@@ -57,6 +57,19 @@ export const WEEKS: Week[] = [
       },
     ],
   },
+  {
+    slug: "week2",
+    number: 2,
+    title: "React Fundamentals",
+    days: [
+      {
+        slug: "day6-components-basics",
+        number: 6,
+        title: "Components Basics: Describing the UI",
+        pages: ALL,
+      },
+    ],
+  },
 ];
 
 /** Standalone notes that belong to no week — the cross-cutting "how to work" material. */
