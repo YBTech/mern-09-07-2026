@@ -215,4 +215,4 @@ async function deleteProductById(id: number) {
 }
 
 
-deleteProductById(10000000);
+// deleteProductById(10000000);

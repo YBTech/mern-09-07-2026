@@ -34,6 +34,12 @@ import D5Practice from "./week1/day5-promises-apis/Practice";
 import D5Concepts from "./week1/day5-promises-apis/Concepts";
 import D5Lab from "./week1/day5-promises-apis/Lab";
 
+import D6Lecture from "./week2/day6-components-basics/lecture/Lecture";
+import D6Notes from "./week2/day6-components-basics/Notes";
+import D6Practice from "./week2/day6-components-basics/Practice";
+import D6Concepts from "./week2/day6-components-basics/Concepts";
+import D6Lab from "./week2/day6-components-basics/Lab";
+
 function App() {
   return (
     <Routes>
@@ -69,7 +75,11 @@ function App() {
       <Route path="/week1/day5-promises-apis/concepts" element={<D5Concepts />} />
       <Route path="/week1/day5-promises-apis/lab" element={<D5Lab />} />
 
-
+      <Route path="/week2/day6-components-basics/lecture" element={<D6Lecture />} />
+      <Route path="/week2/day6-components-basics/notes" element={<D6Notes />} />
+      <Route path="/week2/day6-components-basics/practice" element={<D6Practice />} />
+      <Route path="/week2/day6-components-basics/concepts" element={<D6Concepts />} />
+      <Route path="/week2/day6-components-basics/lab" element={<D6Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

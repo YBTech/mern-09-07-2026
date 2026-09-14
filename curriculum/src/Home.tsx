@@ -34,14 +34,19 @@ function DayRow({ week, day }: { week: Week; day: Day }) {
 export default function Home() {
   return (
     <div className="page home-page">
-      <title>Week 1 — JS/TS Foundations</title>
-      <h1>Week 1: Web Dev Fundamentals (JS/TS Core)</h1>
+      <title>MERN + AI Curriculum</title>
+      <h1>MERN + AI Curriculum</h1>
       {WEEKS.map((week) => (
-        <ul key={week.slug}>
-          {week.days.map((day) => (
-            <DayRow key={day.slug} week={week} day={day} />
-          ))}
-        </ul>
+        <section key={week.slug}>
+          <h2>
+            Week {week.number}: {week.title}
+          </h2>
+          <ul>
+            {week.days.map((day) => (
+              <DayRow key={day.slug} week={week} day={day} />
+            ))}
+          </ul>
+        </section>
       ))}
 
       <section>

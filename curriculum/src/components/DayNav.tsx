@@ -7,7 +7,7 @@ export default function DayNav({ day, current }: { day: string; current: PageKin
 
   return (
     <p className="home-nav">
-      <Link to="/">← Week 1 Home</Link>
+      <Link to="/">← Curriculum Home</Link>
       {pages.map((page) => (
         <span key={page}>
           {" · "}
