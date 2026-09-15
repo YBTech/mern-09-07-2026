@@ -1,6 +1,6 @@
 import DayNav from "../../components/DayNav";
 import CodeBlock from "../../components/CodeBlock";
-import { ExpenseTrackerDemo } from "./_solution";
+import { ScoreboardDemo } from "./_solution";
 
 export default function Lab() {
   return (
@@ -12,116 +12,58 @@ export default function Lab() {
       <div className="task">
         <span className="task-num">1</span>
         <div className="task-body">
-          <p>Expense tracker.</p>
+          <p>Game night scoreboard.</p>
           <span className="tag-starter">Starter</span>
           <CodeBlock
             code={`
-type Category = "food" | "transit" | "other";
-type Expense = { id: string; label: string; cents: number; category: Category };
+type Player = { id: string; name: string; score: number };
 
-const initial: Expense[] = [
-  { id: "e1", label: "Coffee", cents: 450, category: "food" },
-  { id: "e2", label: "Metro card", cents: 2900, category: "transit" },
+const initial: Player[] = [
+  { id: "p1", name: "Ada", score: 0 },
+  { id: "p2", name: "Ben", score: 0 },
+  { id: "p3", name: "Cleo", score: 0 },
 ];
 `}
           />
+          <p className="callout">
+            A fixed roster of three — no "add player" text field. Every interaction is a click,
+            which keeps this a pure state + event-handlers exercise.
+          </p>
           <span className="tag-challenge">Challenge</span>
           <ul className="task-list">
+            <li>A +1 and a -1 button per player, updating that player's score immutably.</li>
             <li>
-              A controlled text field, a controlled amount field, and a
-              controlled category select.
+              Disable a player's -1 button once their score reaches 0 — it should never go negative.
             </li>
             <li>
-              Add on submit with <code>preventDefault</code>, appending
-              immutably to the list.
+              Crown whoever currently has the highest score — computed from the array on every
+              render, never stored as its own state.
             </li>
+            <li>A Delete button per player that drops them from the board, by id.</li>
+            <li>A Reset all button that puts every score back to 0 in one update.</li>
             <li>
-              Reject a blank label or an amount that isn't above zero, with an
-              inline error.
-            </li>
-            <li>Delete any row without mutating the array.</li>
-            <li>Clear all three fields after a successful add.</li>
-            <li>Disable the Add button while the label is empty.</li>
-            <li>
-              A select that filters the rows by category, without throwing away
-              the ones it hides.
-            </li>
-            <li>
-              A running total under the list, computed from the expenses you
-              already hold — no <code>total</code> state kept in sync by hand.
+              Every update goes through the setter immutably; no mutating a player object or the
+              array in place.
             </li>
           </ul>
           <span className="tag-expected">Expected</span>
           <CodeBlock
             code={`
-// submitting a blank label
-error: "Give the expense a name."   (nothing added, fields keep their values)
+// Ada at 0, clicking her -1
+nothing happens — the button is disabled
 
-// submitting "Bus fare" / 275 / transit
-3 rows, fields empty again, Add disabled
+// Ben reaches the highest score
+👑 appears next to Ben's name, moves the moment someone else passes him
+
+// clicking Reset all
+every score back to 0, the roster itself unchanged
 `}
             language="plaintext"
           />
           <div className="demo-result demo-live">
             <p className="demo-result-label">Roughly what you're building</p>
-            <ExpenseTrackerDemo />
+            <ScoreboardDemo />
           </div>
-        </div>
-      </div>
-
-      <p className="section-label">Advanced</p>
-      <p className="section-note">
-        Only if you finish early — extra features to add to the same tracker.
-      </p>
-
-      <div className="task advanced">
-        <span className="task-num">2</span>
-        <div className="task-body">
-          <p>Edit a row in place.</p>
-          <ul className="task-list">
-            <li>
-              An Edit button swaps that row for its own fields, with Save and
-              Cancel.
-            </li>
-            <li>Cancel leaves the row exactly as it was.</li>
-            <li>
-              Only one row can be editing at a time — that constraint decides
-              where the state lives.
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="task advanced">
-        <span className="task-num">3</span>
-        <div className="task-body">
-          <p>Undo the last delete.</p>
-          <ul className="task-list">
-            <li>
-              An Undo button that appears only after a delete and restores that
-              row.
-            </li>
-            <li>Undoing twice in a row shouldn't bring anything back twice.</li>
-            <li>Decide whether the restored row returns to its old position.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="task advanced">
-        <span className="task-num">4</span>
-        <div className="task-body">
-          <p>Sort by amount.</p>
-          <ul className="task-list">
-            <li>A button toggling highest-first and lowest-first.</li>
-            <li>
-              Sorting must not mutate the array in state — <code>.sort</code>{" "}
-              alone does.
-            </li>
-            <li>
-              Adding a row while sorted should land it in the right place
-              without extra bookkeeping.
-            </li>
-          </ul>
         </div>
       </div>
     </div>
