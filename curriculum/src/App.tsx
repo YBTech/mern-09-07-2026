@@ -40,6 +40,12 @@ import D6Practice from "./week2/day6-components-basics/Practice";
 import D6Concepts from "./week2/day6-components-basics/Concepts";
 import D6Lab from "./week2/day6-components-basics/Lab";
 
+import D7Lecture from "./week2/day7-state-interactivity/lecture/Lecture";
+import D7Notes from "./week2/day7-state-interactivity/Notes";
+import D7Practice from "./week2/day7-state-interactivity/Practice";
+import D7Concepts from "./week2/day7-state-interactivity/Concepts";
+import D7Lab from "./week2/day7-state-interactivity/Lab";
+
 function App() {
   return (
     <Routes>
@@ -80,6 +86,12 @@ function App() {
       <Route path="/week2/day6-components-basics/practice" element={<D6Practice />} />
       <Route path="/week2/day6-components-basics/concepts" element={<D6Concepts />} />
       <Route path="/week2/day6-components-basics/lab" element={<D6Lab />} />
+
+      <Route path="/week2/day7-state-interactivity/lecture" element={<D7Lecture />} />
+      <Route path="/week2/day7-state-interactivity/notes" element={<D7Notes />} />
+      <Route path="/week2/day7-state-interactivity/practice" element={<D7Practice />} />
+      <Route path="/week2/day7-state-interactivity/concepts" element={<D7Concepts />} />
+      <Route path="/week2/day7-state-interactivity/lab" element={<D7Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

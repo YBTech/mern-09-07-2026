@@ -68,6 +68,12 @@ export const WEEKS: Week[] = [
         title: "Components Basics: Describing the UI",
         pages: ALL,
       },
+      {
+        slug: "day7-state-interactivity",
+        number: 7,
+        title: "State & Interactivity",
+        pages: ALL,
+      },
     ],
   },
 ];
