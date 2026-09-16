@@ -74,6 +74,12 @@ export const WEEKS: Week[] = [
         title: "State & Interactivity",
         pages: ALL,
       },
+      {
+        slug: "day8-inputs-forms",
+        number: 8,
+        title: "Inputs & Forms",
+        pages: ALL,
+      },
     ],
   },
 ];

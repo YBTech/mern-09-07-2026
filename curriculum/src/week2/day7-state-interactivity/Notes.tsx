@@ -65,7 +65,7 @@ export default function Notes() {
   return (
     <div className="page notes-page">
       <title>Day 7 Notes</title>
-      <DayNav day="day7-state-interactivity" current="notes" />
+      <DayNav day="day7-state-fundamentals" current="notes" />
       <header className="lecture-header">
         <p className="eyebrow">Week 2 · Day 7 · Notes</p>
         <h1>State Fundamentals</h1>
@@ -99,7 +99,7 @@ export default function Notes() {
           </li>
         </ul>
         <p>
-          Want more? <a href="/week2/day7-state-interactivity/concepts">View all concepts.</a>
+          Want more? <a href="/week2/day7-state-fundamentals/concepts">View all concepts.</a>
         </p>
       </section>
 
@@ -374,24 +374,61 @@ setUser((prev) => ({ ...prev, address: { ...prev.address, city: "Cusco" } }));
       </p>
 
       <h2>8. Derived &amp; unnecessary state</h2>
-      <p className="callout">
-        If a value can be computed from existing state/props on every render, don't put it in state
-        too — compute it inline. Duplicate state drifts out of sync and is one more thing to keep
-        updated.
-      </p>
-      <p>Conditional rendering shows up constantly with derived checks:</p>
+      <div className="concept">
+        <p className="concept-label">Concept</p>
+        <ul>
+          <li>
+            If a value can be computed from state/props you already have, it doesn't need its own{" "}
+            <code>useState</code> — compute it directly during render instead.
+          </li>
+          <li>
+            A second state variable that mirrors the first is <strong>redundant state</strong>:
+            nothing forces it to stay in sync, so every place that changes the original now also
+            has to remember to update the copy — and eventually one of them won't.
+          </li>
+          <li>
+            The fix is almost always <em>deletion</em>: remove the state variable, replace every
+            read of it with the plain expression that computes it.
+          </li>
+        </ul>
+      </div>
       <CodeBlock
         code={`
-function AddForm({ title, items }: { title: string; items: string[] }) {
-  return (
-    <>
-      <button disabled={title.trim().length === 0}>Save</button>
-      {items.length === 0 && <p>No items yet.</p>}
-    </>
-  );
+function Bad() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState(""); // duplicates the two above
+
+  function handleFirstNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFirstName(e.target.value);
+    setFullName(e.target.value + " " + lastName); // easy to forget, easy to get wrong
+  }
+
+  function handleLastNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLastName(e.target.value);
+    setFullName(firstName + " " + e.target.value);
+  }
+
+  return <p>Ticket for: {fullName}</p>;
+}
+
+function Good() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fullName = firstName + " " + lastName; // computed every render, never out of sync
+
+  return <p>Ticket for: {fullName}</p>;
 }
 `}
+        bad={[4, 8, 13]}
+        good={[22]}
       />
+      <p className="callout">
+        <code>Good</code> doesn't need <code>handleFirstNameChange</code>/
+        <code>handleLastNameChange</code> at all — a plain{" "}
+        <code>{"onChange={(e) => setFirstName(e.target.value)}"}</code> is enough once there's no
+        second state variable to keep updated alongside it.
+      </p>
 
       <h2>9. Event handlers</h2>
       <p>
