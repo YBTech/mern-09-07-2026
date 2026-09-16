@@ -46,6 +46,12 @@ import D7Practice from "./week2/day7-state-interactivity/Practice";
 import D7Concepts from "./week2/day7-state-interactivity/Concepts";
 import D7Lab from "./week2/day7-state-interactivity/Lab";
 
+import D8Lecture from "./week2/day8-inputs-forms/lecture/Lecture";
+import D8Notes from "./week2/day8-inputs-forms/Notes";
+import D8Practice from "./week2/day8-inputs-forms/Practice";
+import D8Concepts from "./week2/day8-inputs-forms/Concepts";
+import D8Lab from "./week2/day8-inputs-forms/Lab";
+
 function App() {
   return (
     <Routes>
@@ -92,6 +98,12 @@ function App() {
       <Route path="/week2/day7-state-interactivity/practice" element={<D7Practice />} />
       <Route path="/week2/day7-state-interactivity/concepts" element={<D7Concepts />} />
       <Route path="/week2/day7-state-interactivity/lab" element={<D7Lab />} />
+
+      <Route path="/week2/day8-inputs-forms/lecture" element={<D8Lecture />} />
+      <Route path="/week2/day8-inputs-forms/notes" element={<D8Notes />} />
+      <Route path="/week2/day8-inputs-forms/practice" element={<D8Practice />} />
+      <Route path="/week2/day8-inputs-forms/concepts" element={<D8Concepts />} />
+      <Route path="/week2/day8-inputs-forms/lab" element={<D8Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
