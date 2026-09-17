@@ -80,6 +80,12 @@ export const WEEKS: Week[] = [
         title: "Inputs & Forms",
         pages: ALL,
       },
+      {
+        slug: "day9-side-effects-data-fetching",
+        number: 9,
+        title: "Side Effects & Data Fetching",
+        pages: ALL,
+      },
     ],
   },
 ];

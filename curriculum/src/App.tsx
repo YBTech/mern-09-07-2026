@@ -52,6 +52,12 @@ import D8Practice from "./week2/day8-inputs-forms/Practice";
 import D8Concepts from "./week2/day8-inputs-forms/Concepts";
 import D8Lab from "./week2/day8-inputs-forms/Lab";
 
+import D9Lecture from "./week2/day9-side-effects-data-fetching/lecture/Lecture";
+import D9Notes from "./week2/day9-side-effects-data-fetching/Notes";
+import D9Practice from "./week2/day9-side-effects-data-fetching/Practice";
+import D9Concepts from "./week2/day9-side-effects-data-fetching/Concepts";
+import D9Lab from "./week2/day9-side-effects-data-fetching/Lab";
+
 function App() {
   return (
     <Routes>
@@ -104,6 +110,12 @@ function App() {
       <Route path="/week2/day8-inputs-forms/practice" element={<D8Practice />} />
       <Route path="/week2/day8-inputs-forms/concepts" element={<D8Concepts />} />
       <Route path="/week2/day8-inputs-forms/lab" element={<D8Lab />} />
+
+      <Route path="/week2/day9-side-effects-data-fetching/lecture" element={<D9Lecture />} />
+      <Route path="/week2/day9-side-effects-data-fetching/notes" element={<D9Notes />} />
+      <Route path="/week2/day9-side-effects-data-fetching/practice" element={<D9Practice />} />
+      <Route path="/week2/day9-side-effects-data-fetching/concepts" element={<D9Concepts />} />
+      <Route path="/week2/day9-side-effects-data-fetching/lab" element={<D9Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
