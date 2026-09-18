@@ -36,6 +36,19 @@
   margin-bottom: 2rem;
 }
 
+/* A second nav row under DayNav, for a day whose lab is more than one page (week 2 day 10). */
+.lab-subnav {
+  margin: -0.6rem 0 1.25rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+.lab-subnav a {
+  color: #2255cc;
+}
+.lab-subnav strong {
+  color: #1c1c1c;
+}
+
 /* ------------------------------------------------------------------ */
 /* home page — mirrors week1's index.html                              */
 /* ------------------------------------------------------------------ */
@@ -100,6 +113,27 @@
   max-height: 24rem;
   overflow-y: auto;
   white-space: pre;
+}
+
+/* A reference diagram or animation shipped as an image rather than drawn in markup — week 2
+   day 10 embeds Redux's own two data-flow gifs. White ground so a transparent asset still reads. */
+.diagram {
+  margin: 1.1rem 0 1.6rem;
+}
+.diagram img {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+}
+.diagram figcaption {
+  max-width: 720px;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 /* A lab split into named parts — week1 day 3 groups syntax drills and problem solving. */

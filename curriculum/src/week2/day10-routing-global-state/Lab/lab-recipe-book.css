@@ -1,0 +1,241 @@
+/* lab-recipe-book/src/{index,App}.css, rescoped so it can't leak into the rest of the app.
+   Every rule sits under .recipe-book-demo — the original file styles bare `nav`, `:root` and
+   `body`, which would restyle the whole curriculum if imported as-is. Same pattern as week 1
+   day 1's day1-*.css wrappers.
+
+   The overrides at the top of each block undo .lab-page's own h1/h2 rules, which otherwise
+   match the demo's headings because they are descendants of the lab page wrapper. */
+
+.recipe-book-demo {
+  --hr-green: #2e9e4d;
+  --hr-green-dark: #23803d;
+  --hr-dark: #1e2a33;
+  --border: #d9dee2;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.recipe-book-demo *,
+.recipe-book-demo *::before,
+.recipe-book-demo *::after {
+  box-sizing: border-box;
+}
+
+/* .App drops the original min-height: 100vh — this is a panel on a page, not a whole document. */
+.recipe-book-demo .App {
+  background: #fafafa;
+}
+
+.recipe-book-demo .app-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--hr-dark);
+}
+
+.recipe-book-demo .app-header .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 6px;
+  background: #0f171d;
+  color: var(--hr-green);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.recipe-book-demo .app-header h1 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--hr-green);
+  letter-spacing: 0.02em;
+}
+
+.recipe-book-demo nav {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.recipe-book-demo nav a {
+  color: var(--hr-dark);
+  text-decoration: none;
+  font-weight: 500;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid transparent;
+}
+
+.recipe-book-demo nav a:hover {
+  color: var(--hr-green);
+  border-bottom-color: var(--hr-green);
+}
+
+.recipe-book-demo .app {
+  padding: 1.5rem 1.5rem 0;
+}
+
+/* Recipe list */
+.recipe-book-demo .recipe-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.recipe-book-demo .search-input {
+  max-width: 320px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.recipe-book-demo .search-input:focus {
+  border-color: var(--hr-green);
+}
+
+.recipe-book-demo .recipe-list {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Recipe card */
+.recipe-book-demo .recipe-card {
+  max-width: 320px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.recipe-book-demo .recipe-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.recipe-book-demo .recipe-card p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.recipe-book-demo .recipe-card .card-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recipe-book-demo .recipe-card button {
+  background: var(--hr-green);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.recipe-book-demo .recipe-card button:hover {
+  background: var(--hr-green-dark);
+}
+
+.recipe-book-demo .recipe-card button:active {
+  transform: scale(0.97);
+}
+
+.recipe-book-demo .recipe-card a {
+  color: var(--hr-green-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.recipe-book-demo .recipe-card a:hover {
+  text-decoration: underline;
+}
+
+/* Favorites */
+.recipe-book-demo .favorites-container {
+  display: grid;
+  padding: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.recipe-book-demo .favorites-empty {
+  padding: 1.5rem;
+  color: #555;
+}
+
+.recipe-book-demo .favorites-empty p {
+  margin: 0;
+}
+
+/* Recipe details */
+.recipe-book-demo .recipe-details {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 1.5rem;
+}
+
+.recipe-book-demo .recipe-details h2 {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: none;
+  font-size: 1.2rem;
+}
+
+.recipe-book-demo .recipe-details h4 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.recipe-book-demo .recipe-details ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.recipe-book-demo .recipe-details p {
+  margin: 0;
+  color: #444;
+}
+
+.recipe-book-demo .recipe-details button {
+  margin-top: 1.25rem;
+  background: var(--hr-green);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recipe-book-demo .recipe-details button:hover {
+  background: var(--hr-green-dark);
+}
