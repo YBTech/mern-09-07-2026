@@ -58,64 +58,169 @@ import D9Practice from "./week2/day9-side-effects-data-fetching/Practice";
 import D9Concepts from "./week2/day9-side-effects-data-fetching/Concepts";
 import D9Lab from "./week2/day9-side-effects-data-fetching/Lab";
 
+import D10Lecture from "./week2/day10-routing-global-state/lecture/Lecture";
+import D10Notes from "./week2/day10-routing-global-state/Notes";
+import D10Practice from "./week2/day10-routing-global-state/Practice";
+import D10Concepts from "./week2/day10-routing-global-state/Concepts";
+import D10Lab from "./week2/day10-routing-global-state/Lab/Lab";
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
 
-    <Route path="/week1/day1-html-css-dom/lecture" element={<D1Lecture />} />
+      <Route path="/week1/day1-html-css-dom/lecture" element={<D1Lecture />} />
       <Route path="/week1/day1-html-css-dom/notes" element={<D1Notes />} />
-      <Route path="/week1/day1-html-css-dom/practice" element={<D1Practice />} />
-      <Route path="/week1/day1-html-css-dom/concepts" element={<D1Concepts />} />
+      <Route
+        path="/week1/day1-html-css-dom/practice"
+        element={<D1Practice />}
+      />
+      <Route
+        path="/week1/day1-html-css-dom/concepts"
+        element={<D1Concepts />}
+      />
       <Route path="/week1/day1-html-css-dom/lab" element={<D1Lab />} />
 
-      <Route path="/week1/day2-typescript-core/lecture" element={<D2Lecture />} />
+      <Route
+        path="/week1/day2-typescript-core/lecture"
+        element={<D2Lecture />}
+      />
       <Route path="/week1/day2-typescript-core/notes" element={<D2Notes />} />
-      <Route path="/week1/day2-typescript-core/practice" element={<D2Practice />} />
-      <Route path="/week1/day2-typescript-core/concepts" element={<D2Concepts />} />
+      <Route
+        path="/week1/day2-typescript-core/practice"
+        element={<D2Practice />}
+      />
+      <Route
+        path="/week1/day2-typescript-core/concepts"
+        element={<D2Concepts />}
+      />
       <Route path="/week1/day2-typescript-core/lab" element={<D2Lab />} />
 
-      <Route path="/week1/day3-javascript-core/lecture" element={<D3Lecture />} />
+      <Route
+        path="/week1/day3-javascript-core/lecture"
+        element={<D3Lecture />}
+      />
       <Route path="/week1/day3-javascript-core/notes" element={<D3Notes />} />
-      <Route path="/week1/day3-javascript-core/practice" element={<D3Practice />} />
-      <Route path="/week1/day3-javascript-core/concepts" element={<D3Concepts />} />
+      <Route
+        path="/week1/day3-javascript-core/practice"
+        element={<D3Practice />}
+      />
+      <Route
+        path="/week1/day3-javascript-core/concepts"
+        element={<D3Concepts />}
+      />
       <Route path="/week1/day3-javascript-core/lab" element={<D3Lab />} />
 
       <Route path="/week1/day4-js-functions/lecture" element={<D4Lecture />} />
       <Route path="/week1/day4-js-functions/notes" element={<D4Notes />} />
-      <Route path="/week1/day4-js-functions/practice" element={<D4Practice />} />
-      <Route path="/week1/day4-js-functions/concepts" element={<D4Concepts />} />
+      <Route
+        path="/week1/day4-js-functions/practice"
+        element={<D4Practice />}
+      />
+      <Route
+        path="/week1/day4-js-functions/concepts"
+        element={<D4Concepts />}
+      />
       <Route path="/week1/day4-js-functions/lab" element={<D4Lab />} />
 
       <Route path="/week1/day5-promises-apis/lecture" element={<D5Lecture />} />
       <Route path="/week1/day5-promises-apis/notes" element={<D5Notes />} />
-      <Route path="/week1/day5-promises-apis/practice" element={<D5Practice />} />
-      <Route path="/week1/day5-promises-apis/concepts" element={<D5Concepts />} />
+      <Route
+        path="/week1/day5-promises-apis/practice"
+        element={<D5Practice />}
+      />
+      <Route
+        path="/week1/day5-promises-apis/concepts"
+        element={<D5Concepts />}
+      />
       <Route path="/week1/day5-promises-apis/lab" element={<D5Lab />} />
 
-      <Route path="/week2/day6-components-basics/lecture" element={<D6Lecture />} />
+      <Route
+        path="/week2/day6-components-basics/lecture"
+        element={<D6Lecture />}
+      />
       <Route path="/week2/day6-components-basics/notes" element={<D6Notes />} />
-      <Route path="/week2/day6-components-basics/practice" element={<D6Practice />} />
-      <Route path="/week2/day6-components-basics/concepts" element={<D6Concepts />} />
+      <Route
+        path="/week2/day6-components-basics/practice"
+        element={<D6Practice />}
+      />
+      <Route
+        path="/week2/day6-components-basics/concepts"
+        element={<D6Concepts />}
+      />
       <Route path="/week2/day6-components-basics/lab" element={<D6Lab />} />
 
-      <Route path="/week2/day7-state-interactivity/lecture" element={<D7Lecture />} />
-      <Route path="/week2/day7-state-interactivity/notes" element={<D7Notes />} />
-      <Route path="/week2/day7-state-interactivity/practice" element={<D7Practice />} />
-      <Route path="/week2/day7-state-interactivity/concepts" element={<D7Concepts />} />
+      <Route
+        path="/week2/day7-state-interactivity/lecture"
+        element={<D7Lecture />}
+      />
+      <Route
+        path="/week2/day7-state-interactivity/notes"
+        element={<D7Notes />}
+      />
+      <Route
+        path="/week2/day7-state-interactivity/practice"
+        element={<D7Practice />}
+      />
+      <Route
+        path="/week2/day7-state-interactivity/concepts"
+        element={<D7Concepts />}
+      />
       <Route path="/week2/day7-state-interactivity/lab" element={<D7Lab />} />
 
       <Route path="/week2/day8-inputs-forms/lecture" element={<D8Lecture />} />
       <Route path="/week2/day8-inputs-forms/notes" element={<D8Notes />} />
-      <Route path="/week2/day8-inputs-forms/practice" element={<D8Practice />} />
-      <Route path="/week2/day8-inputs-forms/concepts" element={<D8Concepts />} />
+      <Route
+        path="/week2/day8-inputs-forms/practice"
+        element={<D8Practice />}
+      />
+      <Route
+        path="/week2/day8-inputs-forms/concepts"
+        element={<D8Concepts />}
+      />
       <Route path="/week2/day8-inputs-forms/lab" element={<D8Lab />} />
 
-      <Route path="/week2/day9-side-effects-data-fetching/lecture" element={<D9Lecture />} />
-      <Route path="/week2/day9-side-effects-data-fetching/notes" element={<D9Notes />} />
-      <Route path="/week2/day9-side-effects-data-fetching/practice" element={<D9Practice />} />
-      <Route path="/week2/day9-side-effects-data-fetching/concepts" element={<D9Concepts />} />
-      <Route path="/week2/day9-side-effects-data-fetching/lab" element={<D9Lab />} />
+      <Route
+        path="/week2/day9-side-effects-data-fetching/lecture"
+        element={<D9Lecture />}
+      />
+      <Route
+        path="/week2/day9-side-effects-data-fetching/notes"
+        element={<D9Notes />}
+      />
+      <Route
+        path="/week2/day9-side-effects-data-fetching/practice"
+        element={<D9Practice />}
+      />
+      <Route
+        path="/week2/day9-side-effects-data-fetching/concepts"
+        element={<D9Concepts />}
+      />
+      <Route
+        path="/week2/day9-side-effects-data-fetching/lab"
+        element={<D9Lab />}
+      />
+
+      <Route
+        path="/week2/day10-routing-global-state/lecture"
+        element={<D10Lecture />}
+      />
+      <Route
+        path="/week2/day10-routing-global-state/notes"
+        element={<D10Notes />}
+      />
+      <Route
+        path="/week2/day10-routing-global-state/practice"
+        element={<D10Practice />}
+      />
+      <Route
+        path="/week2/day10-routing-global-state/concepts"
+        element={<D10Concepts />}
+      />
+      <Route
+        path="/week2/day10-routing-global-state/lab"
+        element={<D10Lab />}
+      />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

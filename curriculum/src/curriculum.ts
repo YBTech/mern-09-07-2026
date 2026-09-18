@@ -86,6 +86,12 @@ export const WEEKS: Week[] = [
         title: "Side Effects & Data Fetching",
         pages: ALL,
       },
+      {
+        slug: "day10-routing-global-state",
+        number: 10,
+        title: "Routing & Global State",
+        pages: ALL,
+      },
     ],
   },
 ];
