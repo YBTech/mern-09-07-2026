@@ -63,6 +63,7 @@ import D10Notes from "./week2/day10-routing-global-state/Notes";
 import D10Practice from "./week2/day10-routing-global-state/Practice";
 import D10Concepts from "./week2/day10-routing-global-state/Concepts";
 import D10Lab from "./week2/day10-routing-global-state/Lab/Lab";
+import D10LabProblems from "./week2/day10-routing-global-state/Lab/LabLegacy";
 
 function App() {
   return (
@@ -220,6 +221,10 @@ function App() {
       <Route
         path="/week2/day10-routing-global-state/lab"
         element={<D10Lab />}
+      />
+      <Route
+        path="/week2/day10-routing-global-state/lab/problem-set"
+        element={<D10LabProblems />}
       />
 
       {/* General Notes */}
