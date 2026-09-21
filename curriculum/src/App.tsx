@@ -65,6 +65,12 @@ import D10Concepts from "./week2/day10-routing-global-state/Concepts";
 import D10Lab from "./week2/day10-routing-global-state/Lab/Lab";
 import D10LabProblems from "./week2/day10-routing-global-state/Lab/LabLegacy";
 
+import D11Lecture from "./week3/day11-node-express/lecture/Lecture";
+import D11Notes from "./week3/day11-node-express/Notes";
+import D11Practice from "./week3/day11-node-express/Practice";
+import D11Concepts from "./week3/day11-node-express/Concepts";
+import D11Lab from "./week3/day11-node-express/Lab";
+
 function App() {
   return (
     <Routes>
@@ -226,6 +232,21 @@ function App() {
         path="/week2/day10-routing-global-state/lab/problem-set"
         element={<D10LabProblems />}
       />
+
+      <Route
+        path="/week3/day11-node-express/lecture"
+        element={<D11Lecture />}
+      />
+      <Route path="/week3/day11-node-express/notes" element={<D11Notes />} />
+      <Route
+        path="/week3/day11-node-express/practice"
+        element={<D11Practice />}
+      />
+      <Route
+        path="/week3/day11-node-express/concepts"
+        element={<D11Concepts />}
+      />
+      <Route path="/week3/day11-node-express/lab" element={<D11Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

@@ -1,0 +1,24 @@
+{
+  "name": "monolithic",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lecture playground — a bare Express + TypeScript scaffold, built up live.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.1",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.19.43",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
