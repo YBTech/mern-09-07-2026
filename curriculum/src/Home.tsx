@@ -3,6 +3,7 @@ import {
   GENERAL_NOTES,
   PAGE_LABELS,
   WEEKS,
+  dayNumber,
   pageHref,
   type Day,
   type Week,
@@ -12,7 +13,7 @@ function DayRow({ week, day }: { week: Week; day: Day }) {
   return (
     <li>
       <strong>
-        Day {day.number} — {day.title}
+        Day {dayNumber(day)} — {day.title}
       </strong>
       <br />
       {day.pages.length > 0 ? (
