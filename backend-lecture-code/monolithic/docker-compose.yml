@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: backend-lecture-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lecture
+      POSTGRES_PASSWORD: lecture
+      POSTGRES_DB: lecture_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - backend-lecture-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lecture -d lecture_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  backend-lecture-pgdata:

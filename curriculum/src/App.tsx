@@ -71,6 +71,21 @@ import D11Practice from "./week3/day11-node-express/Practice";
 import D11Concepts from "./week3/day11-node-express/Concepts";
 import D11Lab from "./week3/day11-node-express/Lab";
 
+import D12Lecture from "./week3/day12-relational-databases/lecture/Lecture";
+import D12Notes from "./week3/day12-relational-databases/Notes";
+import D12Practice from "./week3/day12-relational-databases/Practice";
+import D12Concepts from "./week3/day12-relational-databases/Concepts";
+import D12Lab from "./week3/day12-relational-databases/Lab";
+
+import FullSqlFoundation from "./week3/additional-backend-topics/full-sql/Foundation";
+import FullSqlQueryOptimization from "./week3/additional-backend-topics/full-sql/QueryOptimization";
+import FullSqlScaling from "./week3/additional-backend-topics/full-sql/ScalingAndThroughput";
+import FullSqlSchemaDesign from "./week3/additional-backend-topics/full-sql/SchemaDesign";
+import FullSqlVsNosql from "./week3/additional-backend-topics/full-sql/SqlVsNosql";
+
+import NodeEventLoopNotes from "./week3/additional-backend-topics/node-event-loop-deep-dive/Notes";
+import NodeEventLoopConcepts from "./week3/additional-backend-topics/node-event-loop-deep-dive/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -247,6 +262,57 @@ function App() {
         element={<D11Concepts />}
       />
       <Route path="/week3/day11-node-express/lab" element={<D11Lab />} />
+
+      <Route
+        path="/week3/day12-relational-databases/lecture"
+        element={<D12Lecture />}
+      />
+      <Route
+        path="/week3/day12-relational-databases/notes"
+        element={<D12Notes />}
+      />
+      <Route
+        path="/week3/day12-relational-databases/practice"
+        element={<D12Practice />}
+      />
+      <Route
+        path="/week3/day12-relational-databases/concepts"
+        element={<D12Concepts />}
+      />
+      <Route
+        path="/week3/day12-relational-databases/lab"
+        element={<D12Lab />}
+      />
+
+      <Route
+        path="/week3/additional-backend-topics/full-sql/foundation"
+        element={<FullSqlFoundation />}
+      />
+      <Route
+        path="/week3/additional-backend-topics/full-sql/query-optimization"
+        element={<FullSqlQueryOptimization />}
+      />
+      <Route
+        path="/week3/additional-backend-topics/full-sql/scaling-and-throughput"
+        element={<FullSqlScaling />}
+      />
+      <Route
+        path="/week3/additional-backend-topics/full-sql/schema-design"
+        element={<FullSqlSchemaDesign />}
+      />
+      <Route
+        path="/week3/additional-backend-topics/full-sql/sql-vs-nosql"
+        element={<FullSqlVsNosql />}
+      />
+
+      <Route
+        path="/week3/additional-backend-topics/node-event-loop-deep-dive/notes"
+        element={<NodeEventLoopNotes />}
+      />
+      <Route
+        path="/week3/additional-backend-topics/node-event-loop-deep-dive/concepts"
+        element={<NodeEventLoopConcepts />}
+      />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

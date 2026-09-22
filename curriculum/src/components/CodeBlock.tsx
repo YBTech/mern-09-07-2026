@@ -5,13 +5,19 @@ import xml from "highlight.js/lib/languages/xml";
 import css from "highlight.js/lib/languages/css";
 import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
+import sql from "highlight.js/lib/languages/sql";
 import plaintext from "highlight.js/lib/languages/plaintext";
 
+// Only the languages this curriculum actually uses, so the bundle doesn't pull in all
+// ~190 grammars. `typescript` already aliases ts/tsx and pulls in the JSX handling;
+// `xml` is what it delegates to for the JSX tags inside a .tsx snippet.
 hljs.registerLanguage("typescript", typescript);
 hljs.registerLanguage("xml", xml);
 hljs.registerLanguage("css", css);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("bash", bash);
+hljs.registerLanguage("sql", sql);
+// for "Expected" blocks that show console output rather than source
 hljs.registerLanguage("plaintext", plaintext);
 
 /**
