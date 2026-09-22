@@ -35,7 +35,6 @@
   color: #444;
   margin-bottom: 2rem;
 }
-
 /* A second nav row under DayNav, for a day whose lab is more than one page (week 2 day 10). */
 .lab-subnav {
   margin: -0.6rem 0 1.25rem;
@@ -136,6 +135,25 @@
   color: #666;
 }
 
+/* An embedded video — the same width and frame as .diagram, held at 16:9 so the player
+   scales with the column instead of needing fixed pixel dimensions. */
+.video-embed {
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
+  margin: 1.1rem 0 1.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+.video-embed iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* A lab split into named parts — week1 day 3 groups syntax drills and problem solving. */
 .lab-page h2 {
   font-size: 1.05rem;
@@ -202,10 +220,24 @@
 .exec-summary li {
   margin-bottom: 0.6rem;
 }
+/* Splits the essentials into "write this" vs "explain this" groups. */
+.exec-summary .compare-label {
+  margin-top: 1.2rem;
+  color: #2255cc;
+}
 .section-divider {
   margin: 3.5rem 0 0;
   border: none;
   border-top: 3px dashed #ccc;
+}
+
+/* A lighter divider for steps WITHIN one h3 section (e.g. a step-by-step
+   worked example) — .section-divider's 3.5rem gap is sized for breaks
+   between major page sections, not sub-steps a few paragraphs apart. */
+.step-divider {
+  margin: 1.75rem 0;
+  border: none;
+  border-top: 1px solid #ddd;
 }
 
 .notes-page pre {
@@ -225,6 +257,44 @@
 }
 .ref-table th {
   background: #f7f7f7;
+}
+
+/* Lays a group of .example-tables out left-to-right with a gap, wrapping on
+   narrow screens — so a handful of small tables don't stack full-height. */
+.example-tables {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin: 0.75rem 0 1rem;
+}
+.example-tables .example-table {
+  margin: 0;
+}
+
+/* A small, fully-bordered, shrink-to-content table for a literal data example
+   (e.g. normalization's before/after rows) — deliberately NOT .ref-table's
+   full-width, bottom-border-only look, which is wrong for a handful of rows. */
+.example-table {
+  border-collapse: collapse;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+.example-table caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.example-table th,
+.example-table td {
+  border: 1px solid #d8d8d8;
+  padding: 0.25rem 0.65rem;
+  text-align: left;
+}
+.example-table th {
+  background: #f7f7f7;
+  font-weight: 600;
 }
 
 /* ------------------------------------------------------------------ */
@@ -459,6 +529,14 @@ summary::marker {
   padding: 0.9rem 1.1rem;
   margin: 1rem 0;
   border-radius: 4px;
+}
+/* A callout can be a div with several labeled <p>s (e.g. "Why it's X" +
+   "The new problem") instead of one plain paragraph — trim the outer gap. */
+.callout p:first-child {
+  margin-top: 0;
+}
+.callout p:last-child {
+  margin-bottom: 0;
 }
 
 .concept {
@@ -774,4 +852,630 @@ pre .line-bad::before {
   color: #888;
   font-size: 0.9rem;
   padding: 0.5rem 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* notes page — parts inside the Full Walkthrough                      */
+/* ------------------------------------------------------------------ */
+/* A day whose walkthrough is long enough to need grouping (day 11 runs from npm through
+   idempotency) splits it into named Parts. The part heading is an <h3> that reads as a
+   divider, and the topics under it drop to <h4>. Days that don't need grouping keep using
+   plain <h3> topics and never see these rules. */
+.notes-page h3.part {
+  margin-top: 3rem;
+  background: #f2f5fb;
+  border-left: 4px solid #4a6fa5;
+  border-radius: 0 6px 6px 0;
+  padding: 0.55rem 0.9rem;
+  font-size: 1.12rem;
+}
+.notes-page h3.part:first-of-type {
+  margin-top: 1.5rem;
+}
+/* Class-scoped, not a bare `.notes-page h4`: day 1's notes already use <h4> for its own
+   sub-headings, and a blanket element rule would silently restyle that page too. */
+.notes-page h4.topic {
+  margin: 1.9rem 0 0.6rem;
+  font-size: 1rem;
+  color: #1f3350;
+}
+
+/* ------------------------------------------------------------------ */
+/* day 11 — simplified mock of the browser DevTools Network tab        */
+/* ------------------------------------------------------------------ */
+/* The Network tab is the single most useful debugging surface for an API, and describing
+   it in prose is what students skip. This is a static picture of it — no buttons, no
+   interactivity — with numbered markers keyed to the legend underneath, so "where do I
+   read the status code" is answered by looking rather than reading. */
+.netmock {
+  border: 1px solid #c7cdd4;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1rem 0 0.75rem;
+  background: #fff;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.netmock-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #eef0f2;
+  border-bottom: 1px solid #c7cdd4;
+  padding: 0.35rem 0.6rem;
+}
+.netmock-bar span {
+  padding: 0.12rem 0.5rem;
+  border-radius: 4px;
+  color: #5a6470;
+  font-size: 0.75rem;
+}
+.netmock-bar span.is-active {
+  background: #fff;
+  color: #1a1a1a;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #c7cdd4;
+}
+.netmock-bar span.netmock-filter {
+  margin-left: auto;
+  background: #dbe6f6;
+  color: #2b4c7e;
+}
+.netmock-list {
+  width: 100%;
+  border-collapse: collapse;
+}
+.netmock-list th,
+.netmock-list td {
+  text-align: left;
+  padding: 0.35rem 0.7rem;
+  border-bottom: 1px solid #edeff1;
+  white-space: nowrap;
+}
+.netmock-list th {
+  background: #f7f8f9;
+  color: #5a6470;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.netmock-list tr.is-selected td {
+  background: #dbe6f6;
+  font-weight: 600;
+}
+.netmock-ok {
+  color: #1b7f3b;
+}
+.netmock-err {
+  color: #c62828;
+}
+.netmock-detail {
+  border-top: 1px solid #c7cdd4;
+}
+.netmock-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: #f7f8f9;
+  border-bottom: 1px solid #e2e5e8;
+  padding: 0.3rem 0.6rem;
+}
+.netmock-tabs span {
+  padding: 0.12rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #5a6470;
+}
+.netmock-tabs span.is-active {
+  background: #fff;
+  color: #1a1a1a;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #c7cdd4;
+}
+.netmock-pane {
+  padding: 0.6rem 0.8rem 0.8rem;
+}
+.netmock-pane + .netmock-pane {
+  border-top: 1px dashed #dfe3e7;
+}
+.netmock-section {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a929b;
+  font-weight: 700;
+}
+.netmock-kv {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.12rem 0;
+  line-height: 1.5;
+}
+.netmock-kv > span:first-child {
+  color: #5a6470;
+  min-width: 11rem;
+  flex-shrink: 0;
+}
+.netmock-kv > span:last-child {
+  color: #1a1a1a;
+  word-break: break-all;
+}
+/* This is a <pre>, so it inherits the dark global code-block chrome and
+   `.notes-page pre`'s padding. Scoping under .netmock raises specificity above both —
+   a plain `.netmock-body` rule loses the padding fight and the block renders oversized. */
+.netmock .netmock-body {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  background: #f7f8f9;
+  border: 1px solid #e2e5e8;
+  border-radius: 4px;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* the numbered markers that tie a spot in the mock to the legend below it */
+.netmark {
+  display: inline-block;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  line-height: 1.15rem;
+  text-align: center;
+  border-radius: 50%;
+  background: #4a6fa5;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: system-ui, sans-serif;
+  margin-right: 0.35rem;
+  flex-shrink: 0;
+}
+.netmock-legend {
+  margin: 0 0 1.5rem;
+  padding-left: 0;
+  list-style: none;
+}
+.netmock-legend li {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
+}
+@media (max-width: 620px) {
+  .netmock {
+    font-size: 0.72rem;
+  }
+  .netmock-kv {
+    flex-direction: column;
+    gap: 0;
+  }
+  .netmock-kv > span:first-child {
+    min-width: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* week 3 lecture console — the instructor's live API harness.          */
+/* Not student material: these pages call the OMS backend during the    */
+/* lecture so a route can be written and then hit on the projector.     */
+/* Sized larger than the rest of the app because it IS the projector.   */
+/* ------------------------------------------------------------------ */
+.lecture-console {
+  max-width: 1100px;
+}
+.lecture-console h2 {
+  font-size: 1.05rem;
+  margin: 2.25rem 0 0.35rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.3rem;
+}
+.console-intro {
+  margin: 0 0 0.9rem;
+  color: #5a6470;
+  font-size: 0.9rem;
+}
+
+/* --- which server, and is it up ----------------------------------- */
+.base-url-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  background: #f7f8f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.base-url-bar label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #5a6470;
+}
+.base-url-bar input {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  min-width: 15rem;
+}
+.base-url-bar button {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #c7cdd4;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.health-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #bbb;
+  flex-shrink: 0;
+}
+.health-dot.is-up {
+  background: #1d9d52;
+}
+.health-dot.is-down {
+  background: #cc2b2b;
+}
+.health-text {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+/* --- preset buttons ------------------------------------------------ */
+.api-console {
+  margin-bottom: 0.5rem;
+}
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0.5rem;
+}
+.preset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  background: #fff;
+  border: 1px solid #c7cdd4;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.preset-btn:hover {
+  border-color: #2255cc;
+  background: #f5f8ff;
+}
+.preset-method {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  color: #fff;
+  background: #5a6470;
+}
+.method-get .preset-method {
+  background: #1d7d4d;
+}
+.method-post .preset-method {
+  background: #2255cc;
+}
+.method-patch .preset-method,
+.method-put .preset-method {
+  background: #b5761a;
+}
+.method-delete .preset-method {
+  background: #cc2b2b;
+}
+.preset-note {
+  margin: 0 0 0.75rem;
+  padding: 0.45rem 0.7rem;
+  background: #f5f8ff;
+  border-left: 3px solid #2255cc;
+  font-size: 0.85rem;
+  color: #1c1c1c;
+}
+
+/* --- request form beside the response ------------------------------ */
+.console-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.request-line {
+  display: flex;
+  gap: 0.4rem;
+}
+.request-line select,
+.request-line input {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.88rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+}
+.request-line input {
+  flex: 1;
+  min-width: 0;
+}
+.send-btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2255cc;
+  border: 1px solid #2255cc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.send-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.request-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5a6470;
+}
+.request-form textarea {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+/* --- the response -------------------------------------------------- */
+.resp-panel {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  padding: 0.65rem 0.8rem;
+  min-height: 7rem;
+}
+.resp-panel.is-ok {
+  border-color: #1d9d52;
+  background: #f2fbf5;
+}
+.resp-panel.is-client-error {
+  border-color: #b5761a;
+  background: #fdf8ef;
+}
+.resp-panel.is-server-error,
+.resp-panel.is-dead {
+  border-color: #cc2b2b;
+  background: #fdf3f3;
+}
+.resp-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+.resp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin-bottom: 0.45rem;
+}
+.resp-status {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  line-height: 1;
+}
+.is-ok .resp-status {
+  color: #1d7d4d;
+}
+.is-client-error .resp-status {
+  color: #b5761a;
+}
+.is-server-error .resp-status,
+.is-dead .resp-status {
+  color: #cc2b2b;
+}
+.resp-ms {
+  font-size: 0.85rem;
+  color: #5a6470;
+}
+.resp-body {
+  margin: 0;
+  max-height: 22rem;
+  overflow: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.resp-waiting {
+  margin: 0;
+  color: #888;
+  font-size: 0.85rem;
+}
+.resp-hint {
+  font-size: 0.85rem;
+}
+.resp-hint p {
+  margin: 0.3rem 0;
+  color: #5a6470;
+}
+.resp-hint pre {
+  margin: 0.3rem 0 0;
+  font-size: 0.75rem;
+  color: #cc2b2b;
+  white-space: pre-wrap;
+}
+
+/* --- per-day demo widgets ------------------------------------------ */
+.demo-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  background: #fff;
+}
+.demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.demo-actions button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: #fff;
+  border: 1px solid #c7cdd4;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.demo-actions button:hover:not(:disabled) {
+  border-color: #2255cc;
+  background: #f5f8ff;
+}
+.demo-actions button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.demo-hint {
+  margin: 0.75rem 0 0;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* --- the event-loop race bars --------------------------------------- */
+.race-bars {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.race-row {
+  display: grid;
+  grid-template-columns: 17rem 1fr 4.5rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+.race-label {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  color: #1c1c1c;
+}
+.race-track {
+  height: 1.15rem;
+  background: #f0f1f3;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.race-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.25s ease-out;
+}
+.race-fill.is-slow {
+  background: #5a6470;
+}
+.race-fill.is-stalled {
+  background: #cc2b2b;
+}
+.race-fill.is-fast {
+  background: #1d9d52;
+}
+.race-ms {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  text-align: right;
+  color: #5a6470;
+}
+.race-verdict {
+  margin: 0.9rem 0 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+}
+.race-verdict.is-bad {
+  background: #fdf3f3;
+  border-left: 3px solid #cc2b2b;
+}
+.race-verdict.is-good {
+  background: #f2fbf5;
+  border-left: 3px solid #1d9d52;
+}
+
+/* --- the idempotency attempt log ------------------------------------ */
+.attempt-list {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.attempt-list li {
+  display: grid;
+  grid-template-columns: 2.2rem 3.5rem 1fr 4.5rem;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.87rem;
+  background: #fafafa;
+  border-left: 3px solid #c7cdd4;
+}
+.attempt-list li.is-ok {
+  background: #f2fbf5;
+  border-left-color: #1d9d52;
+}
+.attempt-list li.is-error {
+  background: #fdf3f3;
+  border-left-color: #cc2b2b;
+}
+.attempt-n {
+  color: #888;
+  font-size: 0.8rem;
+}
+.attempt-status {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+}
+.attempt-ms {
+  text-align: right;
+  font-size: 0.78rem;
+  color: #888;
+}
+.attempt-detail code {
+  font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+  .console-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .race-row {
+    grid-template-columns: 10rem 1fr 4rem;
+  }
 }

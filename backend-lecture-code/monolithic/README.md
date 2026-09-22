@@ -7,3 +7,8 @@ nothing but a health check; everything else gets built live.
 npm install
 npm run dev   # nodemon + ts-node, restarts on save
 ```
+
+Start the Docker postgresql instance
+```base
+docker-compose up
+```

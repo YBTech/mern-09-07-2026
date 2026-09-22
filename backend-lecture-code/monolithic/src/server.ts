@@ -5,6 +5,8 @@ import "dotenv/config";
 
 import express from "express";
 
+import { pool, query } from "./db/pool";
+
 const app = express();
 const PORT = Number(process.env.PORT) || 3100;
 
@@ -16,7 +18,6 @@ interface Product {
   name: string;
   priceCents: number;
   createdAt: Date;
-  updatedAt: Date;
 }
 
 // IIFE + Closure
@@ -32,7 +33,6 @@ const products: Product[] = [
     name: "Ceramic Mug",
     priceCents: 12.99,
     createdAt: new Date(),
-    updatedAt: new Date(),
   },
   {
     id: genId(),
@@ -40,12 +40,11 @@ const products: Product[] = [
     name: "Dot-Grid Notebook",
     priceCents: 8.99,
     createdAt: new Date(),
-    updatedAt: new Date(),
   },
 ];
 
 // blocking
-app.get("/blocking", (req, res) => {
+app.get("/blocking", async (req, res) => {
   // intentionally block for 5 seconds
   const start = Date.now();
   // cpu related tasks will block the main thread
@@ -56,54 +55,71 @@ app.get("/blocking", (req, res) => {
   res.send("hello");
 });
 
-
-
 // we are creating / defining the endpoints
 
 // GET http://localhost:3100/products
-app.get("/products", (req, res) => {
+app.get("/products", async (req, res) => {
   // query parameters
-  const { sortBy, order } = req.query;
-
-  // based on query params you can sort the products and return
-  const _products = [...products].sort(/*sorting logic*/);
+  const { limit, skip } = req.query;
 
   console.log("get request received");
 
-  res.json(_products);
-});
-
-// GET http://localhost:3100/products/:id
-app.get("/products/:id", (req, res) => {
-  // route parameters
-  // all are strings from req.query & req.params
-  const { id } = req.params;
-  const product = products.find((p) => p.id === Number(id));
-
-  if (!product) {
-    return res.status(404).json({
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM products LIMIT $1 OFFSET $2",
+      [limit, skip],
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(400).json({
       error: {
-        message: `Product with id ${id} cannot be found`,
+        message: `bad request`,
       },
     });
   }
+});
 
-  res.json(product);
+// GET http://localhost:3100/products/:id
+app.get("/products/:id", async (req, res) => {
+  // route parameters
+  // all are strings from req.query & req.params
+  const { id } = req.params;
+
+  await pool.query("BEGIN");
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM products WHERE id=${id} LIMIT 1`,
+    );
+    const product = rows[0];
+
+    if (!product) {
+      return res.status(404).json({
+        error: {
+          message: `Product with id ${id} cannot be found`,
+        },
+      });
+    }
+
+    await pool.query("COMMIT");
+    res.json(product);
+  } catch (err) {
+    await pool.query("ROLLBACK");
+  }
 });
 
 // POST http://localhost:3100/products
-app.post("/products", (req, res) => {
+app.post("/products", async (req, res) => {
   // client sends info to server in the body
   const { sku, name, priceCents } = req.body;
 
-  // const isSkuExisted = products.some((p) => p.sku === sku);
-  // if (isSkuExisted) {
-  //   return res.status(409).json({
-  //     error: {
-  //       message: `product with sku ${sku} already exists`,
-  //     },
-  //   });
-  // }
+  const isSkuExisted = products.some((p) => p.sku === sku);
+  if (isSkuExisted) {
+    return res.status(409).json({
+      error: {
+        message: `product with sku ${sku} already exists`,
+      },
+    });
+  }
 
   const newProduct: Product = {
     id: genId(),
@@ -111,15 +127,13 @@ app.post("/products", (req, res) => {
     name,
     priceCents,
     createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   products.push(newProduct);
-
-  res.status(201).json(newProduct);
+  res.status(201).json(products);
 });
 
-app.patch("/products/:id", (req, res) => {
+app.patch("/products/:id", async (req, res) => {
   const { id } = req.params;
   const { name, priceCents } = req.body;
   const product = products.find((p) => p.id === Number(id));
@@ -132,12 +146,11 @@ app.patch("/products/:id", (req, res) => {
   }
 
   product.name = name;
-  product.updatedAt = new Date();
 
   res.json(product);
 });
 
-app.delete("/products/:id", (req, res) => {
+app.delete("/products/:id", async (req, res) => {
   const { id } = req.params;
   const index = products.findIndex((p) => p.id === Number(id));
   if (!index) {
@@ -149,10 +162,38 @@ app.delete("/products/:id", (req, res) => {
 });
 
 // GET http://localhost:3100/health
-app.get("/health", (_req, res) => {
-  res.status(200).json({ status: "ok" });
+app.get("/health", async (_req, res) => {
+  try {
+    await query("SELECT 1");
+    res.status(200).json({ status: "ok", db: "up" });
+  } catch (err) {
+    res.status(503).json({ status: "degraded", db: "down" });
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`Monolithic API listening on http://localhost:${PORT}`);
 });
+
+
+
+// Atomicity
+// Transfer from A - B
+
+// query A: take $1000 out of account A
+// network fail
+// query B: put $1000 into account B
+
+// query A: places an order of 5
+// network fail
+// query B: update from the inventory to reduce 5
+
+
+// Isolation
+// inventory has 1 left
+
+// user A: checkout, check inventory is still there, order success
+// user B: checkout at the same time, check inventory is still there, order success
+
+// when us  er A reads the query:  SELECT quantity FROM Inventory where id = 1 FOR UPDATE;
+// user B reads the query next: but it's locked, so user B has to wait
