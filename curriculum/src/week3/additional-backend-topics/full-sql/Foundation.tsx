@@ -990,7 +990,7 @@ CALL mark_order_shipped(4012);`}
             <td>Lives outside your repo, hard to test, hard to version, hard to hire for</td>
           </tr>
           <tr>
-            <td>Service layer (day 14)</td>
+            <td>Service layer (day 13)</td>
             <td>Versioned with the code, unit-testable, one language</td>
             <td>Every other client of the database can bypass it</td>
           </tr>

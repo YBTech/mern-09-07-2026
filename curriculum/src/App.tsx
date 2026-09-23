@@ -77,6 +77,12 @@ import D12Practice from "./week3/day12-relational-databases/Practice";
 import D12Concepts from "./week3/day12-relational-databases/Concepts";
 import D12Lab from "./week3/day12-relational-databases/Lab";
 
+import D13Lecture from "./week3/day13-layered-architecture/lecture/Lecture";
+import D13Notes from "./week3/day13-layered-architecture/Notes";
+import D13Practice from "./week3/day13-layered-architecture/Practice";
+import D13Concepts from "./week3/day13-layered-architecture/Concepts";
+import D13Lab from "./week3/day13-layered-architecture/Lab";
+
 import FullSqlFoundation from "./week3/additional-backend-topics/full-sql/Foundation";
 import FullSqlQueryOptimization from "./week3/additional-backend-topics/full-sql/QueryOptimization";
 import FullSqlScaling from "./week3/additional-backend-topics/full-sql/ScalingAndThroughput";
@@ -282,6 +288,27 @@ function App() {
       <Route
         path="/week3/day12-relational-databases/lab"
         element={<D12Lab />}
+      />
+
+      <Route
+        path="/week3/day13-layered-architecture/lecture"
+        element={<D13Lecture />}
+      />
+      <Route
+        path="/week3/day13-layered-architecture/notes"
+        element={<D13Notes />}
+      />
+      <Route
+        path="/week3/day13-layered-architecture/practice"
+        element={<D13Practice />}
+      />
+      <Route
+        path="/week3/day13-layered-architecture/concepts"
+        element={<D13Concepts />}
+      />
+      <Route
+        path="/week3/day13-layered-architecture/lab"
+        element={<D13Lab />}
       />
 
       <Route

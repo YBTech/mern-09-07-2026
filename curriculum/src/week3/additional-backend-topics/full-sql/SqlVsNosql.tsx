@@ -418,7 +418,7 @@ try {
           <tr>
             <td>Product catalog reads, sessions, rate limits</td>
             <td>Redis</td>
-            <td>Read constantly, changes rarely, tolerates being rebuilt (day 14)</td>
+            <td>Read constantly, changes rarely, tolerates being rebuilt (day 13)</td>
           </tr>
           <tr>
             <td>Order status history / event log</td>

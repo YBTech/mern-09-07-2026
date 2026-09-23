@@ -130,13 +130,18 @@ export const WEEKS: Week[] = [
         pages: ALL,
       },
       {
+        slug: "day13-layered-architecture",
+        title: "Layered Architecture",
+        pages: ALL,
+      },
+      {
         slug: "additional-backend-topics",
         title: "Additional Backend Topics",
         pages: [], // the group itself has no pages — its topics do
         topics: [
           {
             slug: "full-sql",
-            title: "Full SQL — the complete reference behind days 12 & 13",
+            title: "Full SQL — the complete reference behind days 12 & 14",
             pages: [], // this topic is split into parts instead
             parts: [
               {

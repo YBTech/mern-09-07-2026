@@ -517,7 +517,7 @@ if (!product) {
         </ul>
       </div>
       <p>
-        This is the exact shape day 14 builds into the OMS itself, as a real cache-aside layer in
+        This is the exact shape day 13 builds into the OMS itself, as a real cache-aside layer in
         front of the product catalog.
       </p>
 
@@ -528,7 +528,7 @@ if (!product) {
         <li>Fix N+1 and add the missing index. Most "scaling problems" end here.</li>
         <li>Batch the writes, and use keyset pagination for anything infinite-scrolled.</li>
         <li>Pool connections properly — one pool per process, sized, with a pooler in front if serverless.</li>
-        <li>Cache what's read constantly and changes rarely — the pattern above, day 14's Redis layer.</li>
+        <li>Cache what's read constantly and changes rarely — the pattern above, day 13's Redis layer.</li>
         <li>Add a read replica and route non-critical reads to it.</li>
         <li>Partition the one giant time-series table.</li>
         <li>Only then shard.</li>

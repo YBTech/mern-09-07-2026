@@ -132,7 +132,7 @@ export default function Notes() {
             <li>
               The database is a <strong>separate server process</strong> — your
               Express app talks to it over TCP, so every query is a network
-              round trip. That single fact drives most of tomorrow.
+              round trip. That single fact drives most of Day 14.
             </li>
             <li>
               SQL is <strong>declarative</strong>: you describe the result, and
@@ -653,7 +653,7 @@ const { rows } = await pool.query('SELECT * FROM customers WHERE email = $1', [e
 // Postgres parses "WHERE email = $1" first — $1 can only ever be a value, never more SQL`}
         />
         <p className="callout">
-          An ORM (Day 14) builds parameterized queries under the hood for every normal call, so
+          An ORM (Day 13) builds parameterized queries under the hood for every normal call, so
           writing ordinary ORM code already gets this for free. The one place it still bites: an
           ORM's raw/unsafe escape hatch for building a query string by hand — use it only for
           values you wrote yourself, never for user input.
@@ -1239,7 +1239,7 @@ CALL mark_order_shipped(1);`}
         />
         <p className="callout">
           This course puts most business logic in the app's service layer
-          instead (Day 14) — stored procedures are still worth recognizing,
+          instead (Day 13) — stored procedures are still worth recognizing,
           since plenty of real systems do lean on them.
         </p>
 
