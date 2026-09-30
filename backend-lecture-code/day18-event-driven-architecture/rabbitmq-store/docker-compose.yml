@@ -1,0 +1,23 @@
+# Just the broker. The services run on your machine as plain Node processes
+# (npm run dev:all), so you can start, stop, and duplicate them live.
+name: day18-rabbitmq
+
+services:
+  rabbitmq:
+    # The "-management" tag adds the web UI: http://localhost:15672 (guest / guest).
+    # It's where you SEE exchanges, bindings, queue depth, and unacked messages.
+    image: rabbitmq:4-management
+    container_name: day18-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP: what the code connects to
+      - "15672:15672" # management UI
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  rabbitdata:

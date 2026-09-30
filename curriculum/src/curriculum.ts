@@ -212,6 +212,11 @@ export const WEEKS: Week[] = [
         pages: ["lecture", "notes", "concepts", "lab"],
       },
       { slug: "day17-microservices", title: "Day 17 - Microservices", pages: NO_PRACTICE_LAB },
+      {
+        slug: "day18-event-driven-architecture",
+        title: "Day 18 - Event-Driven Architecture",
+        pages: ["lecture", "notes", "concepts", "lab"],
+      },
     ],
   },
 ];

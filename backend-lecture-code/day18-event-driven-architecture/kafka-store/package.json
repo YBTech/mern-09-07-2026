@@ -1,0 +1,39 @@
+{
+  "name": "day18-kafka-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 18 lecture: the same store, with Kafka as the event log",
+  "type": "module",
+  "scripts": {
+    "infra:up": "docker compose up -d --wait && sh scripts/create-topics.sh",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down -v && npm run infra:up",
+
+    "dev:all": "concurrently --names orders,inventory,notify --prefix-colors auto \"npm run orders\" \"npm run inventory\" \"npm run notifications\"",
+    "orders": "tsx watch services/orders/server.ts",
+    "inventory": "tsx watch services/inventory/server.ts",
+    "notifications": "tsx watch services/notifications/server.ts",
+    "analytics": "tsx watch services/analytics/server.ts",
+
+    "create-topic": "tsx basics/01-create-topic.ts",
+    "produce": "tsx basics/02-produce.ts",
+    "consume": "tsx basics/03-consume.ts",
+    "replay": "tsx basics/04-replay.ts",
+
+    "groups": "sh scripts/describe-groups.sh",
+    "reset-offsets": "sh scripts/reset-offsets.sh",
+
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.0",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

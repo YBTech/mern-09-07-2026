@@ -1,0 +1,305 @@
+{
+  "info": {
+    "name": "Day 18 — Kafka store",
+    "description": "The same store with Kafka as the event log. Every event goes to the `orders` topic, keyed by order id.\n\n1. `npm run infra:up` (Kafka + UI, creates the topic), then `npm run dev:all` (orders, inventory, notifications). Start `npm run analytics` when you get to that folder.\n2. **Place an order** saves the new order id into `orderId`, so **Pay** and **Ship** act on it — all three land in the same partition.\n3. Kafka UI: http://localhost:8085. Consumer groups and lag in the terminal: `npm run groups`.\n\nSKUs: SKU-1 keyboard $49, SKU-2 mouse $25, SKU-3 mug $12. An empty body places a default order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "ordersUrl",
+      "value": "http://localhost:4301"
+    },
+    {
+      "key": "inventoryUrl",
+      "value": "http://localhost:4302"
+    },
+    {
+      "key": "notificationsUrl",
+      "value": "http://localhost:4303"
+    },
+    {
+      "key": "analyticsUrl",
+      "value": "http://localhost:4304"
+    },
+    {
+      "key": "orderId",
+      "value": "ord-1001"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. One order's events (ordering by key)",
+      "description": "Run these three in order. Each response shows the partition and offset — the same partition every time.",
+      "item": [
+        {
+          "name": "Place an order (OrderPlaced)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{ordersUrl}}/orders",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Publishes OrderPlaced keyed by the new order id, and saves that id into {{orderId}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"alice@shop.com\",\n  \"items\": [\n    {\n      \"sku\": \"SKU-1\",\n      \"qty\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set(\"orderId\", pm.response.json().order.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pay for it (OrderPaid)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/orders/{{orderId}}/pay",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "pay"
+              ]
+            },
+            "description": "Same key, so the same partition as the OrderPlaced event."
+          }
+        },
+        {
+          "name": "Ship it (OrderShipped)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/orders/{{orderId}}/ship",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "ship"
+              ]
+            },
+            "description": "Notifications logs placed → paid → shipped, in order."
+          }
+        },
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/orders",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Orders this process created, with their current status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Lag",
+      "description": "Start analytics slowly (`SLOW_MS=100 npm run analytics`), send the burst, then watch the analytics group's lag climb and drain in the Kafka UI or `npm run groups`.",
+      "item": [
+        {
+          "name": "Burst of 150 orders",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{ordersUrl}}/orders/burst",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders",
+                "burst"
+              ]
+            },
+            "description": "Publishes that many OrderPlaced events at once.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"count\": 150\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. What each consumer group did",
+      "description": "Each service is its own consumer group, so each one reads every event.",
+      "item": [
+        {
+          "name": "Stock levels (group: inventory)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryUrl}}/inventory",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "inventory"
+              ]
+            },
+            "description": "Stock per SKU on this copy. Extra copies (PORT=4312 …) split the partitions and keep their own counts."
+          }
+        },
+        {
+          "name": "Emails sent (group: notifications)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationsUrl}}/notifications",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "One email per event, with the partition and offset it came from."
+          }
+        },
+        {
+          "name": "Analytics totals (group: analytics)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsUrl}}/analytics",
+              "host": [
+                "{{analyticsUrl}}"
+              ],
+              "path": [
+                "analytics"
+              ]
+            },
+            "description": "Revenue and counts. Started late, it still reads the topic from offset 0. After `npm run reset-offsets -- analytics`, a restart replays the full history."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "Is each service up?",
+      "item": [
+        {
+          "name": "Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/health",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Inventory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryUrl}}/health",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationsUrl}}/health",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsUrl}}/health",
+              "host": [
+                "{{analyticsUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Only answers once `npm run analytics` is running."
+          }
+        }
+      ]
+    }
+  ]
+}

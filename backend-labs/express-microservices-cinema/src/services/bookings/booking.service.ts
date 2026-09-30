@@ -31,7 +31,6 @@ export const bookingService = {
     //      exist? The client already throws a 404 for you. This comes first so
     //      nothing is held or charged for a showtime that isn't real.
     //
-
     //   2. Hold the seats (seatsClient.hold). You get back a holdId: keep it,
     //      it's the only way to release these seats later. Taken seats → the
     //      client throws seats' 409, and you never reach the payment step.

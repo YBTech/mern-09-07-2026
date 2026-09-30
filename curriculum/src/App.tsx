@@ -108,6 +108,11 @@ import D17Notes from "./week4/day17-microservices/Notes";
 import D17Concepts from "./week4/day17-microservices/Concepts";
 import D17Lab from "./week4/day17-microservices/Lab";
 
+import D18Lecture from "./week4/day18-event-driven-architecture/lecture/Lecture";
+import D18Notes from "./week4/day18-event-driven-architecture/Notes";
+import D18Concepts from "./week4/day18-event-driven-architecture/Concepts";
+import D18Lab from "./week4/day18-event-driven-architecture/Lab";
+
 function App() {
   return (
     <Routes>
@@ -404,6 +409,11 @@ function App() {
         element={<D17Concepts />}
       />
       <Route path="/week4/day17-microservices/lab" element={<D17Lab />} />
+
+      <Route path="/week4/day18-event-driven-architecture/lecture" element={<D18Lecture />} />
+      <Route path="/week4/day18-event-driven-architecture/notes" element={<D18Notes />} />
+      <Route path="/week4/day18-event-driven-architecture/concepts" element={<D18Concepts />} />
+      <Route path="/week4/day18-event-driven-architecture/lab" element={<D18Lab />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
