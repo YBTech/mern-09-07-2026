@@ -1,0 +1,468 @@
+{
+  "info": {
+    "name": "Day 18 — RabbitMQ store",
+    "description": "The e-commerce store whose services talk through RabbitMQ.\n\n1. `npm run infra:up`, then `npm run dev:all` (orders, inventory, notifications). Start `npm run loyalty` when you get to that folder.\n2. **Sync vs. async** is the core demo: set a slow email provider, then compare the two checkouts' response times.\n3. Each service answers on its own port — there is no gateway. The RabbitMQ UI is at http://localhost:15672 (guest / guest).\n\nSKUs: SKU-1 keyboard $49, SKU-2 mouse $25, SKU-3 mug $12. An empty body places a default order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "ordersUrl",
+      "value": "http://localhost:4201"
+    },
+    {
+      "key": "inventoryUrl",
+      "value": "http://localhost:4202"
+    },
+    {
+      "key": "notificationsUrl",
+      "value": "http://localhost:4203"
+    },
+    {
+      "key": "loyaltyUrl",
+      "value": "http://localhost:4204"
+    },
+    {
+      "key": "orderId",
+      "value": "ord-1001"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Sync vs. async checkout",
+      "description": "Send the two slow-email requests first, then compare each checkout's `tookMs`.",
+      "item": [
+        {
+          "name": "Email provider: slow (3s)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{notificationsUrl}}/debug/slow",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "debug",
+                "slow"
+              ]
+            },
+            "description": "Every confirmation email now takes 3 seconds to send.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ms\": 3000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Email provider: fast",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{notificationsUrl}}/debug/slow",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "debug",
+                "slow"
+              ]
+            },
+            "description": "Back to instant emails.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ms\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Place order — SYNC (waits for every service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{ordersUrl}}/orders/sync",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders",
+                "sync"
+              ]
+            },
+            "description": "Orders calls Inventory, then Notifications, over HTTP and waits for both. With a slow email provider this takes 3s+. Stop Notifications and it fails with 503 ECONNREFUSED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"alice@shop.com\",\n  \"items\": [\n    {\n      \"sku\": \"SKU-1\",\n      \"qty\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set(\"orderId\", pm.response.json().order.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Place order — ASYNC (publishes OrderPlaced)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{ordersUrl}}/orders",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Orders saves the order, publishes OrderPlaced to the `orders` exchange, and replies in a few ms. Inventory, Notifications and Loyalty each react on their own time.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": \"alice@shop.com\",\n  \"items\": [\n    {\n      \"sku\": \"SKU-1\",\n      \"qty\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set(\"orderId\", pm.response.json().order.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/orders",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Every order this Orders process has taken, sync and async."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. What happened downstream",
+      "description": "Check what each consumer did after an async order.",
+      "item": [
+        {
+          "name": "Stock levels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryUrl}}/inventory",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "inventory"
+              ]
+            },
+            "description": "Current stock per SKU."
+          }
+        },
+        {
+          "name": "Orders Inventory has reserved",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryUrl}}/inventory/reservations",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "inventory",
+                "reservations"
+              ]
+            },
+            "description": "Order ids this Inventory copy handled. With two copies running, each only lists its share."
+          }
+        },
+        {
+          "name": "Emails sent",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationsUrl}}/notifications",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "Every confirmation email, read from data/emails.jsonl. A duplicate shows up here twice."
+          }
+        },
+        {
+          "name": "Loyalty points",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{loyaltyUrl}}/loyalty",
+              "host": [
+                "{{loyaltyUrl}}"
+              ],
+              "path": [
+                "loyalty"
+              ]
+            },
+            "description": "Points per customer. Only orders placed after Loyalty started earn points."
+          }
+        },
+        {
+          "name": "Orders Loyalty has rewarded",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{loyaltyUrl}}/loyalty/orders",
+              "host": [
+                "{{loyaltyUrl}}"
+              ],
+              "path": [
+                "loyalty",
+                "orders"
+              ]
+            },
+            "description": "Order ids that earned points."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Duplicates (crash before ack)",
+      "description": "Arm the crash, place an ASYNC order, then restart Notifications and check Emails sent: the same order is emailed twice. Restart with IDEMPOTENT=true npm run notifications to see the redelivery skipped.",
+      "item": [
+        {
+          "name": "Crash before the next ack",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{notificationsUrl}}/debug/crash-before-ack",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "debug",
+                "crash-before-ack"
+              ]
+            },
+            "description": "The next message is emailed, then the process exits before acking, so RabbitMQ redelivers it."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Internal (what the sync checkout calls)",
+      "description": "Service-to-service endpoints behind POST /orders/sync. Normally only Orders calls these.",
+      "item": [
+        {
+          "name": "Reserve stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{inventoryUrl}}/internal/reserve",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "internal",
+                "reserve"
+              ]
+            },
+            "description": "Deducts stock for one order.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ord-manual\",\n  \"items\": [\n    {\n      \"sku\": \"SKU-1\",\n      \"qty\": 1,\n      \"price\": 49\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Send order confirmation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{notificationsUrl}}/internal/order-confirmation",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "internal",
+                "order-confirmation"
+              ]
+            },
+            "description": "Sends one confirmation email. Honors the slow-email setting.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ord-manual\",\n  \"customer\": \"alice@shop.com\",\n  \"total\": 49\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "Is each service up?",
+      "item": [
+        {
+          "name": "Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ordersUrl}}/health",
+              "host": [
+                "{{ordersUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Inventory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{inventoryUrl}}/health",
+              "host": [
+                "{{inventoryUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationsUrl}}/health",
+              "host": [
+                "{{notificationsUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Also reports the current email delay and idempotent mode."
+          }
+        },
+        {
+          "name": "Loyalty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{loyaltyUrl}}/health",
+              "host": [
+                "{{loyaltyUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Only answers once `npm run loyalty` is running."
+          }
+        }
+      ]
+    }
+  ]
+}

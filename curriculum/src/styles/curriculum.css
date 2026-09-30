@@ -1799,3 +1799,309 @@ pre .line-bad::before {
 .elapsed-badge {
   justify-self: end;
 }
+
+/* ------------------------------------------------------------------ */
+/* day 18 lecture — the same checkout, sync and async side by side     */
+/* ------------------------------------------------------------------ */
+.co-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+.co-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.8rem;
+}
+.co-pill::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #3d8b40;
+}
+.co-pill.is-down {
+  background: #fde4e4;
+  border-color: #f0b4b0;
+  color: #7a1a14;
+}
+.co-pill.is-down::before {
+  background: #b3261e;
+}
+.co-pill.is-off {
+  border-style: dashed;
+  color: #888;
+}
+.co-pill.is-off::before {
+  background: #bbb;
+}
+.co-stock {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #5a6470;
+}
+
+.co-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.co-controls-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.co-seg {
+  display: inline-flex;
+}
+.co-seg button {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1px solid #b8c0cc;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+}
+.co-seg button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+.co-seg button:last-child {
+  border-radius: 0 4px 4px 0;
+  border-left: 0;
+}
+.co-seg button.is-active {
+  background: #2255cc;
+  border-color: #2255cc;
+  color: #fff;
+}
+.co-seg button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.co-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .co-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.co-panel {
+  border: 1px solid #ddd;
+  border-top-width: 4px;
+  border-radius: 6px;
+  padding: 0.9rem 1.1rem 1.1rem;
+  background: #fff;
+}
+.co-panel.is-sync {
+  border-top-color: #c0392b;
+}
+.co-panel.is-async {
+  border-top-color: #3d8b40;
+}
+.lecture-console .co-panel h2 {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: 1.15rem;
+}
+.co-endpoint {
+  margin: 0.2rem 0 0.4rem;
+}
+.co-how {
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  color: #5a6470;
+  min-height: 3.6em;
+}
+.co-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.co-form select {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+}
+.co-secondary {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1px solid #b8c0cc;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+}
+.co-secondary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.co-timer {
+  min-height: 6rem;
+  margin: 1rem 0 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: #f7f8f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.co-time {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.co-time.is-waiting,
+.co-time.is-sync {
+  color: #b3261e;
+}
+.co-time.is-async {
+  color: #2e7d32;
+}
+.co-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #5a6470;
+}
+.co-error {
+  color: #7a1a14;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.co-orders {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.co-order {
+  border: 1px solid #e6e8eb;
+  border-radius: 5px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+}
+.co-order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+.co-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+.co-step {
+  padding: 0.12rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+.co-step.is-done {
+  background: #e6f4e6;
+  color: #256029;
+}
+.co-step.is-pending {
+  background: #fff4e0;
+  color: #8a5a00;
+}
+.co-refresh {
+  padding: 0.15rem 0.7rem;
+  font-size: 0.8rem;
+  border: 1px solid #b8c0cc;
+  border-radius: 999px;
+  background: #fff;
+  color: #5a6470;
+  cursor: pointer;
+}
+
+/* day 18 lecture — the "how does this store work" explainer above the panels */
+.co-flow {
+  margin: 0.5rem 0 1.25rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 6px;
+  background: #fbfcfd;
+  padding: 0.6rem 1rem 0.9rem;
+}
+.co-flow > summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.co-flow-facts {
+  margin: 0.6rem 0 0.9rem;
+  padding-left: 1.2rem;
+  font-size: 0.88rem;
+  color: #3a4350;
+}
+.co-flow-facts li + li {
+  margin-top: 0.2rem;
+}
+.co-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+@media (max-width: 900px) {
+  .co-flow-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.co-flow-col {
+  border-top: 3px solid #ccc;
+  padding-top: 0.5rem;
+  min-width: 0;
+}
+.co-flow-col.is-sync {
+  border-top-color: #c0392b;
+}
+.co-flow-col.is-async {
+  border-top-color: #3d8b40;
+}
+.co-flow-col h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+}
+.co-flow-col svg {
+  width: 100%;
+  height: auto;
+}
+.co-calls {
+  margin: 0.4rem 0 0;
+  padding-left: 1.3rem;
+  font-size: 0.84rem;
+}
+.co-calls li {
+  margin-bottom: 0.4rem;
+}
+.co-calls li > code {
+  display: inline-block;
+  font-weight: 700;
+  margin-right: 0.3rem;
+}
+.co-calls li > span {
+  color: #4a5361;
+}
+.co-flow-helpers {
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  color: #5a6470;
+}

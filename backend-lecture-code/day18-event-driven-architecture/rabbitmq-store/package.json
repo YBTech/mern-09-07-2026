@@ -1,0 +1,38 @@
+{
+  "name": "day18-rabbitmq-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 18 lecture: an e-commerce store whose services talk through RabbitMQ",
+  "type": "module",
+  "scripts": {
+    "infra:up": "docker compose up -d --wait",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down -v && docker compose up -d --wait && rm -rf data",
+
+    "dev:all": "concurrently --names orders,inventory,notify --prefix-colors auto \"npm run orders\" \"npm run inventory\" \"npm run notifications\"",
+    "orders": "tsx watch services/orders/server.ts",
+    "inventory": "tsx watch services/inventory/server.ts",
+    "notifications": "tsx watch services/notifications/server.ts",
+    "loyalty": "tsx watch services/loyalty/server.ts",
+
+    "send": "tsx basics/01-send.ts",
+    "receive": "tsx basics/02-receive.ts",
+    "publish": "tsx basics/03-publish-fanout.ts",
+    "subscribe": "tsx basics/04-subscribe.ts",
+    "poison": "tsx scripts/publish-poison.ts",
+
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.6",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.0",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
