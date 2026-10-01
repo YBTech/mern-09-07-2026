@@ -35,16 +35,20 @@
   color: #444;
   margin-bottom: 2rem;
 }
-/* A second nav row under DayNav, for a day whose lab is more than one page (week 2 day 10). */
-.lab-subnav {
+/* A second nav row under DayNav, for a page that is split into several pages
+   (week 2 day 10's lab, week 4 day 19's notes). */
+.lab-subnav,
+.page-subnav {
   margin: -0.6rem 0 1.25rem;
   font-size: 0.85rem;
   color: #888;
 }
-.lab-subnav a {
+.lab-subnav a,
+.page-subnav a {
   color: #2255cc;
 }
-.lab-subnav strong {
+.lab-subnav strong,
+.page-subnav strong {
   color: #1c1c1c;
 }
 
@@ -115,7 +119,7 @@
 }
 
 /* A reference diagram or animation shipped as an image rather than drawn in markup — week 2
-   day 10 embeds Redux's own two data-flow gifs. White ground so a transparent asset still reads. */
+   day 9 embeds Redux's own two data-flow gifs. White ground so a transparent asset still reads. */
 .diagram {
   margin: 1.1rem 0 1.6rem;
 }
@@ -257,6 +261,18 @@
 }
 .ref-table th {
   background: #f7f7f7;
+}
+
+/* A .ref-table where a row can be followed by a colSpan row holding its own
+   <details> dropdown (e.g. the attack-patterns table). The divider between
+   that row and its own dropdown is removed so the two read as one unit; the
+   dividers between separate entries are darkened so each unit still reads as
+   its own section. */
+.ref-table.expandable-rows td {
+  border-bottom: 1px solid #999;
+}
+.ref-table.expandable-rows tr.has-detail td {
+  border-bottom: none;
 }
 
 /* Lays a group of .example-tables out left-to-right with a gap, wrapping on
@@ -517,6 +533,16 @@ summary::marker {
   margin: 0 0 0.6rem;
 }
 .answer p:last-child {
+  margin-bottom: 0;
+}
+.answer ul {
+  margin: 0 0 0.6rem;
+  padding-left: 1.2rem;
+}
+.answer li {
+  margin-bottom: 0.3rem;
+}
+.answer ul:last-child {
   margin-bottom: 0;
 }
 
@@ -1481,7 +1507,7 @@ pre .line-bad::before {
 }
 
 /* ------------------------------------------------------------------ */
-/* day 14 lecture — offset vs. cursor pagination (demo-pagination)      */
+/* day 14 lecture — offset vs. cursor pagination (#demo-pagination)      */
 /* ------------------------------------------------------------------ */
 .pager-grid {
   display: grid;
@@ -1801,6 +1827,234 @@ pre .line-bad::before {
 }
 
 /* ------------------------------------------------------------------ */
+/* day 16 lecture — login/signup pages and the token viewer            */
+/* ------------------------------------------------------------------ */
+.auth-card {
+  max-width: 26rem;
+}
+.auth-card h3 {
+  margin: 0 0 0.75rem;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5a6470;
+}
+.auth-form input {
+  font-size: 0.95rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+}
+.auth-card > .send-btn {
+  width: 100%;
+}
+.auth-divider {
+  margin: 0.75rem 0;
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+}
+.auth-google {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 1rem;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1c1c1c;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.auth-google:hover {
+  border-color: #2255cc;
+  background: #f5f8ff;
+}
+.auth-error {
+  margin: 0.75rem 0 0;
+  color: #cc2b2b;
+  font-size: 0.88rem;
+}
+.auth-seeds {
+  margin-top: 1rem;
+}
+.auth-seeds .demo-actions button {
+  font-size: 0.78rem;
+  font-weight: 400;
+  padding: 0.25rem 0.5rem;
+}
+.auth-switch {
+  margin-top: 1rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2255cc;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.auth-check {
+  flex-direction: row !important;
+  align-items: center;
+  font-weight: 400 !important;
+}
+.auth-sent-header {
+  font-size: 0.78rem;
+  color: #5a6470;
+  word-break: break-all;
+}
+.auth-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  background: #f2fbf5;
+  border: 1px solid #1d9d52;
+  border-radius: 6px;
+}
+.auth-status span {
+  flex: 1;
+}
+.auth-status button {
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* The three parts of a JWT, coloured the way jwt.io colours them. */
+.token-panel {
+  margin: 1rem 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.token-raw {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  word-break: break-all;
+}
+.token-header {
+  color: #d63aff;
+}
+.token-payload {
+  color: #0070b8;
+}
+.token-signature {
+  color: #00a37a;
+}
+.token-decoded {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.token-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5a6470;
+}
+@media (max-width: 700px) {
+  .token-decoded {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* day 15 lecture — S3 upload demo                                     */
+/* ------------------------------------------------------------------ */
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.upload-row select {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+}
+.upload-steps {
+  margin: 1rem 0 0;
+  padding-left: 1.3rem;
+  font-size: 0.88rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.upload-steps li.is-pending {
+  color: #999;
+}
+.upload-steps li.is-running {
+  color: #1c1c1c;
+  font-weight: 600;
+}
+.upload-steps li.is-ok::marker {
+  content: "✓ ";
+  color: #1d9d52;
+}
+.upload-steps li.is-error {
+  color: #cc2b2b;
+  font-weight: 600;
+}
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.image-gallery-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.6rem;
+  text-align: center;
+  background: #fff;
+}
+.image-gallery-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.image-gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f3f5;
+  color: #999;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+.image-gallery-name {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.image-gallery-price {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #5a6470;
+}
+
+/* ------------------------------------------------------------------ */
 /* day 18 lecture — the same checkout, sync and async side by side     */
 /* ------------------------------------------------------------------ */
 .co-status {
@@ -2104,4 +2358,476 @@ pre .line-bad::before {
   margin: 0.9rem 0 0;
   font-size: 0.8rem;
   color: #5a6470;
+}
+
+/* ------------------------------------------------------------------ */
+/* day 19 lecture — GraphQL demo (real pages) and real-time demo        */
+/* ------------------------------------------------------------------ */
+.lecture-demo-links {
+  font-size: 1rem;
+  line-height: 1.9;
+}
+.gq-back {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+.gq-how {
+  margin: 0 0 0.75rem;
+  font-size: 0.84rem;
+  color: #5a6470;
+  min-height: 3.6em;
+}
+.lecture-console h3.gq-sub {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 1rem;
+}
+.gq-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+}
+.gq-toolbar-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #3a4350;
+}
+.gq-sim {
+  flex: 1 1 18rem;
+  font-size: 0.78rem;
+  color: #6a7380;
+}
+.gq-metricbar {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: #f7f8f9;
+  border: 1px solid #e6e8eb;
+  border-radius: 6px;
+}
+.gq-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.gq-metrics > div {
+  display: flex;
+  flex-direction: column;
+}
+.gq-big {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.gq-big.is-running {
+  color: #b3261e;
+}
+.gq-label {
+  font-size: 0.75rem;
+  color: #5a6470;
+}
+.gq-error {
+  color: #7a1a14;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.gq-details {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+}
+.gq-details > summary {
+  cursor: pointer;
+  color: #2255cc;
+}
+.gq-details pre {
+  font-size: 0.74rem;
+}
+
+/* the network waterfall: one bar per request, on a shared timeline */
+/* Fixed height, scrolling inside: the page below never jumps as requests land. */
+.net {
+  margin-top: 0.6rem;
+  height: 6.2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 0.3rem;
+}
+.net-empty {
+  margin: auto;
+  font-size: 0.75rem;
+  color: #8a93a0;
+}
+.net-row {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 4.2rem;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+}
+.net-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #3a4350;
+}
+.net-label code {
+  font-size: 0.68rem;
+}
+.net-track {
+  position: relative;
+  height: 0.7rem;
+  background: #fff;
+  border-radius: 2px;
+}
+.net-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 2px;
+  background: #7ea6e0;
+}
+.net-bar.is-catalog {
+  background: #d98b8b;
+}
+.net-bar.is-shipping {
+  background: #e8a060;
+}
+.net-bar.is-aggregator {
+  background: #3d8b40;
+}
+.net-bar.is-reviews,
+.net-bar.is-content {
+  background: #8e5fd6;
+}
+.net-size {
+  text-align: right;
+  color: #5a6470;
+  font-variant-numeric: tabular-nums;
+}
+
+/* device frames */
+.ui-browser {
+  border: 1px solid #c9ced6;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.ui-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  background: #f1f3f5;
+  border-bottom: 1px solid #dfe3e8;
+}
+.ui-dots {
+  width: 2.6rem;
+  height: 0.6rem;
+  background: radial-gradient(circle, #e06c60 0 0.28rem, transparent 0.3rem) 0 0 / 0.9rem 0.6rem repeat-x;
+}
+.ui-url {
+  flex: 1;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  color: #5a6470;
+  background: #fff;
+  border-radius: 999px;
+}
+.ui-browser-body {
+  min-height: 18rem;
+  padding: 1rem 1.2rem 1.2rem;
+}
+.ui-phone {
+  width: 21rem;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 10px solid #1c1c1c;
+  border-radius: 2rem;
+  overflow: hidden;
+  background: #fff;
+}
+.ui-phone-notch {
+  width: 6rem;
+  height: 0.9rem;
+  margin: 0 auto;
+  background: #1c1c1c;
+  border-radius: 0 0 0.6rem 0.6rem;
+}
+.ui-phone-body {
+  min-height: 26rem;
+  padding: 0.6rem 0.9rem 1rem;
+  font-size: 0.85rem;
+}
+.lecture-console h3.ui-page-title {
+  margin: 0 0 0.8rem;
+  font-size: 1.1rem;
+}
+.ui-empty,
+.ui-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 19rem; /* about the loaded page's height, so it doesn't jump either */
+  color: #8a93a0;
+  font-size: 0.9rem;
+}
+.ui-card {
+  position: relative;
+  padding: 0.9rem 1rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+.ui-card h4,
+.acct-mobile h4,
+.rv h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+.ui-tag {
+  position: absolute;
+  top: -0.65rem;
+  right: 0.8rem;
+  padding: 0.05rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2b4a80;
+  background: #eef3ff;
+  border: 1px solid #7ea6e0;
+  border-radius: 999px;
+}
+.ui-muted {
+  color: #6a7380;
+  margin: 0.1rem 0;
+}
+.ui-stars {
+  color: #c98a00;
+  letter-spacing: 0.05em;
+}
+.ui-pill {
+  flex-shrink: 0;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  color: #256029;
+  background: #eef8ee;
+  border: 1px solid #7dbb7d;
+}
+.ui-pill.is-in_transit,
+.ui-pill.is-preparing {
+  color: #8a5a00;
+  background: #fff4e0;
+  border-color: #e8b400;
+}
+.ui-thumb {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 6px;
+  background: #e9eef7;
+  border: 1px solid #c6d3ea;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6a7f9f;
+}
+
+/* My Account */
+.acct {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .acct {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.acct-left {
+  display: grid;
+  gap: 1.1rem;
+}
+.acct-reviews,
+.acct-orders ul,
+.acct-mobile ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.acct-reviews li {
+  margin: 0.35rem 0;
+  font-size: 0.86rem;
+}
+.acct-orders li,
+.acct-mobile li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #eef0f3;
+}
+.acct-orders li:last-child,
+.acct-mobile li:last-child {
+  border-bottom: 0;
+}
+.acct-order-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 0.88rem;
+}
+.acct-mobile-hi {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+}
+.acct-mobile-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+}
+.acct-mobile-link {
+  margin: 0.8rem 0 0;
+  color: #2255cc;
+}
+
+.rt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 1rem;
+}
+.rt-stats {
+  font-size: 0.78rem;
+  color: #5a6470;
+}
+.rt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .rt-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.rt-panel {
+  border-top-color: #8e5fd6;
+}
+.rt-panel.is-wide {
+  grid-column: 1 / -1;
+}
+.rt-section {
+  margin: 2rem 0 0.25rem;
+  font-size: 1.15rem;
+}
+.rt-counters {
+  margin: 0.5rem 0 0.2rem;
+  font-size: 0.82rem;
+  color: #5a6470;
+}
+.rt-metrics {
+  display: flex;
+  gap: 2rem;
+  margin: 0.3rem 0 0.5rem;
+}
+.rt-metrics span {
+  display: block;
+  font-size: 0.75rem;
+  color: #5a6470;
+}
+.rt-metrics strong {
+  font-size: 1.6rem;
+}
+.rt-spark {
+  display: block;
+  width: 100%;
+  height: 62px;
+  background: #f7f9fc;
+  border-radius: 4px;
+}
+.rt-feed {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  font-size: 0.85rem;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+.rt-feed li {
+  padding: 0.2rem 0;
+  border-bottom: 1px solid #f1f3f5;
+}
+.rt-late {
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+  color: #8a5a00;
+}
+.rt-empty {
+  color: #888;
+}
+.rt-score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0.3rem 0 0.5rem;
+}
+.rt-score strong {
+  font-size: 1.8rem;
+}
+.rt-score em {
+  font-style: normal;
+  font-size: 0.85rem;
+  color: #c0392b;
+}
+.rt-online {
+  margin: 0.2rem 0;
+  font-size: 0.82rem;
+  color: #3d8b40;
+}
+.rt-typing {
+  min-height: 1.1em;
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #888;
+}
+.rt-chat {
+  margin-top: 0.6rem;
+  border: 1px solid #e6e8eb;
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+}
+.rt-chat ul {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  max-height: 9rem;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+.rt-chat li {
+  padding: 0.15rem 0;
+}
+.rt-chat li.is-me {
+  color: #2b4a80;
+}
+.rt-chat form {
+  display: flex;
+  gap: 0.5rem;
+}
+.rt-chat input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
 }

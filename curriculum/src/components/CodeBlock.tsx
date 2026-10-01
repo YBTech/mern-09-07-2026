@@ -6,6 +6,7 @@ import css from "highlight.js/lib/languages/css";
 import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
 import sql from "highlight.js/lib/languages/sql";
+import graphql from "highlight.js/lib/languages/graphql";
 import plaintext from "highlight.js/lib/languages/plaintext";
 
 // Only the languages this curriculum actually uses, so the bundle doesn't pull in all
@@ -17,6 +18,8 @@ hljs.registerLanguage("css", css);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("bash", bash);
 hljs.registerLanguage("sql", sql);
+// GraphQL schemas (SDL) and queries
+hljs.registerLanguage("graphql", graphql);
 // for "Expected" blocks that show console output rather than source
 hljs.registerLanguage("plaintext", plaintext);
 

@@ -1,0 +1,33 @@
+{
+  "name": "day19-graphql-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 19 lecture: a store whose My Account page needs four REST services \u2014 called directly, through a REST aggregator, and through a GraphQL aggregator",
+  "type": "module",
+  "scripts": {
+    "dev:all": "concurrently --names agg,users,orders,catalog,shipping,reviews --prefix-colors auto \"npm run aggregator\" \"npm run users\" \"npm run orders\" \"npm run catalog\" \"npm run shipping\" \"npm run reviews\"",
+    "aggregator": "tsx watch services/aggregator/server.ts",
+    "users": "tsx watch services/users/server.ts",
+    "orders": "tsx watch services/orders/server.ts",
+    "catalog": "tsx watch services/catalog/server.ts",
+    "shipping": "tsx watch services/shipping/server.ts",
+    "reviews": "tsx watch services/reviews/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/express5": "^1.1.2",
+    "dataloader": "^2.2.3",
+    "express": "^5.1.0",
+    "graphql": "^16.14.2",
+    "graphql-depth-limit": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/graphql-depth-limit": "^1.1.6",
+    "@types/node": "^22.15.0",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

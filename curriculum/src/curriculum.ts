@@ -217,6 +217,7 @@ export const WEEKS: Week[] = [
         title: "Day 18 - Event-Driven Architecture",
         pages: ["lecture", "notes", "concepts", "lab"],
       },
+      { slug: "day19-realtime-graphql", title: "Day 19 - Real-Time Communication & GraphQL", pages: NO_PRACTICE_LAB },
     ],
   },
 ];

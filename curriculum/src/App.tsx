@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 
 import IdeShortcuts from "./general/IdeShortcuts";
@@ -112,6 +112,13 @@ import D18Lecture from "./week4/day18-event-driven-architecture/lecture/Lecture"
 import D18Notes from "./week4/day18-event-driven-architecture/Notes";
 import D18Concepts from "./week4/day18-event-driven-architecture/Concepts";
 import D18Lab from "./week4/day18-event-driven-architecture/Lab";
+
+import D19Lecture from "./week4/day19-realtime-graphql/lecture/Lecture";
+import D19GraphqlDemo from "./week4/day19-realtime-graphql/lecture/GraphqlDemo";
+import D19RealtimeDemo from "./week4/day19-realtime-graphql/lecture/RealtimeDemo";
+import D19GraphqlNotes from "./week4/day19-realtime-graphql/Notes/Graphql";
+import D19RealtimeNotes from "./week4/day19-realtime-graphql/Notes/Realtime";
+import D19Concepts from "./week4/day19-realtime-graphql/Concepts";
 
 function App() {
   return (
@@ -414,6 +421,14 @@ function App() {
       <Route path="/week4/day18-event-driven-architecture/notes" element={<D18Notes />} />
       <Route path="/week4/day18-event-driven-architecture/concepts" element={<D18Concepts />} />
       <Route path="/week4/day18-event-driven-architecture/lab" element={<D18Lab />} />
+
+      <Route path="/week4/day19-realtime-graphql/lecture" element={<D19Lecture />} />
+      <Route path="/week4/day19-realtime-graphql/lecture/graphql" element={<D19GraphqlDemo />} />
+      <Route path="/week4/day19-realtime-graphql/lecture/realtime" element={<D19RealtimeDemo />} />
+      <Route path="/week4/day19-realtime-graphql/notes" element={<Navigate to="/week4/day19-realtime-graphql/notes/graphql" replace />} />
+      <Route path="/week4/day19-realtime-graphql/notes/graphql" element={<D19GraphqlNotes />} />
+      <Route path="/week4/day19-realtime-graphql/notes/realtime" element={<D19RealtimeNotes />} />
+      <Route path="/week4/day19-realtime-graphql/concepts" element={<D19Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
