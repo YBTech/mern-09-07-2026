@@ -119,6 +119,9 @@ import D19RealtimeDemo from "./week4/day19-realtime-graphql/lecture/RealtimeDemo
 import D19GraphqlNotes from "./week4/day19-realtime-graphql/Notes/Graphql";
 import D19RealtimeNotes from "./week4/day19-realtime-graphql/Notes/Realtime";
 import D19Concepts from "./week4/day19-realtime-graphql/Concepts";
+import D20Lecture from "./week4/day20-system-design/lecture/Lecture";
+import D20Notes from "./week4/day20-system-design/Notes";
+import D20Concepts from "./week4/day20-system-design/Concepts";
 
 function App() {
   return (
@@ -429,6 +432,10 @@ function App() {
       <Route path="/week4/day19-realtime-graphql/notes/graphql" element={<D19GraphqlNotes />} />
       <Route path="/week4/day19-realtime-graphql/notes/realtime" element={<D19RealtimeNotes />} />
       <Route path="/week4/day19-realtime-graphql/concepts" element={<D19Concepts />} />
+
+      <Route path="/week4/day20-system-design/lecture" element={<D20Lecture />} />
+      <Route path="/week4/day20-system-design/notes" element={<D20Notes />} />
+      <Route path="/week4/day20-system-design/concepts" element={<D20Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
