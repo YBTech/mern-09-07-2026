@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { PAGE_LABELS, findWeekByDaySlug, pageHref, topicPageHref, type PageKind } from "../curriculum";
+import LangToggle from "./LangToggle";
 
 // The nav bar at the top of every day page: back to the index, then that day's sibling
 // pages. Which pages a day actually has, and which week it belongs to, both come from
@@ -23,6 +24,7 @@ export default function DayNav({
 
   return (
     <p className="home-nav">
+      <LangToggle />
       <Link to="/">← Curriculum Home</Link>
       {pages.map((page) => (
         <span key={page}>

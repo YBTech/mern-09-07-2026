@@ -1,0 +1,24 @@
+/* Day 1 — practice.html's own CSS, ported verbatim.
+ *
+ * Day 1 is the HTML/CSS day: its pages carry live demos and its lab is a finished
+ * reference page with a design of its own. Much of this is written against bare
+ * element selectors, so every rule is scoped under `.day1-practice` — the class this
+ * page's component puts on its wrapper. Unscoped, rules like `body` and `h1` would
+ * restyle the whole SPA. Rules the shared stylesheet already provides were dropped
+ * rather than duplicated; where both still apply to the wrapper, this file is
+ * imported later and wins, which is what reproduces the original page.
+ */
+
+.day1-practice{
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        line-height: 1.6;
+        color: #1c1c1c;
+      }
+.day1-practice h1{
+        font-size: 1.4rem;
+        border-bottom: 3px solid #222;
+        padding-bottom: 0.3rem;
+      }

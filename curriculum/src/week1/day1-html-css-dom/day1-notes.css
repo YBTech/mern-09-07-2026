@@ -1,0 +1,245 @@
+/* Day 1 — notes.html's own CSS, ported verbatim.
+ *
+ * Day 1 is the HTML/CSS day: its pages carry live demos and its lab is a finished
+ * reference page with a design of its own. Much of this is written against bare
+ * element selectors, so every rule is scoped under `.day1-notes` — the class this
+ * page's component puts on its wrapper. Unscoped, rules like `body` and `h1` would
+ * restyle the whole SPA. Rules the shared stylesheet already provides were dropped
+ * rather than duplicated; where both still apply to the wrapper, this file is
+ * imported later and wins, which is what reproduces the original page.
+ */
+
+.day1-notes{
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        line-height: 1.6;
+        color: #1c1c1c;
+      }
+.day1-notes h1{
+        margin: 0.2rem 0 0;
+      }
+.day1-notes h2{
+        margin-top: 3rem;
+        border-bottom: 3px solid #222;
+        padding-bottom: 0.3rem;
+      }
+.day1-notes h3{
+        margin-top: 1.75rem;
+      }
+.day1-notes h4{
+        margin: 1.5rem 0 0.25rem;
+        font-size: 0.95rem;
+      }
+.day1-notes .badge-generic{
+        background: #e0e0e0;
+        color: #616161;
+      }
+.day1-notes .badge-semantic{
+        background: #d7ebff;
+        color: #0b5fa5;
+      }
+.day1-notes .generic-row td{
+        background: #f0f0f0;
+        color: #777;
+        font-style: italic;
+      }
+.day1-notes .code-demo-pair > *{
+        flex: 1 1 280px;
+        margin: 0;
+      }
+.day1-notes .demo-box{
+        border: 2px dashed #888;
+        padding: 1rem;
+        border-radius: 6px;
+        background: #fafafa;
+      }
+.day1-notes .demo-form{
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        max-width: 320px;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+      }
+.day1-notes .demo-form input,
+.day1-notes .demo-form select{
+        padding: 0.4rem 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+.day1-notes .demo-form button{
+        align-self: flex-start;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+.day1-notes .specificity-demo{
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+.day1-notes p.spec-target{
+        color: green; 
+      }
+.day1-notes #css-core .spec-target{
+        color: crimson; 
+      }
+.day1-notes .box-model-demo{
+        margin: 1rem 0;
+      }
+.day1-notes .bm-margin{
+        background: #ffe0b2;
+        padding: 1.5rem;
+        font-size: 0.8rem;
+        color: #663c00;
+      }
+.day1-notes .bm-border{
+        background: #fff9c4;
+        border: 4px solid #f9a825;
+        padding: 1.5rem;
+        font-size: 0.8rem;
+        color: #665c00;
+      }
+.day1-notes .bm-padding{
+        background: #c8e6c9;
+        padding: 1.5rem;
+        font-size: 0.8rem;
+        color: #1b5e20;
+      }
+.day1-notes .bm-content{
+        background: #90caf9;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #0d3c61;
+        text-align: center;
+      }
+.day1-notes .display-demo{
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 1rem;
+      }
+.day1-notes .display-row{
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed #ddd;
+      }
+.day1-notes .display-row:last-child{
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+.day1-notes .tag-label{
+        display: inline-block;
+        font-family: monospace;
+        background: #222;
+        color: #fff;
+        padding: 0.1rem 0.5rem;
+        border-radius: 3px;
+        margin-bottom: 0.4rem;
+        font-size: 0.8rem;
+      }
+.day1-notes .demo-block{
+        display: block;
+        width: 200px;
+        height: 50px;
+        background: #90caf9;
+        padding: 0.5rem;
+      }
+.day1-notes .demo-inline{
+        display: inline;
+        width: 200px; 
+        height: 50px; 
+        background: #a5d6a7;
+        padding: 0.5rem;
+      }
+.day1-notes .demo-inline-block{
+        display: inline-block;
+        width: 160px;
+        height: 50px;
+        background: #ffab91;
+        padding: 0.5rem;
+        overflow: hidden;
+      }
+.day1-notes .flex-demo{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+      }
+.day1-notes .flex-item{
+        background: #7986cb;
+        color: white;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 1.3rem;
+      }
+.day1-notes .grid-demo{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+      }
+.day1-notes .grid-item{
+        background: #26a69a;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        border-radius: 6px;
+        font-size: 1.1rem;
+      }
+.day1-notes .quick-css-demo{
+        font-size: 1.1rem;
+        color: #ffffff;
+        background-color: #5c6bc0;
+        border: 1px solid black;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+.day1-notes .responsive-demo{
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 1rem;
+        background: #fafafa;
+      }
+.day1-notes .responsive-demo .narrow-only{
+        display: none;
+      }
+.day1-notes .responsive-demo .wide-only{
+          display: none;
+        }
+.day1-notes .responsive-demo .narrow-only{
+          display: block;
+        }
+.day1-notes .position-demo{
+        position: relative;
+        height: 120px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 1rem;
+        background: #fafafa;
+      }
+.day1-notes .position-badge{
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: crimson;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }

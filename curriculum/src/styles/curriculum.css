@@ -19,6 +19,27 @@
   color: #1c1c1c;
 }
 
+/* ── Language toggle ───────────────────────────────────────────────────────── */
+html[lang="zh"] .lang-en { display: none; }
+html:not([lang="zh"]) .lang-zh { display: none; }
+
+.lang-toggle {
+  float: right;
+  font-size: 0.78rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid #c0c8d4;
+  border-radius: 3px;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.lang-toggle:hover {
+  background: #f0f4fa;
+  border-color: #2255cc;
+  color: #2255cc;
+}
+
 /* nav bar, shared by every page for a day (week1: .home-nav) */
 .home-nav {
   margin-bottom: 1rem;

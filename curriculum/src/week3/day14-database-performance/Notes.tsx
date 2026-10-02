@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import DayNav from "../../components/DayNav";
 import CodeBlock from "../../components/CodeBlock";
+import { En, Zh } from "../../components/Lang";
 
 export default function Notes() {
   return (
@@ -10,51 +11,49 @@ export default function Notes() {
 
       <header className="lecture-header">
         <p className="eyebrow">Week 3 · Day 14 · Notes</p>
-        <h1>Database Performance</h1>
-        <p className="subtitle">Executive summary → full walkthrough</p>
+        <h1><En>Database Performance</En><Zh>数据库性能</Zh></h1>
+        <p className="subtitle"><En>Executive summary → full walkthrough</En><Zh>核心摘要 → 完整讲解</Zh></p>
       </header>
 
       {/* ============================================================ */}
       {/* Section 1 — Executive Summary                                 */}
       {/* ============================================================ */}
       <section id="executive-summary" className="exec-summary">
-        <h2>Section 1 — Executive Summary</h2>
-        <p>The essentials — what you must be able to do by the end of today:</p>
+        <h2><En>Section 1 — Executive Summary</En><Zh>第一节 — 核心摘要</Zh></h2>
+        <p><En>The essentials — what you must be able to do by the end of today:</En><Zh>今天结束时你必须掌握的核心内容：</Zh></p>
         <ul>
           <li>
-            Spot an N+1 query by reading code, and fix it with a join or a
-            batched lookup
+            <En>Spot an N+1 query by reading code, and fix it with a join or a batched lookup</En>
+            <Zh>通过阅读代码识别 N+1 查询问题，并用 join 或批量查询修复</Zh>
           </li>
           <li>
-            Add an index for a real slow query and explain what it does — and
-            what it costs
+            <En>Add an index for a real slow query and explain what it does — and what it costs</En>
+            <Zh>为真实的慢查询添加 index，并解释它的作用和代价</Zh>
           </li>
           <li>
-            Read an <code>EXPLAIN ANALYZE</code> plan well enough to tell
-            whether an index is being used
+            <En>Read an <code>EXPLAIN ANALYZE</code> plan well enough to tell whether an index is being used</En>
+            <Zh>读懂 <code>EXPLAIN ANALYZE</code> 的执行计划，判断 index 是否被使用</Zh>
           </li>
           <li>
-            Explain why deep <code>OFFSET</code> pagination gets slow, and write
-            the keyset version instead
+            <En>Explain why deep <code>OFFSET</code> pagination gets slow, and write the keyset version instead</En>
+            <Zh>解释为什么深层 <code>OFFSET</code> 分页会变慢，并改写为 keyset 分页</Zh>
           </li>
           <li>
-            Explain partitioning, sharding and read replicas conceptually — what
-            problem each one solves, and in what order you'd reach for them
+            <En>Explain partitioning, sharding and read replicas conceptually — what problem each one solves, and in what order you'd reach for them</En>
+            <Zh>从概念上解释 partitioning、sharding 和 read replica——各自解决什么问题，以及应该按什么顺序使用它们</Zh>
           </li>
           <li>
-            Use one connection pool per process instead of connecting per
-            request, and say why
+            <En>Use one connection pool per process instead of connecting per request, and say why</En>
+            <Zh>每个进程使用一个 connection pool，而不是每次请求都建立新连接，并说明原因</Zh>
           </li>
           <li>
-            Pick SQL vs. NoSQL for a specific case and justify it (e.g. a
-            high-write append-only log)
+            <En>Pick SQL vs. NoSQL for a specific case and justify it (e.g. a high-write append-only log)</En>
+            <Zh>针对具体场景选择 SQL 还是 NoSQL，并给出理由（例如高写入的只追加日志）</Zh>
           </li>
         </ul>
         <p>
-          Want more?{" "}
-          <Link to="/week3/day14-database-performance/concepts">
-            View all concepts?
-          </Link>
+          <En>Want more?{" "}<Link to="/week3/day14-database-performance/concepts">View all concepts?</Link></En>
+          <Zh>想了解更多？{" "}<Link to="/week3/day14-database-performance/concepts">查看所有概念</Link></Zh>
         </p>
       </section>
 
@@ -64,25 +63,28 @@ export default function Notes() {
       {/* Section 2 — Full Walkthrough                                  */}
       {/* ============================================================ */}
       <section id="full-walkthrough">
-        <h2>Section 2 — Full Walkthrough</h2>
+        <h2><En>Section 2 — Full Walkthrough</En><Zh>第二节 — 完整讲解</Zh></h2>
         <p>
-          Everything below works against the schema from Day 12 —{" "}
+          <En>Everything below works against the schema from Day 12 —{" "}
           <code>orders</code>, <code>order_items</code>, <code>inventory</code>,{" "}
           <code>order_status_history</code>. The snippets use raw{" "}
           <code>pool.query</code> so you can see exactly what reaches the
           database — in the project, that SQL lives in Day 13&apos;s repository
-          layer, whether written by hand or generated by the ORM.
+          layer, whether written by hand or generated by the ORM.</En>
+          <Zh>以下内容基于第 12 天的数据库模式——<code>orders</code>、<code>order_items</code>、<code>inventory</code>、<code>order_status_history</code>。示例代码使用原生 <code>pool.query</code>，让你清楚地看到每条到达数据库的 SQL——在实际项目中，这些 SQL 位于 repository 层，可以手写也可以由 ORM 生成。</Zh>
         </p>
         <p className="callout">
-          Fix in this order: query shape first, then indexes, then capacity.
-          Most "we need a bigger database" turns out to be a missing index.
+          <En>Fix in this order: query shape first, then indexes, then capacity.
+          Most "we need a bigger database" turns out to be a missing index.</En>
+          <Zh>按这个顺序修复：先优化查询结构，再加 index，最后才考虑扩容。大多数"需要更大数据库"的问题，其实只是缺少一个 index。</Zh>
         </p>
 
-        <h3>2.1 The N+1 query problem</h3>
+        <h3>2.1 <En>The N+1 query problem</En><Zh>N+1 查询问题</Zh></h3>
         <p>
-          <strong>Problem:</strong> one query fetches a list, then one more
+          <En><strong>Problem:</strong> one query fetches a list, then one more
           query runs <em>per row</em> to fetch that row's related data — 1 query
-          becomes 1 + N.
+          becomes 1 + N.</En>
+          <Zh><strong>问题：</strong>一条查询获取列表，然后对<em>每一行</em>再发出一条查询获取关联数据——1 条查询变成 1 + N 条。</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -99,7 +101,8 @@ for (const order of orders) {
 // 50 orders on the page = 51 queries`}
         />
         <p>
-          <strong>Solution:</strong> one join query instead of looping.
+          <En><strong>Solution:</strong> one join query instead of looping.</En>
+          <Zh><strong>解决方案：</strong>用一条 join 查询替代循环。</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -113,8 +116,9 @@ const { rows } = await pool.query(\`
 // 50 orders on the page = 1 query, however many items they have`}
         />
         <p>
-          <strong>Or, when the join gets ugly:</strong> fetch the parents, then
-          fetch <em>all</em> the children in one batched query.
+          <En><strong>Or, when the join gets ugly:</strong> fetch the parents, then
+          fetch <em>all</em> the children in one batched query.</En>
+          <Zh><strong>或者，当 join 变得复杂时：</strong>先查父级数据，再用一条批量查询获取<em>所有</em>子级数据。</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -126,13 +130,15 @@ const { rows: items } = await pool.query(
 // 2 queries, no matter how many orders came back`}
         />
         <p className="callout">
-          N+1 doesn't throw an error or fail a test with 5 rows of seed data —
+          <En>N+1 doesn't throw an error or fail a test with 5 rows of seed data —
           it just gets slower and slower as the table grows. Reading the code
           for "a query inside a loop" is the habit that catches it before
-          production does.
+          production does.</En>
+          <Zh>N+1 问题不会报错，在只有 5 行测试数据时也不会让测试失败——它只是随着数据量增长越来越慢。养成"在代码中寻找循环内的查询"的习惯，才能在上线前发现它。</Zh>
         </p>
         <p>
-          <strong>Other common scenarios of the N+1 problem:</strong>
+          <En><strong>Other common scenarios of the N+1 problem:</strong></En>
+          <Zh><strong>N+1 问题的其他常见形式：</strong></Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -153,17 +159,23 @@ for (const order of orders) {
 }`}
         />
         <p>
-          All of these, and the ORM eager-loading fixes, are in{" "}
-          <Link to="/week3/additional-backend-topics/full-sql/query-optimization">
+          <En>All of these, and the ORM eager-loading fixes, are in{" "}
+          <Link to="/additional/backend/full-sql/query-optimization">
             Full SQL · Query Optimization
           </Link>
-          .
+          .</En>
+          <Zh>这些场景以及 ORM 的 eager-loading 修复方案，都在{" "}
+          <Link to="/additional/backend/full-sql/query-optimization">
+            Full SQL · Query Optimization
+          </Link>
+          中详细介绍。</Zh>
         </p>
 
-        <h3>2.2 Indexing</h3>
+        <h3>2.2 <En>Indexing</En><Zh>索引（Index）</Zh></h3>
         <p>
-          <strong>Problem:</strong> without an index, finding matching rows
-          means reading every row in the table and checking each one.
+          <En><strong>Problem:</strong> without an index, finding matching rows
+          means reading every row in the table and checking each one.</En>
+          <Zh><strong>问题：</strong>没有 index，查找匹配行意味着读取表中的每一行逐一检查。</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -171,10 +183,11 @@ for (const order of orders) {
 -- with no index: Postgres reads every row in orders and checks each one`}
         />
         <p>
-          <strong>Solution: an index.</strong> A separate, sorted structure
+          <En><strong>Solution: an index.</strong> A separate, sorted structure
           Postgres keeps next to the table — roughly a B-tree, the same shape
           Postgres uses internally — so it can jump straight to the matching
-          rows instead of reading every one.
+          rows instead of reading every one.</En>
+          <Zh><strong>解决方案：添加 index。</strong>Postgres 在表旁维护一个单独的有序数据结构——大致是一棵 B-tree——这样它可以直接跳转到匹配的行，而不必逐行扫描。</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -196,13 +209,15 @@ check row 5,000,000  → no match
 5,000,000 rows checked               a small handful checked`}
         />
         <p className="callout">
-          On 5 seed rows this makes no visible difference — the gap only shows
+          <En>On 5 seed rows this makes no visible difference — the gap only shows
           up at real scale. The actual before/after timing is in the next
-          section's <code>EXPLAIN</code> plan.
+          section's <code>EXPLAIN</code> plan.</En>
+          <Zh>在只有 5 行测试数据时看不出差异——差距只在真实数据量下才会显现。下一节的 <code>EXPLAIN</code> 执行计划会展示实际的前后耗时对比。</Zh>
         </p>
         <p>
-          <strong>Trade-off:</strong> an index isn't free — every index on a
-          table is more work for every write to it:
+          <En><strong>Trade-off:</strong> an index isn't free — every index on a
+          table is more work for every write to it:</En>
+          <Zh><strong>代价：</strong>index 不是免费的——表上每个 index 都会让每次写操作增加额外开销：</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -211,36 +226,41 @@ UPDATE orders SET status = 'shipped' WHERE id = 42;
 -- this one UPDATE writes the row, then updates both indexes too`}
         />
         <div className="concept">
-          <p className="concept-label">Concept — indexing in one sentence</p>
+          <p className="concept-label"><En>Concept — indexing in one sentence</En><Zh>概念——一句话理解 index</Zh></p>
           <ul>
             <li>
-              An index is a separate, sorted lookup structure Postgres keeps
-              next to a table.
+              <En>An index is a separate, sorted lookup structure Postgres keeps next to a table.</En>
+              <Zh>Index 是 Postgres 在表旁维护的一个单独的有序查找结构。</Zh>
             </li>
             <li>
-              <strong>Benefit:</strong> faster reads — jump straight to matching
-              rows instead of scanning every one.
+              <En><strong>Benefit:</strong> faster reads — jump straight to matching rows instead of scanning every one.</En>
+              <Zh><strong>优点：</strong>加速读取——直接跳到匹配的行，无需全表扫描。</Zh>
             </li>
             <li>
-              <strong>Trade-off:</strong> slower writes — every{" "}
-              <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> on the
-              table also updates every index on it.
+              <En><strong>Trade-off:</strong> slower writes — every{" "}
+              <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> on the table also updates every index on it.</En>
+              <Zh><strong>代价：</strong>写入变慢——表上的每次 <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> 都需要同步更新所有 index。</Zh>
             </li>
             <li>
-              In short: an index speeds up the read and slows down the write.
-              Index the columns you actually filter or join on, not every column
-              in the table.
+              <En>In short: an index speeds up the read and slows down the write.
+              Index the columns you actually filter or join on, not every column in the table.</En>
+              <Zh>简言之：index 加快读取，减慢写入。只对真正用于过滤或 join 的列建索引，而不是对每一列都建。</Zh>
             </li>
           </ul>
         </div>
         <p>
-          A query can filter on more than one column at once — indexing several
+          <En>A query can filter on more than one column at once — indexing several
           columns together (a compound index) and the leftmost-prefix rule that
           comes with it are in{" "}
-          <Link to="/week3/additional-backend-topics/full-sql/query-optimization">
+          <Link to="/additional/backend/full-sql/query-optimization">
             Full SQL · Query Optimization
           </Link>
-          .
+          .</En>
+          <Zh>一个查询可以同时过滤多个列——多列联合索引（compound index）及其最左前缀规则，详见{" "}
+          <Link to="/additional/backend/full-sql/query-optimization">
+            Full SQL · Query Optimization
+          </Link>
+          。</Zh>
         </p>
         <figure className="video-embed">
           <iframe
@@ -252,27 +272,30 @@ UPDATE orders SET status = 'shipped' WHERE id = 42;
         </figure>
 
         <h3>
-          2.3 Reading an <code>EXPLAIN</code> plan
+          2.3 <En>Reading an <code>EXPLAIN</code> plan</En><Zh>读懂 <code>EXPLAIN</code> 执行计划</Zh>
         </h3>
         <p>
-          <strong>Step 1 — find the slow query.</strong> In production you won't
-          know which one to look at unless something tells you:
+          <En><strong>Step 1 — find the slow query.</strong> In production you won't
+          know which one to look at unless something tells you:</En>
+          <Zh><strong>第一步——找到慢查询。</strong>在生产环境中，如果没有工具告诉你，你不会知道该看哪条查询：</Zh>
         </p>
         <CodeBlock
           language="plaintext"
           code={`log_min_duration_statement = 100   -- log any statement slower than 100ms, with its duration`}
         />
         <p>
-          Once that's on, a slow query shows up as a line in the Postgres log:
+          <En>Once that's on, a slow query shows up as a line in the Postgres log:</En>
+          <Zh>开启后，慢查询会以一行记录出现在 Postgres 日志中：</Zh>
         </p>
         <CodeBlock
           language="plaintext"
           code={`2026-03-14 10:02:11 UTC LOG:  duration: 812.441 ms  statement: SELECT * FROM orders WHERE status = 'packed';`}
         />
         <p>
-          <code>pg_stat_statements</code> goes further — it's a real table
+          <En><code>pg_stat_statements</code> goes further — it's a real table
           Postgres keeps, so you can query it directly instead of reading log
-          files one line at a time:
+          files one line at a time:</En>
+          <Zh><code>pg_stat_statements</code> 更进一步——它是 Postgres 维护的一张真实表，你可以直接查询它，而无需一行行翻日志文件：</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -290,22 +313,24 @@ LIMIT 3;`}
   512 |  45.02 | SELECT * FROM inventory WHERE store_id = $1`}
         />
         <p className="callout">
-          This is how real performance problems get found — reading the logs (or{" "}
+          <En>This is how real performance problems get found — reading the logs (or{" "}
           <code>pg_stat_statements</code>) for what's actually slow, not by
-          guessing which query "feels slow" while writing it.
+          guessing which query "feels slow" while writing it.</En>
+          <Zh>这才是发现真实性能问题的方式——读日志（或查 <code>pg_stat_statements</code>）找出真正慢的查询，而不是凭感觉猜哪条"看起来慢"。</Zh>
         </p>
         <p>
-          <strong>Step 2 — look inside it.</strong> <code>EXPLAIN ANALYZE</code>{" "}
-          runs the query for real and prints the plan Postgres used, with real
-          timings:
+          <En><strong>Step 2 — look inside it.</strong> <code>EXPLAIN ANALYZE</code>{" "}
+          runs the query for real and prints the plan Postgres used, with real timings:</En>
+          <Zh><strong>第二步——深入分析。</strong><code>EXPLAIN ANALYZE</code> 实际执行查询，并打印 Postgres 使用的执行计划和真实耗时：</Zh>
         </p>
         <CodeBlock
           language="sql"
           code={`EXPLAIN ANALYZE SELECT * FROM orders WHERE status = 'packed';`}
         />
         <p>
-          On the 5,000,000-row <code>orders</code> table from the last section,
-          before the index exists:
+          <En>On the 5,000,000-row <code>orders</code> table from the last section,
+          before the index exists:</En>
+          <Zh>对上一节那张拥有 5,000,000 行的 <code>orders</code> 表，在创建 index 之前：</Zh>
         </p>
         <CodeBlock
           language="plaintext"
@@ -315,87 +340,76 @@ LIMIT 3;`}
 Planning Time: 0.110 ms
 Execution Time: 812.441 ms`}
         />
-        <p>How to read it, piece by piece:</p>
+        <p><En>How to read it, piece by piece:</En><Zh>逐项解读：</Zh></p>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Part</th>
-              <th>What it means</th>
+              <th><En>Part</En><Zh>字段</Zh></th>
+              <th><En>What it means</En><Zh>含义</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td><code>Seq Scan on orders</code></td>
               <td>
-                <code>Seq Scan on orders</code>
-              </td>
-              <td>
-                The operation. <code>Seq Scan</code> = read every row.{" "}
-                <code>Index Scan</code> / <code>Bitmap Index Scan</code> = used
-                an index.
+                <En>The operation. <code>Seq Scan</code> = read every row.{" "}
+                <code>Index Scan</code> / <code>Bitmap Index Scan</code> = used an index.</En>
+                <Zh>操作类型。<code>Seq Scan</code> = 全表扫描；<code>Index Scan</code> / <code>Bitmap Index Scan</code> = 使用了 index。</Zh>
               </td>
             </tr>
             <tr>
+              <td><code>cost=0.00..104000.00</code></td>
               <td>
-                <code>cost=0.00..104000.00</code>
-              </td>
-              <td>
-                The planner's <em>estimate</em> (first row..all rows), in its
-                own units — not milliseconds. Only useful for comparing plans.
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>rows=1180 width=48</code>
-              </td>
-              <td>
-                Estimated rows returned, and average row size in bytes.
+                <En>The planner's <em>estimate</em> (first row..all rows), in its
+                own units — not milliseconds. Only useful for comparing plans.</En>
+                <Zh>规划器的<em>估算</em>成本（第一行..全部行），单位不是毫秒，只用于比较不同计划。</Zh>
               </td>
             </tr>
             <tr>
+              <td><code>rows=1180 width=48</code></td>
               <td>
-                <code>actual time=0.412..812.330</code>
+                <En>Estimated rows returned, and average row size in bytes.</En>
+                <Zh>预估返回行数，以及平均行大小（字节）。</Zh>
               </td>
-              <td>Real milliseconds: first row..last row.</td>
             </tr>
             <tr>
+              <td><code>actual time=0.412..812.330</code></td>
+              <td><En>Real milliseconds: first row..last row.</En><Zh>实际耗时（毫秒）：第一行..最后一行。</Zh></td>
+            </tr>
+            <tr>
+              <td><code>rows=1204 loops=1</code></td>
               <td>
-                <code>rows=1204 loops=1</code>
-              </td>
-              <td>
-                Rows actually returned, and how many times this step ran. If
+                <En>Rows actually returned, and how many times this step ran. If
                 actual rows are far off the estimate, the planner's stats are
-                stale — run <code>ANALYZE orders;</code>.
+                stale — run <code>ANALYZE orders;</code>.</En>
+                <Zh>实际返回行数，以及该步骤执行次数。如果实际行数与估算相差很大，说明统计信息过期——执行 <code>ANALYZE orders;</code> 更新。</Zh>
               </td>
             </tr>
             <tr>
-              <td>
-                <code>Filter</code>
-              </td>
-              <td>The condition checked against each row after reading it.</td>
+              <td><code>Filter</code></td>
+              <td><En>The condition checked against each row after reading it.</En><Zh>读取每行后进行检查的过滤条件。</Zh></td>
             </tr>
             <tr>
+              <td><code>Rows Removed by Filter</code></td>
               <td>
-                <code>Rows Removed by Filter</code>
-              </td>
-              <td>
-                Rows read, then thrown away. A big number here = missing index.
+                <En>Rows read, then thrown away. A big number here = missing index.</En>
+                <Zh>读取后被丢弃的行数。数字很大 = 缺少 index。</Zh>
               </td>
             </tr>
             <tr>
+              <td><code>Planning Time</code> / <code>Execution Time</code></td>
               <td>
-                <code>Planning Time</code> / <code>Execution Time</code>
-              </td>
-              <td>
-                Time spent choosing the plan / actually running it. Execution
-                Time is the one to watch.
+                <En>Time spent choosing the plan / actually running it. Execution Time is the one to watch.</En>
+                <Zh>选择执行计划的耗时 / 实际运行耗时。重点关注 Execution Time。</Zh>
               </td>
             </tr>
           </tbody>
         </table>
         <p>
-          Put together: Postgres read all 5,000,000 rows, kept 1,204, threw away
+          <En>Put together: Postgres read all 5,000,000 rows, kept 1,204, threw away
           the other 4,998,796 — and took 812ms doing it. After{" "}
-          <code>CREATE INDEX orders_status_idx ON orders (status);</code>:
+          <code>CREATE INDEX orders_status_idx ON orders (status);</code>:</En>
+          <Zh>综合来看：Postgres 读取了全部 5,000,000 行，保留 1,204 行，丢弃了其余 4,998,796 行——耗时 812ms。在执行 <code>CREATE INDEX orders_status_idx ON orders (status);</code> 之后：</Zh>
         </p>
         <CodeBlock
           language="plaintext"
@@ -405,75 +419,86 @@ Planning Time: 0.120 ms
 Execution Time: 0.312 ms`}
         />
         <p className="callout">
-          Same 1,204 rows, 812ms → 0.3ms. <code>Index Cond</code> replaced{" "}
+          <En>Same 1,204 rows, 812ms → 0.3ms. <code>Index Cond</code> replaced{" "}
           <code>Filter</code>, and there's no <code>Rows Removed</code> line —
-          it jumped straight to the matches instead of reading everything.
+          it jumped straight to the matches instead of reading everything.</En>
+          <Zh>同样是 1,204 行，耗时从 812ms 降至 0.3ms。<code>Index Cond</code> 取代了 <code>Filter</code>，也没有 <code>Rows Removed</code>——它直接跳到匹配行，而不是扫描全表。</Zh>
         </p>
         <div className="concept">
-          <p className="concept-label">Summary — fixing a slow query</p>
+          <p className="concept-label"><En>Summary — fixing a slow query</En><Zh>小结——如何修复慢查询</Zh></p>
           <ol>
             <li>
-              <strong>Find it:</strong> <code>pg_stat_statements</code> records
+              <En><strong>Find it:</strong> <code>pg_stat_statements</code> records
               the call count and timing of every query. Sort it by average (or
-              total) time to get the top few offenders.
+              total) time to get the top few offenders.</En>
+              <Zh><strong>找到它：</strong><code>pg_stat_statements</code> 记录了每条查询的调用次数和耗时。按平均（或总计）耗时排序，找出最慢的几条。</Zh>
             </li>
             <li>
-              <strong>Explain it:</strong> run <code>EXPLAIN ANALYZE</code> on
+              <En><strong>Explain it:</strong> run <code>EXPLAIN ANALYZE</code> on
               that query. <code>Seq Scan</code> + big{" "}
-              <code>Rows Removed by Filter</code> → add an index.
+              <code>Rows Removed by Filter</code> → add an index.</En>
+              <Zh><strong>分析它：</strong>对该查询执行 <code>EXPLAIN ANALYZE</code>。出现 <code>Seq Scan</code> + 大量 <code>Rows Removed by Filter</code> → 添加 index。</Zh>
             </li>
             <li>
-              <strong>Confirm it:</strong> run <code>EXPLAIN ANALYZE</code>{" "}
+              <En><strong>Confirm it:</strong> run <code>EXPLAIN ANALYZE</code>{" "}
               again — you should see an <code>Index Scan</code> and a much
-              smaller Execution Time.
+              smaller Execution Time.</En>
+              <Zh><strong>验证它：</strong>再次执行 <code>EXPLAIN ANALYZE</code>——应该看到 <code>Index Scan</code> 以及大幅缩短的 Execution Time。</Zh>
             </li>
           </ol>
         </div>
         <p>
-          A worked 812ms → 0.3ms plan on a real-sized table, every node type
-          you'll see, and why an index you created might still not be used are
-          in{" "}
-          <Link to="/week3/additional-backend-topics/full-sql/query-optimization">
+          <En>A worked 812ms → 0.3ms plan on a real-sized table, every node type
+          you'll see, and why an index you created might still not be used are in{" "}
+          <Link to="/additional/backend/full-sql/query-optimization">
             Full SQL · Query Optimization
           </Link>
-          .
+          .</En>
+          <Zh>真实数据量下 812ms → 0.3ms 的完整演示、所有节点类型的解释，以及为什么你创建的 index 有时仍不会被使用——详见{" "}
+          <Link to="/additional/backend/full-sql/query-optimization">
+            Full SQL · Query Optimization
+          </Link>
+          。</Zh>
         </p>
 
         <h3>
-          2.4 Pagination: <code>OFFSET</code> vs. keyset
+          2.4 <En>Pagination: <code>OFFSET</code> vs. keyset</En><Zh>分页：<code>OFFSET</code> 与 keyset 分页</Zh>
         </h3>
         <p>
-          The fulfillment queue is paginated. The obvious way stops working on
-          deep pages:
+          <En>The fulfillment queue is paginated. The obvious way stops working on deep pages:</En>
+          <Zh>履单队列需要分页。最直观的方式在翻到深层页面时会出问题：</Zh>
         </p>
         <CodeBlock
           language="sql"
           code={`SELECT * FROM orders ORDER BY created_at DESC LIMIT 20 OFFSET 9980;   -- page 500`}
         />
         <div className="concept">
-          <p className="concept-label">Concept — two problems, both real</p>
+          <p className="concept-label"><En>Concept — two problems, both real</En><Zh>概念——两个真实存在的问题</Zh></p>
           <ul>
             <li>
-              <strong>It gets slower the deeper you go.</strong> The database
+              <En><strong>It gets slower the deeper you go.</strong> The database
               still has to produce and discard all 9,980 skipped rows before
-              returning 20. Page 1 is instant; page 500 is a scan and a sort.
+              returning 20. Page 1 is instant; page 500 is a scan and a sort.</En>
+              <Zh><strong>越翻越慢。</strong>数据库仍然需要生成并丢弃前 9,980 行，才能返回 20 行。第 1 页瞬间返回；第 500 页需要全量扫描和排序。</Zh>
             </li>
             <li>
-              <strong>It skips and duplicates rows under writes.</strong> A new
+              <En><strong>It skips and duplicates rows under writes.</strong> A new
               order inserted while the user is on page 2 shifts everything down
-              one, so row 20 reappears on page 3.
+              one, so row 20 reappears on page 3.</En>
+              <Zh><strong>写入时会跳行或重复行。</strong>用户在翻第 2 页时插入一条新订单，所有行下移一位，第 20 行会在第 3 页重新出现。</Zh>
             </li>
             <li>
-              It's still right when you need numbered pages and a total count.
-              It's wrong for infinite scroll and for anything paging through a
-              big table.
+              <En>It's still right when you need numbered pages and a total count.
+              It's wrong for infinite scroll and for anything paging through a big table.</En>
+              <Zh>当你需要页码和总数时，OFFSET 分页仍然适用。但对于无限滚动或翻页大表的场景，它是错误的选择。</Zh>
             </li>
           </ul>
         </div>
         <p>
-          Keyset (cursor) pagination replaces "skip 9,980 rows" with "start
+          <En>Keyset (cursor) pagination replaces "skip 9,980 rows" with "start
           after the last row I saw", so the index seeks straight there and page
-          500 costs the same as page 1:
+          500 costs the same as page 1:</En>
+          <Zh>Keyset（cursor）分页用"从上次看到的最后一行之后开始"替代"跳过 9,980 行"，让 index 直接定位，第 500 页和第 1 页的开销相同：</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -489,57 +514,59 @@ ORDER BY created_at DESC, id DESC
 LIMIT 20;`}
         />
         <p className="callout">
-          The sort key needs a unique tiebreaker (<code>id</code>) and an index
+          <En>The sort key needs a unique tiebreaker (<code>id</code>) and an index
           on exactly that key — paginating on <code>created_at</code> alone
-          silently loses rows whenever two share a timestamp.
+          silently loses rows whenever two share a timestamp.</En>
+          <Zh>排序键需要一个唯一的去重字段（<code>id</code>），并且必须为该组合键建立 index——仅按 <code>created_at</code> 分页，当两行时间戳相同时会悄悄丢失数据。</Zh>
         </p>
 
-        <h3>2.5 Partitioning, sharding &amp; replication</h3>
+        <h3>2.5 <En>Partitioning, sharding &amp; replication</En><Zh>分区、分片与副本</Zh></h3>
         <p>
-          <strong>Problem:</strong> a table that's fast at 5,000 rows can slow to a crawl at 5
-          million — more rows to scan, more index to maintain, more writes competing for the same
-          machine.
+          <En><strong>Problem:</strong> a table that's fast at 5,000 rows can slow to a crawl at 5
+          million — more rows to scan, more index to maintain, more writes competing for the same machine.</En>
+          <Zh><strong>问题：</strong>5,000 行时很快的表，到了 500 万行可能慢如蜗牛——需要扫描更多行、维护更大的 index，写操作也要在同一台机器上竞争资源。</Zh>
         </p>
-        <p>Three different fixes for three different flavors of that problem — not synonyms:</p>
+        <p><En>Three different fixes for three different flavors of that problem — not synonyms:</En><Zh>针对该问题的三种不同解法——它们不是同义词：</Zh></p>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Technique</th>
-              <th>What it does</th>
-              <th>Problem it solves</th>
+              <th><En>Technique</En><Zh>技术</Zh></th>
+              <th><En>What it does</En><Zh>做什么</Zh></th>
+              <th><En>Problem it solves</En><Zh>解决的问题</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Partitioning</td>
+              <td><En>Partitioning</En><Zh>分区（Partitioning）</Zh></td>
               <td>
-                Splits one table into smaller physical tables by a key (usually
-                a date), inside <strong>one</strong> database
+                <En>Splits one table into smaller physical tables by a key (usually
+                a date), inside <strong>one</strong> database</En>
+                <Zh>按键值（通常是日期）将一张表拆分为多个物理子表，仍在<strong>同一个</strong>数据库中</Zh>
               </td>
-              <td>One table so big its scans and its maintenance hurt</td>
+              <td><En>One table so big its scans and its maintenance hurt</En><Zh>单表过大，全表扫描和维护代价高</Zh></td>
             </tr>
             <tr>
-              <td>Sharding</td>
+              <td><En>Sharding</En><Zh>分片（Sharding）</Zh></td>
               <td>
-                Splits rows across <strong>separate database servers</strong> by
-                a shard key
+                <En>Splits rows across <strong>separate database servers</strong> by a shard key</En>
+                <Zh>按 shard key 将行分散到<strong>不同的数据库服务器</strong>上</Zh>
               </td>
-              <td>Write volume or data size beyond one machine</td>
+              <td><En>Write volume or data size beyond one machine</En><Zh>写入量或数据量超出单台机器的承载能力</Zh></td>
             </tr>
             <tr>
-              <td>Replication</td>
+              <td><En>Replication</En><Zh>副本（Replication）</Zh></td>
               <td>
-                Copies the same data to read-only replicas that follow the
-                primary
+                <En>Copies the same data to read-only replicas that follow the primary</En>
+                <Zh>将相同数据复制到跟随主库的只读副本上</Zh>
               </td>
-              <td>Read load, and failover if the primary dies</td>
+              <td><En>Read load, and failover if the primary dies</En><Zh>读取压力，以及主库故障时的容灾切换</Zh></td>
             </tr>
           </tbody>
         </table>
 
         <p>
-          <strong>Partitioning</strong> — split one big table into smaller
-          physical tables by a key, still inside one database:
+          <En><strong>Partitioning</strong> — split one big table into smaller physical tables by a key, still inside one database:</En>
+          <Zh><strong>分区（Partitioning）</strong>——按键值将一张大表拆分为多个较小的物理子表，仍在同一个数据库内：</Zh>
         </p>
         <svg viewBox="0 0 640 235" role="img" aria-label="One Postgres database containing the order_status_history table split into partitions osh_2026_01, osh_2026_02, osh_2026_03 and more. A date-filtered query only touches the osh_2026_02 partition.">
           <defs>
@@ -562,9 +589,10 @@ LIMIT 20;`}
           <text x="247" y="220" textAnchor="middle" fontSize="10" fill="#2255cc">a date-filtered query touches only this one</text>
         </svg>
         <p>
-          A query with no date filter has to check every partition instead of just one, and
+          <En>A query with no date filter has to check every partition instead of just one, and
           dropping a month of old data becomes a <code>DROP TABLE</code>, not a multi-hour{" "}
-          <code>DELETE</code>:
+          <code>DELETE</code>:</En>
+          <Zh>没有日期过滤条件的查询必须检查每个分区；而清除一个月的旧数据只需 <code>DROP TABLE</code>，而不是耗时数小时的 <code>DELETE</code>：</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -579,13 +607,15 @@ CREATE TABLE osh_2026_02 PARTITION OF order_status_history
   FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');`}
         />
         <p className="callout">
-          Still one machine — partitioning never adds write capacity, it only
-          makes queries that filter on the partition key cheaper.
+          <En>Still one machine — partitioning never adds write capacity, it only
+          makes queries that filter on the partition key cheaper.</En>
+          <Zh>仍然是一台机器——分区不会增加写入容量，只会让按分区键过滤的查询更高效。</Zh>
         </p>
 
         <p>
-          <strong>Sharding</strong> — split rows across separate database{" "}
-          <em>servers</em> by a shard key:
+          <En><strong>Sharding</strong> — split rows across separate database{" "}
+          <em>servers</em> by a shard key:</En>
+          <Zh><strong>分片（Sharding）</strong>——按 shard key 将行分散到不同的数据库<em>服务器</em>上：</Zh>
         </p>
         <svg viewBox="0 0 640 220" role="img" aria-label="An app routing a lookup for customer 1500 to Shard 2 only, out of three separate Postgres servers each holding a different range of customer IDs.">
           <defs>
@@ -616,19 +646,21 @@ CREATE TABLE osh_2026_02 PARTITION OF order_status_history
           <text x="510" y="160" textAnchor="middle" fontSize="9" fill="#5b6b82">full Postgres server</text>
         </svg>
         <p>
-          A lookup for customer 1500 only ever reaches Shard 2 — the other two are never queried.
+          <En>A lookup for customer 1500 only ever reaches Shard 2 — the other two are never queried.
           The cost: two rows on different shards can't be joined in one query, so anything
-          spanning shards moves into application code.
+          spanning shards moves into application code.</En>
+          <Zh>查询 customer 1500 只会访问 Shard 2——其他两个分片完全不参与。代价是：不同分片上的行无法在一条查询中 join，跨分片的操作必须在应用层处理。</Zh>
         </p>
         <p className="callout">
-          Cross-shard joins and transactions move into application code. Picking
+          <En>Cross-shard joins and transactions move into application code. Picking
           the shard key wrong (a hot shard, a query that needs every shard) is
-          expensive to undo.
+          expensive to undo.</En>
+          <Zh>跨分片的 join 和事务需要移入应用层。选错 shard key（导致热点分片，或每次查询都要访问所有分片）代价极高，难以回退。</Zh>
         </p>
 
         <p>
-          <strong>Replication</strong> — copy the same data to read-only
-          replicas that follow the primary:
+          <En><strong>Replication</strong> — copy the same data to read-only replicas that follow the primary:</En>
+          <Zh><strong>副本（Replication）</strong>——将相同数据复制到跟随主库的只读副本上：</Zh>
         </p>
         <svg viewBox="0 0 640 210" role="img" aria-label="A primary database accepting writes, replicating asynchronously to two read-only replicas that serve read traffic.">
           <defs>
@@ -650,34 +682,40 @@ CREATE TABLE osh_2026_02 PARTITION OF order_status_history
           <text x="465" y="182" textAnchor="middle" fontSize="9" fill="#5b6b82">read-only</text>
         </svg>
         <p>
-          Reserve stock on the primary, then immediately read it back from a replica, and it might
-          still show the old number — read-after-write has to go to the primary.
+          <En>Reserve stock on the primary, then immediately read it back from a replica, and it might
+          still show the old number — read-after-write has to go to the primary.</En>
+          <Zh>在主库上预留库存后，立即从副本读取，可能仍显示旧数量——写后读必须走主库。</Zh>
         </p>
         <p className="callout">
-          Replication solves read load and failover, not write capacity — every
-          write still goes through the one primary.
+          <En>Replication solves read load and failover, not write capacity — every write still goes through the one primary.</En>
+          <Zh>Replication 解决的是读取压力和容灾，而不是写入容量——所有写操作仍然只经过唯一的主库。</Zh>
         </p>
 
         <p className="callout">
-          Order of reach: index → batch → cache → replica → partition → shard.
-          Shard last; one well-indexed Postgres handles far more than most teams
-          assume.
+          <En>Order of reach: index → batch → cache → replica → partition → shard.
+          Shard last; one well-indexed Postgres handles far more than most teams assume.</En>
+          <Zh>应对顺序：index → 批量查询 → cache → replica → partition → shard。分片放最后；一个索引完善的 Postgres 实例能承载的负载远超大多数团队的预期。</Zh>
         </p>
         <p>
-          The deeper version — partition strategies and pruning, choosing a
+          <En>The deeper version — partition strategies and pruning, choosing a
           shard key, replication lag and read-your-writes — is in{" "}
-          <Link to="/week3/additional-backend-topics/full-sql/scaling-and-throughput">
+          <Link to="/additional/backend/full-sql/scaling-and-throughput">
             Full SQL · Scaling &amp; Throughput
           </Link>
-          .
+          .</En>
+          <Zh>更深入的内容——分区策略与剪枝、选择 shard key、replication 延迟与写后读——详见{" "}
+          <Link to="/additional/backend/full-sql/scaling-and-throughput">
+            Full SQL · Scaling &amp; Throughput
+          </Link>
+          。</Zh>
         </p>
 
-        <h3>2.6 Connection pooling</h3>
+        <h3>2.6 <En>Connection pooling</En><Zh>连接池（Connection pooling）</Zh></h3>
         <p>
-          A Postgres connection is a separate OS process with several MB of
+          <En>A Postgres connection is a separate OS process with several MB of
           memory behind it. Opening one per request costs a TCP handshake plus
-          authentication plus process startup — routinely more than the query
-          itself.
+          authentication plus process startup — routinely more than the query itself.</En>
+          <Zh>一个 Postgres 连接是一个独立的操作系统进程，占用数 MB 内存。每次请求都建立新连接需要 TCP 握手 + 认证 + 进程启动——这些开销通常比查询本身还要大。</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -718,14 +756,15 @@ try {
 }`}
         />
         <p className="callout">
-          The pool is per process: 8 app instances × <code>max: 10</code> = 80
+          <En>The pool is per process: 8 app instances × <code>max: 10</code> = 80
           connections at the database, which must stay under its{" "}
           <code>max_connections</code>. Bigger pools aren't faster — past the
-          point where the database is CPU-bound they just add contention.
+          point where the database is CPU-bound they just add contention.</En>
+          <Zh>连接池是每个进程独立的：8 个应用实例 × <code>max: 10</code> = 数据库端 80 个连接，必须低于其 <code>max_connections</code> 限制。更大的连接池不等于更快——超过数据库 CPU 瓶颈后，更多连接只会增加竞争。</Zh>
         </p>
 
-        <h3>2.7 SQL vs. NoSQL</h3>
-        <p>The high-level differences, at a glance:</p>
+        <h3>2.7 <En>SQL vs. NoSQL</En><Zh>SQL 与 NoSQL</Zh></h3>
+        <p><En>The high-level differences, at a glance:</En><Zh>高层次的差异，一览：</Zh></p>
         <table className="ref-table">
           <thead>
             <tr>
@@ -736,38 +775,38 @@ try {
           </thead>
           <tbody>
             <tr>
-              <td>Data shape</td>
-              <td>Rows in tables, a fixed schema</td>
-              <td>Documents / key-value / etc., flexible per record</td>
+              <td><En>Data shape</En><Zh>数据结构</Zh></td>
+              <td><En>Rows in tables, a fixed schema</En><Zh>表中的行，固定 schema</Zh></td>
+              <td><En>Documents / key-value / etc., flexible per record</En><Zh>文档 / 键值对等，每条记录结构可不同</Zh></td>
             </tr>
             <tr>
-              <td>Relationships</td>
-              <td>Joined across tables at query time</td>
-              <td>Usually embedded together instead of joined</td>
+              <td><En>Relationships</En><Zh>关联关系</Zh></td>
+              <td><En>Joined across tables at query time</En><Zh>查询时跨表 join</Zh></td>
+              <td><En>Usually embedded together instead of joined</En><Zh>通常直接嵌入，而不是 join</Zh></td>
             </tr>
             <tr>
-              <td>Consistency</td>
-              <td>Strong — ACID transactions</td>
-              <td>Often eventual; tunable depending on the system</td>
+              <td><En>Consistency</En><Zh>一致性</Zh></td>
+              <td><En>Strong — ACID transactions</En><Zh>强一致性——ACID 事务</Zh></td>
+              <td><En>Often eventual; tunable depending on the system</En><Zh>通常是最终一致性；可根据系统调整</Zh></td>
             </tr>
             <tr>
-              <td>Scaling</td>
-              <td>Vertical first, then replicas/sharding</td>
-              <td>Built to scale out horizontally from the start</td>
+              <td><En>Scaling</En><Zh>扩展方式</Zh></td>
+              <td><En>Vertical first, then replicas/sharding</En><Zh>先纵向扩展，再副本/分片</Zh></td>
+              <td><En>Built to scale out horizontally from the start</En><Zh>从一开始就为横向扩展设计</Zh></td>
             </tr>
             <tr>
-              <td>Best at</td>
-              <td>Complex queries over related data</td>
-              <td>Very high throughput, simple lookups by key</td>
+              <td><En>Best at</En><Zh>最擅长</Zh></td>
+              <td><En>Complex queries over related data</En><Zh>对关联数据进行复杂查询</Zh></td>
+              <td><En>Very high throughput, simple lookups by key</En><Zh>极高吞吐量，按键的简单查找</Zh></td>
             </tr>
           </tbody>
         </table>
 
-        <p>A closer look, with the same kind of data modeled both ways:</p>
+        <p><En>A closer look, with the same kind of data modeled both ways:</En><Zh>更仔细地对比，用同一类数据分别用两种方式建模：</Zh></p>
 
         <p>
-          <strong>Schema:</strong> SQL fixes the shape up front; NoSQL lets
-          every record have its own shape.
+          <En><strong>Schema:</strong> SQL fixes the shape up front; NoSQL lets every record have its own shape.</En>
+          <Zh><strong>Schema：</strong>SQL 预先固定数据结构；NoSQL 允许每条记录有自己的结构。</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -791,8 +830,9 @@ try {
         />
 
         <p>
-          <strong>Relationships:</strong> SQL joins across tables at query time;
-          NoSQL usually embeds the related data directly in the record instead.
+          <En><strong>Relationships:</strong> SQL joins across tables at query time;
+          NoSQL usually embeds the related data directly in the record instead.</En>
+          <Zh><strong>关联关系：</strong>SQL 在查询时跨表 join；NoSQL 通常将关联数据直接嵌入记录中。</Zh>
         </p>
         <CodeBlock
           language="sql"
@@ -808,19 +848,25 @@ JOIN authors ON authors.id = posts.author_id;`}
         />
 
         <p>
-          <strong>Consistency:</strong> SQL guarantees a transaction is
+          <En><strong>Consistency:</strong> SQL guarantees a transaction is
           all-or-nothing and every read sees committed data. Many NoSQL systems
           trade that for speed — a write can take a moment to become visible
           everywhere, which is fine for some data (a "like" count) and wrong for
-          others (an account balance).
+          others (an account balance).</En>
+          <Zh><strong>一致性：</strong>SQL 保证事务要么全部成功要么全部回滚，每次读取都能看到已提交的数据。许多 NoSQL 系统为了速度放弃了这一保证——一次写入可能需要一段时间才能在所有节点可见，这对某些数据（点赞数）可以接受，对另一些数据（账户余额）则不行。</Zh>
         </p>
         <p>
-          Every NoSQL family, ACID vs. BASE in more depth, and the same domain
+          <En>Every NoSQL family, ACID vs. BASE in more depth, and the same domain
           modeled both ways are in{" "}
-          <Link to="/week3/additional-backend-topics/full-sql/sql-vs-nosql">
+          <Link to="/additional/backend/full-sql/sql-vs-nosql">
             Full SQL · SQL vs. NoSQL
           </Link>
-          .
+          .</En>
+          <Zh>每种 NoSQL 类型、ACID 与 BASE 的深入对比，以及同一领域用两种方式建模的完整示例，详见{" "}
+          <Link to="/additional/backend/full-sql/sql-vs-nosql">
+            Full SQL · SQL vs. NoSQL
+          </Link>
+          。</Zh>
         </p>
       </section>
     </div>
