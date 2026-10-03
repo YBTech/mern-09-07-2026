@@ -18,189 +18,190 @@ export default function Concepts() {
         </p>
 
         <details>
-          <summary>State the CAP theorem precisely — what&apos;s wrong with &quot;pick two&quot;?</summary>
+          <summary>What steps do you follow in a system design interview?</summary>
           <div className="answer">
             <p>
-              The choice only exists <em>during a network partition</em>: then you pick consistency
-              or availability. With no partition you get both. And since partitions are unavoidable
-              in a distributed system, the real choice is always CP or AP.
+              Clarify requirements, estimate capacity, draw a high-level design, deep-dive into the
+              bottleneck the interviewer picks, then state your trade-offs. Ask before you draw, and say
+              your assumptions out loud.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Apply CAP to this system: the Inventory service is unreachable. What do you do?</summary>
+          <summary>State the CAP theorem. What does it mean for a design?</summary>
           <div className="answer">
             <p>
-              AP means accepting the order and reserving stock later, risking an oversell. CP means
-              rejecting orders until Inventory answers, losing sales. Retail normally picks AP for
-              intake — a rare oversell is cheaper than refusing every customer mid-flash-sale.
+              During a network partition you must choose consistency or availability; with no partition
+              you get both. Partitions are unavoidable, so the real choice is CP or AP — per operation,
+              and a business decision (retail usually picks AP for order intake).
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Why is CAP a per-operation decision rather than a per-system one?</summary>
+          <summary>What is the difference between horizontal and vertical scaling?</summary>
           <div className="answer">
             <p>
-              Different operations have different tolerance for staleness. The same system can be CP
-              for inventory reservation (correctness matters) and AP for order status display (a
-              slightly stale status is harmless).
+              Vertical means a bigger machine — it has a hard ceiling and is still a single point of
+              failure. Horizontal means more machines — almost no ceiling and one failure doesn&apos;t
+              take you down, but the service must be stateless (or share its state) so any instance can
+              serve any request.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What makes a service horizontally scalable in the first place?</summary>
+          <summary>What are the four fault-tolerance patterns, and what does each solve?</summary>
           <div className="answer">
             <p>
-              Statelessness — any instance can serve any request because nothing needed lives in one
-              process&apos;s memory. That&apos;s exactly why Day 16 used stateless JWTs rather than
-              server-side sessions.
+              <strong>Timeout</strong>: a hung dependency can&apos;t tie up your threads.{" "}
+              <strong>Retry with backoff</strong>: survive transient failures without stampeding a
+              recovering service. <strong>Circuit breaker</strong>: stop calling a dependency that stays
+              down and return a fallback. <strong>Bulkhead</strong>: one slow dependency can&apos;t use up
+              the resources the others need.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Compare vertical and horizontal scaling.</summary>
+          <summary>What is a circuit breaker?</summary>
           <div className="answer">
             <p>
-              Vertical means a bigger machine — simple, no code changes, but it has a hard ceiling
-              and it&apos;s still a single point of failure. Horizontal means more machines —
-              effectively unlimited and fault-tolerant, but it requires statelessness or shared
-              state. Databases scale up first; app servers scale out.
+              After N failures in a row it opens and fails calls instantly with a fallback instead of
+              waiting out timeouts, then lets one trial call through after a while — if that succeeds, it
+              closes again.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Walk through what happens when a browser resolves <code>orders.retailco.com</code>.</summary>
+          <summary>Where in the stack can you cache, and what are the main strategies?</summary>
           <div className="answer">
             <p>
-              Browser cache → OS cache → recursive resolver → root nameserver (&quot;ask .com&quot;)
-              → TLD nameserver (&quot;ask this authoritative NS&quot;) → authoritative nameserver
-              returns the IP and a TTL. Every layer caches the answer for that TTL.
+              Browser, CDN edge, application (Redis), and the database&apos;s own memory — each closer to
+              the data and fresher, but slower to reach. The common write strategies are cache-aside (read
+              the DB on a miss and fill the cache), write-through (write both together), and write-behind
+              (write the cache, flush to the DB later).
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Why lower a DNS TTL before a migration rather than during it?</summary>
+          <summary>How do you choose a database?</summary>
           <div className="answer">
             <p>
-              Resolvers already hold the answer for the <em>old</em> TTL, so a change made at cutover
-              time doesn&apos;t reach them for that long. Lowering it a day ahead means caches expire
-              quickly by the time you actually switch.
+              Match the data: relational (PostgreSQL) for consistency, joins, and transactions; document
+              (MongoDB) for flexible nested data; key-value (Redis) for cache and sessions; time-series for
+              metrics; search (Elasticsearch) for full-text. The safe default is PostgreSQL plus Redis.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What belongs on a CDN, and what never does?</summary>
+          <summary>What is DNS?</summary>
           <div className="answer">
             <p>
-              Static, identical-for-everyone assets — JS/CSS bundles, fonts, product images. Never
-              order status, inventory counts, or anything authenticated: those are per-user and must
-              be correct rather than fast.
+              The system that turns a domain name into an IP address. The browser asks a DNS server for
+              the domain&apos;s IP, gets it back, then sends its request to that IP.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Why does a content hash in a filename make cache invalidation a non-problem?</summary>
+          <summary>What is a CDN, and what belongs on one?</summary>
           <div className="answer">
             <p>
-              A new build produces a new filename, so there&apos;s nothing stale to invalidate — you
-              can safely set a one-year TTL on <code>app.9f2c1a.js</code> because that exact file
-              will never change.
+              A network of servers around the world that caches files close to users. Put static files on
+              it: JS/CSS bundles, fonts, images. Never put personal or constantly changing data on it,
+              such as order status, inventory counts, or authenticated responses.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>When would you use least-connections instead of round-robin?</summary>
+          <summary>What is a load balancer, and how does it choose an instance?</summary>
           <div className="answer">
             <p>
-              When request durations vary a lot. Round-robin assumes requests cost roughly the same;
-              if some take ten seconds, it will keep handing work to an instance that&apos;s already
-              saturated.
-            </p>
-          </div>
-        </details>
-      </section>
-
-      <section id="tier-2">
-        <h2>2. Advanced concepts</h2>
-        <p className="tier-note">
-          Less commonly asked, and some go beyond what today&apos;s lecture covered — mostly
-          &quot;gotcha&quot; interview trivia and things that sharpen how you code without being
-          asked often.
-        </p>
-
-        <details>
-          <summary>What makes a health check useless, and what does a good one test?</summary>
-          <div className="answer">
-            <p>
-              One that returns <code>200</code> without touching anything the service depends on —
-              it stays green while every real request fails. A good one verifies the database
-              connection and any critical dependency, so a sick instance is actually pulled from
-              rotation.
+              It spreads incoming requests across several instances of a service. Round robin picks the
+              next instance in turn, least connections picks the one with the fewest open connections, and
+              sticky routing sends the same client to the same instance.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What is connection draining, and what does it make possible?</summary>
+          <summary>What is a health check?</summary>
           <div className="answer">
             <p>
-              The load balancer stops sending new requests to an instance while letting in-flight
-              ones finish before it&apos;s removed. That&apos;s the mechanism behind zero-downtime
-              deploys — and the gap Day 15&apos;s single EC2 box couldn&apos;t close.
+              A request the load balancer sends to each instance to see if it can serve traffic; a failing
+              instance is pulled out before users notice. It must test what the service really needs, such
+              as the database — a check that always returns <code>200</code> is useless.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Why is <code>CNAME</code> illegal at the apex domain, and what do you use instead?</summary>
+          <summary>What is the difference between an API Gateway and a load balancer?</summary>
           <div className="answer">
             <p>
-              A <code>CNAME</code> must be the only record for its name, but the apex also needs{" "}
-              <code>NS</code> and <code>SOA</code> records. Providers offer a synthetic{" "}
-              <code>ALIAS</code>/<code>ANAME</code> record that resolves like a CNAME but returns an
-              address.
+              The API Gateway is the front door: it routes each request to the right service and handles
+              auth and rate limiting. The load balancer spreads requests across the many instances of one
+              service.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What does PACELC add to CAP?</summary>
+          <summary>When would you choose React, Angular, or Next.js?</summary>
           <div className="answer">
             <p>
-              It covers the normal case CAP ignores: if there&apos;s a Partition, choose A or C;{" "}
-              <em>Else</em>, choose Latency or Consistency. Most systems trade consistency for
-              latency even when nothing is broken, which CAP alone never describes.
+              React is a flexible, unopinionated library — fast to start, but conventions drift as the
+              team grows. Angular is an opinionated framework — slower to start, but consistent for large,
+              long-lived teams. Next.js adds server-side rendering to React for SEO and a fast first load.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>Why does scaling the app tier often make the database problem worse?</summary>
+          <summary>What problem does server-side rendering solve?</summary>
           <div className="answer">
             <p>
-              Each new instance opens its own connection pool, so the database sees N × pool_size
-              connections and can exhaust its limit. More app capacity just delivers load to the
-              bottleneck faster — which is why a shared pooler like PgBouncer exists.
+              A plain React app sends an empty HTML shell and builds the page in the browser, so the first
+              paint is slow and crawlers may see nothing. With server-side rendering the server sends
+              finished HTML, then the JavaScript hydrates it to make it interactive.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What&apos;s the difference between an L4 and an L7 load balancer?</summary>
+          <summary>Where do the security boundaries go in an AWS architecture?</summary>
           <div className="answer">
             <p>
-              L4 balances TCP connections without reading them — fast, protocol-agnostic. L7 reads
-              the HTTP request, so it can route by path or host, terminate TLS, and retry idempotent
-              requests. AWS&apos;s NLB and ALB are the respective examples.
+              Services and databases sit in a private subnet with no public address; only the load balancer
+              is public. A WAF at the edge blocks bad traffic, HTTPS ends at the front door, and passwords
+              come from a secrets manager instead of being hard-coded.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What is observability?</summary>
+          <div className="answer">
+            <p>
+              Being able to see what your system is doing through three signals: logs (what happened),
+              metrics (how much, how fast), and traces (which service made a request slow).
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What are database sharding and PACELC?</summary>
+          <div className="answer">
+            <p>
+              <strong>Sharding</strong> splits one large table across several databases by a key — only at
+              extreme scale, because it adds heavy operational cost. <strong>PACELC</strong> extends CAP:
+              even with no partition, you still trade latency against consistency.
             </p>
           </div>
         </details>

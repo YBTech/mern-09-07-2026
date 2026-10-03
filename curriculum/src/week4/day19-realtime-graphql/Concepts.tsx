@@ -18,6 +18,25 @@ export default function Concepts() {
         </p>
 
         <details>
+          <summary>What is a BFF, and what problem does it solve?</summary>
+          <div className="answer">
+            <p>
+              A BFF (Backend for Frontend) is a backend layer that sits between the clients and the microservices. The
+              client makes one request to it; it makes the many requests to the services and returns exactly the shape
+              that screen needs.
+            </p>
+            <p>
+              The problem: different clients need different views of the same data. A web dashboard wants everything, a
+              phone list wants three fields, an admin tool wants audit fields — but the microservices expose generic,
+              resource-shaped endpoints, so each client over-fetches (fields it never shows) and under-fetches (several
+              calls to stitch one page together). Doing that stitching in the browser means many round trips across the
+              internet, and every client re-implements it. A BFF moves it into the datacenter next to the services, where
+              each call takes about a millisecond and they can run in parallel. The services themselves don&apos;t change.
+            </p>
+          </div>
+        </details>
+
+        <details>
           <summary>Why is it slow for a browser to call several microservices to build one page?</summary>
           <div className="answer">
             <p>
@@ -25,17 +44,6 @@ export default function Concepts() {
               before you can ask for their shipments. On a laptop on Wi-Fi (~20 ms a trip) nobody notices; on a phone on
               cellular (100–300 ms a trip) the waves stack into a visible delay. And every client re-implements the same
               calls and stitching.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What does an aggregation layer do, and why is it faster?</summary>
-          <div className="answer">
-            <p>
-              The browser makes one request to it, and it makes the many requests to the services. It runs next to them
-              in the datacenter, so each of its calls takes about a millisecond instead of a trip across the internet,
-              and it runs them in parallel. The services themselves don&apos;t change.
             </p>
           </div>
         </details>
@@ -71,6 +79,18 @@ export default function Concepts() {
               without that problem — and they paid for the complexity: N+1 resolvers, query-cost limits, per-field
               authorization, no HTTP caching. Many went back to REST and kept GraphQL only where many clients need different
               views of the same data.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What is a GraphQL schema?</summary>
+          <div className="answer">
+            <p>
+              The contract of the API: it defines the types, their fields, how they connect (an <code>Order</code> has a{" "}
+              <code>shipment</code>), and the entry points, <code>Query</code> and <code>Mutation</code>. It&apos;s strongly
+              typed, so every request is validated against it before anything runs, and clients can read it to get
+              documentation and autocomplete. Resolvers are the code that fills in each field.
             </p>
           </div>
         </details>
@@ -154,12 +174,40 @@ export default function Concepts() {
         </details>
 
         <details>
+          <summary>What is a WebSocket?</summary>
+          <div className="answer">
+            <p>
+              A persistent, two-way connection between the browser and the server. It starts as an HTTP request that
+              upgrades the connection; after that, either side can send a message at any moment without a new request.
+              It&apos;s what chat, multiplayer games, and collaborative editing are built on.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What are Server-Sent Events (SSE)?</summary>
+          <div className="answer">
+            <p>
+              A one-way stream from the server to the browser. The browser opens a normal HTTP request with{" "}
+              <code>EventSource</code>, the server keeps the response open and writes text events to it whenever it has
+              something to send, and the browser never sends anything back over that connection.
+            </p>
+          </div>
+        </details>
+
+        <details>
           <summary>When would you choose SSE over a WebSocket?</summary>
           <div className="answer">
             <p>
-              When only the server needs to send: streaming an AI answer, live scores, price tickers, notifications. SSE
-              is plain HTTP, very little code, and the browser reconnects by itself. Choose WebSocket when the browser
-              also sends often, like chat or a multiplayer game.
+              When only the server needs to send: streaming an AI answer, live scores, price tickers, notifications.
+              SSE is plain HTTP, so it works with existing proxies, load balancers, and cookies; the browser reconnects
+              by itself and sends <code>Last-Event-ID</code> so the server can resend what it missed; and it needs very
+              little code. The limits are that it&apos;s text-only and one-way.
+            </p>
+            <p>
+              Choose WebSocket when the browser also sends often, like chat or a multiplayer game, or when you need
+              binary data. In return you handle reconnects and heartbeats yourself, and scaling is harder — each client
+              holds a connection to one specific server, so you need a pub/sub layer between servers.
             </p>
           </div>
         </details>
@@ -185,98 +233,67 @@ export default function Concepts() {
         </p>
 
         <details>
-          <summary>Why does GraphQL create an N+1 problem, and how does DataLoader fix it?</summary>
+          <summary>How do REST and GraphQL compare?</summary>
           <div className="answer">
+            <table className="ref-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>REST</th>
+                  <th>GraphQL</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Endpoints</td>
+                  <td>Many — one URL per resource, with the HTTP method as the action</td>
+                  <td>One URL; the query says what you want</td>
+                </tr>
+                <tr>
+                  <td>Response shape</td>
+                  <td>Fixed by the server</td>
+                  <td>Chosen by the client, field by field</td>
+                </tr>
+                <tr>
+                  <td>Over- / under-fetching</td>
+                  <td>Common — extra fields, or several calls per screen</td>
+                  <td>Avoided — one request, exactly the fields asked for</td>
+                </tr>
+                <tr>
+                  <td>Contract and docs</td>
+                  <td>Optional (OpenAPI), kept separately</td>
+                  <td>Built in — a typed schema every request is checked against</td>
+                </tr>
+                <tr>
+                  <td>Versioning</td>
+                  <td>Usually <code>/v1</code>, <code>/v2</code></td>
+                  <td>Add fields, deprecate old ones, no new version</td>
+                </tr>
+                <tr>
+                  <td>Caching</td>
+                  <td>Free — GETs are cached by browsers, proxies, and CDNs</td>
+                  <td>Hard — every request is a POST to one URL, so caching moves to the client</td>
+                </tr>
+                <tr>
+                  <td>Errors</td>
+                  <td>HTTP status codes (404, 500)</td>
+                  <td><code>200</code> with an <code>errors</code> array, so partial success is possible</td>
+                </tr>
+                <tr>
+                  <td>Authorization</td>
+                  <td>Per endpoint</td>
+                  <td>Per field — one query can reach public and private data</td>
+                </tr>
+                <tr>
+                  <td>Cost</td>
+                  <td>Simple, and every tool understands it</td>
+                  <td>N+1 resolvers, query-cost limits, a steeper learning curve</td>
+                </tr>
+              </tbody>
+            </table>
             <p>
-              Resolvers run per object: <code>OrderItem.product</code> runs once per line item, so ten items make ten
-              calls. DataLoader collects every key requested in the same tick and fetches them in one batch, like{" "}
-              <code>GET /products?ids=…</code> or <code>WHERE id IN (…)</code>.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why must a DataLoader be created per request rather than once per process?</summary>
-          <div className="answer">
-            <p>
-              It caches what it loads. Shared across requests, one user&apos;s data could be served to another user
-              (and stale data would never refresh). One loader per request keeps the cache to a single request.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>How do you stop a client from sending a deliberately expensive query?</summary>
-          <div className="answer">
-            <p>
-              A depth limit (reject deep nesting before anything runs), a cost limit (give fields a cost and cap the
-              total, which also catches the same field repeated under many aliases), capped pagination, timeouts, rate
-              limiting — or persisted queries, so the server only accepts queries registered ahead of time.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What does GraphQL cost you in caching, compared to REST?</summary>
-          <div className="answer">
-            <p>
-              REST GETs are cached for free by browsers, proxies, and CDNs. GraphQL sends every request as a POST to one
-              URL, so none of that applies. Caching moves to the client (e.g. Apollo Client&apos;s cache) or to persisted
-              queries sent as GETs.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>How is authorization different in GraphQL?</summary>
-          <div className="answer">
-            <p>
-              It&apos;s checked per field, not per endpoint. A single query can reach a public product name and a private
-              order total, so each resolver (or a schema-level rule) has to check whether this user may see this field.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>How do you version a GraphQL API?</summary>
-          <div className="answer">
-            <p>
-              Usually you don&apos;t add <code>/v2</code>. You add new fields beside the old ones, mark the old ones{" "}
-              <code>@deprecated</code>, and remove them once no client asks for them — easy to check, because clients
-              name every field they use.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What is the WebSocket handshake, technically?</summary>
-          <div className="answer">
-            <p>
-              An HTTP GET with <code>Upgrade: websocket</code> and a <code>Sec-WebSocket-Key</code> header. The server
-              answers <code>101 Switching Protocols</code> with a matching <code>Sec-WebSocket-Accept</code>, and from then
-              on the same TCP connection speaks the WebSocket protocol instead of HTTP.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why is a WebSocket server harder to scale than a REST server?</summary>
-          <div className="answer">
-            <p>
-              Each client holds a long-lived connection to one specific server. An update that happens on server A must
-              reach clients connected to server B, so you need a pub/sub layer (such as Redis) between servers, and
-              often sticky sessions at the load balancer.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>How does SSE handle a dropped connection?</summary>
-          <div className="answer">
-            <p>
-              The browser&apos;s <code>EventSource</code> reconnects automatically and sends a{" "}
-              <code>Last-Event-ID</code> header with the id of the last event it received, so the server can send what it
-              missed.
+              Rule of thumb: REST for service-to-service calls, simple CRUD, and cache-heavy public reads; GraphQL when
+              many screens or clients need different shapes of connected data.
             </p>
           </div>
         </details>
