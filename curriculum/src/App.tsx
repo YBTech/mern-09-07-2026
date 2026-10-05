@@ -3,6 +3,7 @@ import Home from "./Home";
 
 import IdeShortcuts from "./general/IdeShortcuts";
 import CommonSense from "./general/CommonSense";
+import EvaluationQuestions from "./evaluation-question-list/EvaluationQuestions";
 
 import D1Lecture from "./week1/day1-html-css-dom/lecture/Lecture";
 import D1Notes from "./week1/day1-html-css-dom/Notes";
@@ -446,6 +447,7 @@ function App() {
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
       <Route path="/general/common-sense" element={<CommonSense />} />
+      <Route path="/evaluation-questions" element={<EvaluationQuestions />} />
     </Routes>
   );
 }

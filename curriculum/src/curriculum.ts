@@ -249,6 +249,13 @@ export const GENERAL_NOTES: GeneralNote[] = [
   },
 ];
 
+/** The final-evaluation question bank — one page, linked from its own section on Home. */
+export const EVALUATION_PAGE = {
+  href: "/evaluation-questions",
+  title: "Final Evaluation Questions",
+  blurb: "Every conceptual question the final evaluation can ask, grouped by subject. No hands-on coding.",
+};
+
 export function dayNumber(day: Day): number {
   return Number(day.slug.match(/^day(\d+)/)?.[1] ?? NaN);
 }
