@@ -1,4 +1,4 @@
-import NoteNav from "../components/NoteNav";
+import DayNav from "../components/DayNav";
 
 // [action, mac binding, windows/linux binding] — every shortcut on this page gives both
 // platforms, per the curriculum-notes-style rule.
@@ -112,7 +112,7 @@ export default function IdeShortcuts() {
   return (
     <div className="page notes-page">
       <title>Common Developer IDE Shortcuts</title>
-      <NoteNav title="IDE Shortcuts" />
+      <DayNav title="IDE Shortcuts" />
       <header className="lecture-header">
         <p className="eyebrow">General Notes</p>
         <h1>Common Developer IDE Shortcuts</h1>

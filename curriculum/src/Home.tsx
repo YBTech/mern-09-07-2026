@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import LangToggle from "./components/LangToggle";
+import DayNav from "./components/DayNav";
 import {
   GENERAL_NOTES,
   PAGE_LABELS,
@@ -100,7 +100,7 @@ export default function Home() {
   return (
     <div className="page home-page">
       <title>MERN + AI Curriculum</title>
-      <p className="home-nav"><LangToggle /></p>
+      <DayNav />
       <h1>MERN + AI Curriculum</h1>
       {WEEKS.map((week) => (
         <section key={week.slug}>

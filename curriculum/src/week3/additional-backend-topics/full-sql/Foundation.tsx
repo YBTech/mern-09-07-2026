@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import TopicNav from "../../../components/TopicNav";
+import DayNav from "../../../components/DayNav";
 import CodeBlock from "../../../components/CodeBlock";
 
 export default function Foundation() {
   return (
     <div className="page notes-page">
       <title>Full SQL — Foundation</title>
-      <TopicNav day="additional-backend-topics" topic="full-sql" current="foundation" />
+      <DayNav day="additional-backend-topics" topic="full-sql" part="foundation" />
 
       <header className="lecture-header">
         <p className="eyebrow">Full SQL · Foundation</p>

@@ -7,6 +7,7 @@ import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
 import sql from "highlight.js/lib/languages/sql";
 import graphql from "highlight.js/lib/languages/graphql";
+import gherkin from "highlight.js/lib/languages/gherkin";
 import plaintext from "highlight.js/lib/languages/plaintext";
 
 // Only the languages this curriculum actually uses, so the bundle doesn't pull in all
@@ -20,6 +21,8 @@ hljs.registerLanguage("bash", bash);
 hljs.registerLanguage("sql", sql);
 // GraphQL schemas (SDL) and queries
 hljs.registerLanguage("graphql", graphql);
+// BDD .feature files (Feature / Scenario / Given / When / Then)
+hljs.registerLanguage("gherkin", gherkin);
 // for "Expected" blocks that show console output rather than source
 hljs.registerLanguage("plaintext", plaintext);
 
@@ -68,25 +71,39 @@ type Props = {
   good?: number[];
   /** 1-indexed lines to flag with a red ✗ (the "don't do this" side). */
   bad?: number[];
+  /** Show a line-number gutter — for when the prose refers to lines by number. */
+  lineNumbers?: boolean;
 };
 
-export default function CodeBlock({ code, language = "tsx", good, bad }: Props) {
+export default function CodeBlock({ code, language = "tsx", good, bad, lineNumbers }: Props) {
   const html = useMemo(() => {
     const highlighted = hljs.highlight(code.trim(), { language }).value;
-    if (!good?.length && !bad?.length) return highlighted;
+    if (!good?.length && !bad?.length && !lineNumbers) return highlighted;
 
-    return splitHighlightedLines(highlighted)
+    // A marked (or numbered) line is a display:block span, which already ends its own
+    // line — so it gets no trailing "\n". With one, <pre> would render an empty line
+    // after it.
+    const lines = splitHighlightedLines(highlighted);
+    return lines
       .map((line, idx) => {
         const n = idx + 1;
-        if (good?.includes(n)) return `<span class="line-good">${line}</span>`;
-        if (bad?.includes(n)) return `<span class="line-bad">${line}</span>`;
-        return line;
+        const isLast = idx === lines.length - 1;
+        const mark = good?.includes(n) ? "line-good" : bad?.includes(n) ? "line-bad" : "";
+        if (lineNumbers) {
+          return `<span class="line ${mark}"><span class="ln">${n}</span>${line}</span>`;
+        }
+        if (mark) return `<span class="${mark}">${line}</span>`;
+        return isLast ? line : line + "\n";
       })
-      .join("\n");
-  }, [code, language, good, bad]);
+      .join("");
+  }, [code, language, good, bad, lineNumbers]);
 
   return (
-    <pre>
+    <pre
+      className={
+        lineNumbers ? (good?.length || bad?.length ? "line-numbers has-marks" : "line-numbers") : undefined
+      }
+    >
       <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
     </pre>
   );

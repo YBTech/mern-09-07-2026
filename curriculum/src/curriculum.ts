@@ -221,6 +221,14 @@ export const WEEKS: Week[] = [
       { slug: "day20-system-design", title: "Day 20 - System Design", pages: NO_PRACTICE_LAB },
     ],
   },
+  {
+    slug: "week5",
+    number: 5,
+    title: "Backend Advanced 2",
+    days: [
+      { slug: "day21-testing-code-quality", title: "Day 21 - Testing & Code Quality", pages: NO_PRACTICE_LAB },
+    ],
+  },
 ];
 
 /** Standalone notes that belong to no week — the cross-cutting "how to work" material. */

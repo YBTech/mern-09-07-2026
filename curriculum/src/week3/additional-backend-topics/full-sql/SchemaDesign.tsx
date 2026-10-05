@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import TopicNav from "../../../components/TopicNav";
+import DayNav from "../../../components/DayNav";
 import CodeBlock from "../../../components/CodeBlock";
 
 export default function SchemaDesign() {
   return (
     <div className="page notes-page">
       <title>Full SQL — Schema Design &amp; Evolution</title>
-      <TopicNav day="additional-backend-topics" topic="full-sql" current="schema-design" />
+      <DayNav day="additional-backend-topics" topic="full-sql" part="schema-design" />
 
       <header className="lecture-header">
         <p className="eyebrow">Full SQL · Advanced</p>

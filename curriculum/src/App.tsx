@@ -122,6 +122,9 @@ import D19Concepts from "./week4/day19-realtime-graphql/Concepts";
 import D20Lecture from "./week4/day20-system-design/lecture/Lecture";
 import D20Notes from "./week4/day20-system-design/Notes";
 import D20Concepts from "./week4/day20-system-design/Concepts";
+import D21Lecture from "./week5/day21-testing-code-quality/lecture/Lecture";
+import D21Notes from "./week5/day21-testing-code-quality/Notes";
+import D21Concepts from "./week5/day21-testing-code-quality/Concepts";
 
 function App() {
   return (
@@ -436,6 +439,9 @@ function App() {
       <Route path="/week4/day20-system-design/lecture" element={<D20Lecture />} />
       <Route path="/week4/day20-system-design/notes" element={<D20Notes />} />
       <Route path="/week4/day20-system-design/concepts" element={<D20Concepts />} />
+      <Route path="/week5/day21-testing-code-quality/lecture" element={<D21Lecture />} />
+      <Route path="/week5/day21-testing-code-quality/notes" element={<D21Notes />} />
+      <Route path="/week5/day21-testing-code-quality/concepts" element={<D21Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
