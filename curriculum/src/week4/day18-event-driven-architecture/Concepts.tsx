@@ -18,191 +18,133 @@ export default function Concepts() {
         </p>
 
         <details>
-          <summary>What does a synchronous call between services cost you?</summary>
+          <summary>What are synchronous and asynchronous communication between services?</summary>
           <div className="answer">
             <p>
-              The caller waits for every call, so latencies add up and the slowest service sets the
-              response time. A down or slow dependency fails or hangs the caller too, uptime multiplies
-              down across the chain (five services at 99.9% ≈ 99.5%), and the caller has to know every
-              service it calls.
+              <strong>Synchronous:</strong> the caller sends a request and waits for the response before
+              it continues, like an HTTP call. <strong>Asynchronous:</strong> the caller hands off a
+              message and moves on without waiting — the receiver handles it later, on its own time.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>When do you choose async messaging over a synchronous HTTP call?</summary>
+          <summary>What are the trade-offs between synchronous and asynchronous communication?</summary>
           <div className="answer">
             <p>
-              When you don&apos;t need the result to build your response — it should happen{" "}
-              <em>because</em> this happened (an email, points, analytics). If the answer is part of
-              what you return to the caller, like a price or a card authorization, stay synchronous.
+              Synchronous gives you a consistent, immediate answer, but you pay for the network delay on
+              every call, and a slow or down dependency slows or fails the caller too. Asynchronous
+              returns fast and keeps services independent, but the system is only{" "}
+              <em>eventually</em> consistent — the order is saved now, the email arrives a few seconds
+              later. Use sync when the answer is part of your response, async when it isn&apos;t.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What is eventual consistency?</summary>
-          <div className="answer">
-            <p>
-              Every part of the system becomes correct, just not at the same instant: the order is
-              saved now, the email arrives two seconds later, the points five seconds later. It&apos;s
-              the price of not waiting — and why UIs show states like &quot;processing&quot;.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why is an event named <code>OrderPlaced</code> rather than <code>SendEmail</code>?</summary>
-          <div className="answer">
-            <p>
-              An event states a fact that already happened; a command names a receiver and tells it
-              what to do. Past-tense naming keeps the publisher ignorant of its consumers — name it like
-              a command and you&apos;ve re-coupled the two sides.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What is a message queue, and what does an ack do?</summary>
+          <summary>What is a message queue, and what problem does it solve?</summary>
           <div className="answer">
             <p>
               A named line of messages held by a broker: producers put messages in, consumers take them
-              out. The consumer acks when it&apos;s done, and only then is the message deleted — so if
-              the consumer is down or crashes mid-way, the message waits instead of being lost.
+              out. It decouples the two sides — the producer doesn&apos;t wait for the consumer, and if
+              the consumer is slow or down, messages wait in the queue instead of being lost. The
+              consumer acks when it&apos;s done, and only then is the message deleted.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What happens when two consumers read the same queue?</summary>
+          <summary>What is pub/sub, and how do a queue and an exchange give you that pattern?</summary>
           <div className="answer">
             <p>
-              They compete: each message goes to exactly one of them. That&apos;s how you scale a slow
-              consumer — and exactly why a single queue can&apos;t deliver the same message to several
-              different services.
+              One published message is delivered to <em>every</em> interested service. A queue alone
+              can&apos;t do that — competing consumers each get a different message. Put an exchange in
+              front: the publisher sends to the exchange, each service has its own queue bound to it,
+              and the exchange copies every message into every queue. Same pattern, different names:
+              producer/consumer, publisher/subscriber.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>How does a RabbitMQ exchange give you fan-out?</summary>
+          <summary>What are RabbitMQ and an exchange?</summary>
           <div className="answer">
             <p>
-              The publisher sends to an exchange, not a queue. Each subscribing service declares its
-              own queue and binds it to the exchange, and a <code>fanout</code> exchange copies every
-              message into every bound queue. The exchange copies <em>between</em> services; each queue
-              still splits messages <em>within</em> a service.
+              RabbitMQ is a message broker. Publishers send messages to an <strong>exchange</strong>,
+              which doesn&apos;t store anything — it routes each message into the queues bound to it, and
+              consumers read from those queues. A <code>fanout</code> exchange copies a message into
+              every bound queue.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What does fan-out buy you when a new subscriber is added?</summary>
+          <summary>What are SQS and SNS?</summary>
           <div className="answer">
             <p>
-              Nothing changes in the publisher. A Loyalty service binds a new queue to the existing
-              exchange (or, in Kafka, reads the topic as a new consumer group) — Orders is never edited
-              or redeployed, and never learns it exists.
+              Both are AWS-managed services. <strong>SQS</strong> is a queue: messages wait until a
+              consumer takes and deletes them. <strong>SNS</strong> is a pub/sub topic: one message
+              published to it is pushed to every subscriber. They map onto RabbitMQ as SQS = queue, SNS =
+              fanout exchange.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>How do SQS and SNS map onto RabbitMQ?</summary>
+          <summary>Why put SNS in front of SQS, and what is the fan-out pattern?</summary>
           <div className="answer">
             <p>
-              SQS is a queue; SNS is a fanout exchange. &quot;SNS fan-out to SQS&quot; — one topic,
-              one SQS queue subscribed per service — is the same pattern as an exchange with one queue
-              per subscriber, except AWS runs the broker.
+              <strong>Fan-out</strong> means one message goes out to many receivers. An SQS queue alone
+              gives each message to just one consumer, so you publish to an SNS topic and subscribe one
+              SQS queue per service: every service gets its own copy, and its queue buffers and retries
+              if the service is slow or down.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>How is Kafka different from a message queue?</summary>
+          <summary>What is Kafka?</summary>
           <div className="answer">
             <p>
-              A queue deletes a message once it&apos;s acked; Kafka is a log that keeps messages for a
-              retention period whether or not anyone read them. Each consumer group just tracks its
-              position (an offset), so groups read independently, new groups can read history, and you
-              can replay by moving the offset back.
+              A distributed event log. Producers append messages to it, and unlike a queue, Kafka
+              keeps them for a retention period whether or not anyone has read them, so consumers can
+              read independently, read history, and replay. That makes it a good fit for high-throughput
+              event streams.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What is an offset, and what happens when a consumer restarts?</summary>
+          <summary>What is a Kafka topic, and what is a partition?</summary>
           <div className="answer">
             <p>
-              A message&apos;s position in a partition. A consumer group commits the next offset it
-              will read, per partition; after a crash or restart it resumes from there, so nothing is
-              lost or skipped.
+              A <strong>topic</strong> is a named stream of messages, like <code>order.placed</code>. It
+              is split into <strong>partitions</strong>, each an ordered log that can live on a
+              different broker, so a topic scales across machines. Order is guaranteed within a
+              partition, not across the whole topic; messages with the same key land in the same
+              partition.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What does Kafka guarantee about ordering?</summary>
+          <summary>What is a Kafka offset?</summary>
           <div className="answer">
             <p>
-              Order is guaranteed <em>within a partition</em>, never across a topic. That&apos;s why
-              the message key matters: keying by <code>orderId</code> puts all of one order&apos;s
-              events in one partition, so they stay in sequence.
+              A message&apos;s position within a partition. A consumer tracks the offset it has read up
+              to, so after a restart it resumes from there, and it can replay by moving the offset back.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What&apos;s the difference between two consumers in the same group and two different groups?</summary>
+          <summary>What are a consumer and a consumer group?</summary>
           <div className="answer">
             <p>
-              Same group: they split the partitions and each message is handled once — that&apos;s how
-              you scale one service. Different groups: each gets every message — that&apos;s fan-out
-              to independent services.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why does adding a fourth consumer to a group reading a 3-partition topic not help?</summary>
-          <div className="answer">
-            <p>
-              Each partition is owned by exactly one consumer in a group, so three partitions means at
-              most three busy consumers — the fourth sits idle. The partition count caps a group&apos;s
-              parallelism.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>When would you pick a queue, and when Kafka?</summary>
-          <div className="answer">
-            <p>
-              A queue for jobs that are done once and forgotten — emails, image resizing, spreading work
-              across workers. Kafka when you need history, replay, new consumers reading the past, or
-              very high throughput — analytics, audit trails, event streams.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why does at-least-once delivery mean duplicates are normal rather than exceptional?</summary>
-          <div className="answer">
-            <p>
-              A consumer processes the message, then acks (or commits its offset). Crash in between and
-              the message is redelivered on restart — a routine event, not a rare bug. Acking first
-              just trades duplicates for lost messages.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What does it mean for a consumer to be idempotent, and how do you make one?</summary>
-          <div className="answer">
-            <p>
-              Processing the same event twice leaves the same end state as processing it once. The usual
-              technique is a <code>processed_events</code> table keyed by event ID — insert first with{" "}
-              <code>ON CONFLICT DO NOTHING</code>, and bail out if the row already existed.
+              A <strong>consumer</strong> reads messages from a topic. A <strong>consumer group</strong>{" "}
+              is a set of consumers sharing the work: each partition is read by one consumer in the
+              group, so adding consumers scales a slow service. Different groups each receive every
+              message, which is how several services subscribe to the same topic.
             </p>
           </div>
         </details>
@@ -217,13 +159,24 @@ export default function Concepts() {
         </p>
 
         <details>
-          <summary>What is the dual-write problem, and what is the outbox pattern?</summary>
+          <summary>Why are duplicate messages normal in a message queue, and how do you deal with them?</summary>
           <div className="answer">
             <p>
-              Saving to the database and publishing the event are two separate writes — a crash between
-              them leaves an order nobody is told about. The outbox pattern writes the event into an{" "}
-              <code>outbox</code> table in the <em>same</em> transaction as the order, and a separate
-              relay publishes from it.
+              Delivery is at-least-once: a consumer processes the message, then acks. If it crashes in
+              between, the message is redelivered on restart — a routine event, not a rare bug. Acking
+              first would just trade duplicates for lost messages, so instead you make the consumer
+              idempotent.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What does it mean for a consumer to be idempotent?</summary>
+          <div className="answer">
+            <p>
+              Processing the same message twice leaves the same end state as processing it once. The
+              usual technique is a <code>processed_events</code> table keyed by event ID — insert first
+              with <code>ON CONFLICT DO NOTHING</code>, and skip the message if the row already existed.
             </p>
           </div>
         </details>
@@ -233,89 +186,20 @@ export default function Concepts() {
           <div className="answer">
             <p>
               A poison message fails every time, and requeued forever it blocks everything behind it.
-              After it fails (or after N retries) it&apos;s moved to a DLQ so the consumer can keep
-              going, and a human can inspect it later. RabbitMQ and SQS support this natively; with
-              Kafka you publish to your own DLQ topic.
+              After N failed retries it&apos;s moved to a dead-letter queue so the consumer can keep
+              going and a human can inspect it later.
             </p>
           </div>
         </details>
 
         <details>
-          <summary>What is consumer lag, and why is it the metric to alert on?</summary>
-          <div className="answer">
-            <p>
-              The gap between the newest offset in a partition and the group&apos;s committed offset —
-              how far behind reality the service is. It climbs long before anything visibly breaks, and
-              a stuck consumer can sit at 0% CPU while it does.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What is a saga, and why does event-driven architecture need one?</summary>
+          <summary>What is the saga pattern, and why does event-driven architecture need one?</summary>
           <div className="answer">
             <p>
               A sequence of local transactions across services, each with a compensating action to undo
               it. With no transaction spanning services, a failed payment is rolled back by events —{" "}
               <code>PaymentFailed</code> makes Inventory release the stock and Orders mark the order
               failed.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What&apos;s the difference between a <code>direct</code>, <code>topic</code>, and <code>fanout</code> exchange?</summary>
-          <div className="answer">
-            <p>
-              <code>fanout</code> copies to every bound queue; <code>direct</code> only to queues bound
-              with the exact routing key; <code>topic</code> to queues whose pattern matches, like{" "}
-              <code>order.*</code>.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>What is an SQS visibility timeout?</summary>
-          <div className="answer">
-            <p>
-              SQS&apos;s version of an unacked message: once a consumer receives it, the message is
-              hidden from others for the timeout. If the consumer doesn&apos;t call{" "}
-              <code>DeleteMessage</code> in time, it reappears and is delivered again — at-least-once,
-              same as RabbitMQ.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>RabbitMQ pushes, Kafka consumers pull — why does that matter?</summary>
-          <div className="answer">
-            <p>
-              A push broker tracks every message&apos;s state per consumer; a pull model only stores
-              one offset per group, which is much of why Kafka scales to huge volumes and can replay. It
-              also means a Kafka consumer sets its own pace — backlog shows up as lag, not as a broker
-              trying to deliver faster than you can handle.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Kafka advertises exactly-once semantics — why can&apos;t you rely on it here?</summary>
-          <div className="answer">
-            <p>
-              It applies to Kafka-to-Kafka transactions only. The moment your handler writes to a
-              database or sends an email, that side effect is outside the transaction, so you&apos;re
-              back to at-least-once and must be idempotent anyway.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>Why can&apos;t you freely increase a topic&apos;s partition count later?</summary>
-          <div className="answer">
-            <p>
-              The partition is a hash of the key modulo the partition count, so adding partitions
-              re-maps keys — new events for an order can land in a different partition than its earlier
-              ones, which breaks per-key ordering across the change.
             </p>
           </div>
         </details>

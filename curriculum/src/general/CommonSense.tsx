@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import NoteNav from "../components/NoteNav";
+import DayNav from "../components/DayNav";
 import CodeBlock from "../components/CodeBlock";
 
 // Two short snippets side by side, for comparisons where the whole point is the shape of the
@@ -31,7 +31,7 @@ export default function CommonSense() {
   return (
     <div className="page notes-page">
       <title>Developer Common Sense</title>
-      <NoteNav title="Developer Common Sense" />
+      <DayNav title="Developer Common Sense" />
       <header className="lecture-header">
         <p className="eyebrow">General Notes</p>
         <h1>Developer Common Sense</h1>

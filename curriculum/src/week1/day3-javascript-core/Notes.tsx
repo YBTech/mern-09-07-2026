@@ -1,5 +1,6 @@
 import DayNav from "../../components/DayNav";
 import CodeBlock from "../../components/CodeBlock";
+import { En, Zh } from "../../components/Lang";
 
 export default function Notes() {
   return (
@@ -8,34 +9,36 @@ export default function Notes() {
       <DayNav day="day3-javascript-core" current="notes" />
 
       <header className="lecture-header">
-        <p className="eyebrow">Week 1 · Day 3 · Notes</p>
+        <p className="eyebrow"><En>Week 1 · Day 3 · Notes</En><Zh>第一周 · 第三天 · 笔记</Zh></p>
         <h1>JavaScript Core</h1>
-        <p className="subtitle">Executive summary → full walkthrough</p>
+        <p className="subtitle"><En>Executive summary → full walkthrough</En><Zh>执行摘要 → 完整讲解</Zh></p>
       </header>
 
       {/* ============================================================ */}
       {/* Section 1 — Executive Summary                                 */}
       {/* ============================================================ */}
       <section id="executive-summary" className="exec-summary">
-        <h2>Section 1 — Executive Summary</h2>
+        <h2><En>Section 1 — Executive Summary</En><Zh>第一节 — 执行摘要</Zh></h2>
         <p>
-          The essentials — the bare minimum you need to know for today, not a
-          highlights reel of the lecture:
+          <En>The essentials — the bare minimum you need to know for today, not a
+          highlights reel of the lecture:</En>
+          <Zh>今天的核心要点——不是讲座的亮点集锦，而是你必须掌握的最低限度：</Zh>
         </p>
         <ul>
-          <li>Explain primitive (pass-by-value) vs. reference (pass-by-reference) semantics, including what happens when an object/array is passed into a function.</li>
-          <li>Build a mixed-type array and read a property from a nested object.</li>
-          <li>Shallow-copy an array and an object with spread, and confirm the original is untouched.</li>
-          <li>Write an <code>if</code>/<code>else if</code>/<code>else</code> chain and a ternary expression.</li>
-          <li>Write a <code>for</code> loop, including the <code>for...of</code> variant, over an array.</li>
-          <li>Build a string with <code>+</code> concatenation and with a template literal.</li>
-          <li>Destructure properties out of an object.</li>
-          <li>Know the difference between <code>==</code> and <code>===</code>, and use <code>===</code> by default.</li>
-          <li>Explain <code>let</code> vs. <code>const</code> — reassigning the binding vs. mutating what it points to.</li>
-          <li>Use the core string methods: <code>toUpperCase</code>/<code>toLowerCase</code>, <code>charAt</code>, <code>split</code>, <code>substring</code>.</li>
+          <li><En>Explain primitive (pass-by-value) vs. reference (pass-by-reference) semantics, including what happens when an object/array is passed into a function.</En><Zh>解释原始类型（按值传递）与引用类型（按引用传递）的语义，包括将 object/array 传入函数时会发生什么。</Zh></li>
+          <li><En>Build a mixed-type array and read a property from a nested object.</En><Zh>创建一个混合类型的 array，并读取嵌套 object 的属性。</Zh></li>
+          <li><En>Shallow-copy an array and an object with spread, and confirm the original is untouched.</En><Zh>用 spread 对 array 和 object 做浅拷贝，并确认原始数据未被修改。</Zh></li>
+          <li><En>Write an <code>if</code>/<code>else if</code>/<code>else</code> chain and a ternary expression.</En><Zh>写出 <code>if</code>/<code>else if</code>/<code>else</code> 链式判断和三元表达式。</Zh></li>
+          <li><En>Write a <code>for</code> loop, including the <code>for...of</code> variant, over an array.</En><Zh>编写 <code>for</code> 循环，包括遍历 array 的 <code>for...of</code> 变体。</Zh></li>
+          <li><En>Build a string with <code>+</code> concatenation and with a template literal.</En><Zh>用 <code>+</code> 拼接和模板字符串（template literal）两种方式构建字符串。</Zh></li>
+          <li><En>Destructure properties out of an object.</En><Zh>从 object 中解构（destructure）属性。</Zh></li>
+          <li><En>Know the difference between <code>==</code> and <code>===</code>, and use <code>===</code> by default.</En><Zh>了解 <code>==</code> 与 <code>===</code> 的区别，默认使用 <code>===</code>。</Zh></li>
+          <li><En>Explain <code>let</code> vs. <code>const</code> — reassigning the binding vs. mutating what it points to.</En><Zh>解释 <code>let</code> 与 <code>const</code> 的区别——重新赋值绑定 vs. 修改它所指向的值。</Zh></li>
+          <li><En>Use the core string methods: <code>toUpperCase</code>/<code>toLowerCase</code>, <code>charAt</code>, <code>split</code>, <code>substring</code>.</En><Zh>使用核心字符串方法：<code>toUpperCase</code>/<code>toLowerCase</code>、<code>charAt</code>、<code>split</code>、<code>substring</code>。</Zh></li>
         </ul>
         <p>
-          Want more? <a href="/src/day3-javascript-core/concepts.html">View all concepts?</a>
+          <En>Want more? <a href="/src/day3-javascript-core/concepts.html">View all concepts?</a></En>
+          <Zh>想了解更多？<a href="/src/day3-javascript-core/concepts.html">查看所有概念？</a></Zh>
         </p>
       </section>
 
@@ -44,10 +47,10 @@ export default function Notes() {
       {/* ============================================================ */}
       {/* Section 2 — Full Walkthrough                                  */}
       {/* ============================================================ */}
-      <h2 style={{ marginTop: "2.5rem" }}>Section 2 — Full Walkthrough</h2>
+      <h2 style={{ marginTop: "2.5rem" }}><En>Section 2 — Full Walkthrough</En><Zh>第二节 — 完整讲解</Zh></h2>
 
       <section id="primitives-references">
-        <h2>1. Primitives vs. references (core!)</h2>
+        <h2><En>1. Primitives vs. references (core!)</En><Zh>1. 原始类型与引用类型（核心！）</Zh></h2>
         <CodeBlock code={`let a = 10;
 let b = a;        // copies the VALUE
 b = 20;
@@ -65,18 +68,18 @@ let person = { name: "Ada" };
 mutate(person);
 console.log(person.name); // "changed"`} language="typescript" />
         <div className="concept">
-          <p className="concept-label">Concept</p>
+          <p className="concept-label"><En>Concept</En><Zh>概念</Zh></p>
           <ul>
-            <li>Primitives (<code>string</code>, <code>number</code>, <code>boolean</code>, <code>null</code>, <code>undefined</code>, <code>symbol</code>, <code>bigint</code>) are copied <strong>by value</strong> — each variable owns an independent copy.</li>
-            <li>Objects and arrays are copied <strong>by reference</strong> — the variable holds a pointer to the same data, so both variables see any mutation.</li>
-            <li>This is exactly why passing an object/array into a function lets that function mutate the caller's data, while passing a primitive never does.</li>
+            <li><En>Primitives (<code>string</code>, <code>number</code>, <code>boolean</code>, <code>null</code>, <code>undefined</code>, <code>symbol</code>, <code>bigint</code>) are copied <strong>by value</strong> — each variable owns an independent copy.</En><Zh>原始类型（<code>string</code>、<code>number</code>、<code>boolean</code>、<code>null</code>、<code>undefined</code>、<code>symbol</code>、<code>bigint</code>）<strong>按值</strong>复制——每个变量都拥有一份独立的副本。</Zh></li>
+            <li><En>Objects and arrays are copied <strong>by reference</strong> — the variable holds a pointer to the same data, so both variables see any mutation.</En><Zh>Object 和 array <strong>按引用</strong>复制——变量持有指向同一数据的指针，因此任一变量的修改对另一个都可见。</Zh></li>
+            <li><En>This is exactly why passing an object/array into a function lets that function mutate the caller's data, while passing a primitive never does.</En><Zh>这正是为什么将 object/array 传入函数时，函数可以修改调用方的数据，而传入原始类型则不会。</Zh></li>
           </ul>
         </div>
       </section>
 
       {/* ============================================================ */}
       <section id="basics">
-        <h2>2. Arrays, objects, and functions — the basics</h2>
+        <h2><En>2. Arrays, objects, and functions — the basics</En><Zh>2. Array、object 与函数——基础</Zh></h2>
         <CodeBlock code={`// array — create with [], access by index (0-based)
 const fruits = ["apple", "banana", "cherry"];
 console.log(fruits[0]); // "apple"
@@ -99,7 +102,7 @@ console.log(sum(2, 3)); // 5`} language="typescript" />
 
       {/* ============================================================ */}
       <section id="equality">
-        <h2>3. Equality comparison</h2>
+        <h2><En>3. Equality comparison</En><Zh>3. 相等比较</Zh></h2>
         <CodeBlock code={`console.log(1 == "1");   // true  — coerces "1" to 1 first
 console.log(1 === "1");  // false — different types, no coercion
 
@@ -110,15 +113,16 @@ let refA = [1, 2];
 let refB = refA;         // same reference, different variable name
 console.log(refA === refB); // true — literally the same object`} language="typescript" />
         <p className="callout">
-          Objects and arrays only ever equal <em>themselves</em> — comparison checks reference
+          <En>Objects and arrays only ever equal <em>themselves</em> — comparison checks reference
           identity, never structure. Two arrays with identical contents are still two different boxes
-          in memory, so they're never <code>==</code> or <code>===</code> to each other.
+          in memory, so they're never <code>==</code> or <code>===</code> to each other.</En>
+          <Zh>Object 和 array 只与<em>自身</em>相等——比较检查的是引用标识，而非内容结构。两个内容完全相同的 array 在内存中仍是两个不同的盒子，因此它们之间永远不会 <code>==</code> 或 <code>===</code>。</Zh>
         </p>
       </section>
 
       {/* ============================================================ */}
       <section id="copies">
-        <h2>4. Shallow vs. deep copy</h2>
+        <h2><En>4. Shallow vs. deep copy</En><Zh>4. 浅拷贝与深拷贝</Zh></h2>
         <CodeBlock code={`const original = { title: "Draft", meta: { views: 10 } };
 
 // shallow copy — only the TOP level is copied
@@ -136,18 +140,18 @@ const deep = structuredClone(original);
 deep.meta.views = 1;
 console.log(original.meta.views); // still 999, untouched`} language="typescript" />
         <div className="concept">
-          <p className="concept-label">Concept</p>
+          <p className="concept-label"><En>Concept</En><Zh>概念</Zh></p>
           <ul>
-            <li>Spread (<code>{"{"}...obj{"}"}</code>/<code>[...arr]</code>) and <code>Object.assign</code> copy exactly <strong>one level</strong> deep — any nested object/array inside is still the same shared reference.</li>
-            <li><code>structuredClone(x)</code> is the modern, built-in deep clone — it walks the whole structure and handles <code>Date</code>, <code>Map</code>, <code>Set</code>, nested objects/arrays correctly. It still can't clone functions.</li>
-            <li>The older fallback, <code>JSON.parse(JSON.stringify(x))</code>, also deep-clones — but silently drops functions and <code>undefined</code> values, and turns <code>Date</code> objects into plain strings.</li>
+            <li><En>Spread (<code>{"{"}...obj{"}"}</code>/<code>[...arr]</code>) and <code>Object.assign</code> copy exactly <strong>one level</strong> deep — any nested object/array inside is still the same shared reference.</En><Zh>展开运算符（<code>{"{"}...obj{"}"}</code>/<code>[...arr]</code>）和 <code>Object.assign</code> 只复制<strong>第一层</strong>——内部嵌套的 object/array 仍然是与原始对象共享的同一引用。</Zh></li>
+            <li><En><code>structuredClone(x)</code> is the modern, built-in deep clone — it walks the whole structure and handles <code>Date</code>, <code>Map</code>, <code>Set</code>, nested objects/arrays correctly. It still can't clone functions.</En><Zh><code>structuredClone(x)</code> 是现代内置的深克隆方法——它遍历整个结构，并正确处理 <code>Date</code>、<code>Map</code>、<code>Set</code> 及嵌套 object/array。但仍无法克隆函数。</Zh></li>
+            <li><En>The older fallback, <code>JSON.parse(JSON.stringify(x))</code>, also deep-clones — but silently drops functions and <code>undefined</code> values, and turns <code>Date</code> objects into plain strings.</En><Zh>旧方法 <code>JSON.parse(JSON.stringify(x))</code> 也能深拷贝——但会静默丢弃函数和 <code>undefined</code> 值，并将 <code>Date</code> object 转为普通字符串。</Zh></li>
           </ul>
         </div>
       </section>
 
       {/* ============================================================ */}
       <section id="scope">
-        <h2>5. Scope, <code>var</code>/<code>let</code>/<code>const</code>, hoisting</h2>
+        <h2><En>5. Scope, <code>var</code>/<code>let</code>/<code>const</code>, hoisting</En><Zh>5. 作用域、<code>var</code>/<code>let</code>/<code>const</code> 与变量提升（hoisting）</Zh></h2>
         <CodeBlock code={`console.log(typeof hoistedVar); // "undefined" — var is hoisted AND initialized to undefined
 var hoistedVar = 1;
 
@@ -157,25 +161,26 @@ let hoistedLet = 1;`} language="typescript" />
 person.name = "Grace"; // fine — mutating the object, not reassigning the binding
 person = {};             // ✗ error — Assignment to constant variable`} language="typescript" good={[2]} bad={[3]} />
         <div className="concept">
-          <p className="concept-label">Concept</p>
+          <p className="concept-label"><En>Concept</En><Zh>概念</Zh></p>
           <ul>
-            <li><code>var</code> is <strong>function-scoped</strong>, hoisted to the top of its function and initialized as <code>undefined</code> — reading it early just gives <code>undefined</code>, no error.</li>
-            <li><code>let</code>/<code>const</code> are <strong>block-scoped</strong>, hoisted but left uninitialized — reading either before its declaration line throws (the "temporal dead zone").</li>
-            <li><code>const</code> blocks reassigning the <em>binding</em>, not mutating the object/array it points to.</li>
-            <li>Global <code>var</code>s (and function declarations) attach to the <code>window</code> object; global <code>let</code>/<code>const</code> do not — that's part of why leaving things on <code>window</code> is a known memory-leak risk (nothing ever lets them get garbage-collected).</li>
+            <li><En><code>var</code> is <strong>function-scoped</strong>, hoisted to the top of its function and initialized as <code>undefined</code> — reading it early just gives <code>undefined</code>, no error.</En><Zh><code>var</code> 是<strong>函数作用域</strong>，提升到所在函数顶部并初始化为 <code>undefined</code>——提前读取只会得到 <code>undefined</code>，不会报错。</Zh></li>
+            <li><En><code>let</code>/<code>const</code> are <strong>block-scoped</strong>, hoisted but left uninitialized — reading either before its declaration line throws (the "temporal dead zone").</En><Zh><code>let</code>/<code>const</code> 是<strong>块级作用域</strong>，提升后处于未初始化状态——在声明行之前读取会抛出异常（即"暂时性死区"）。</Zh></li>
+            <li><En><code>const</code> blocks reassigning the <em>binding</em>, not mutating the object/array it points to.</En><Zh><code>const</code> 阻止的是重新赋值<em>绑定</em>，而不是修改它所指向的 object/array 的内容。</Zh></li>
+            <li><En>Global <code>var</code>s (and function declarations) attach to the <code>window</code> object; global <code>let</code>/<code>const</code> do not — that's part of why leaving things on <code>window</code> is a known memory-leak risk (nothing ever lets them get garbage-collected).</En><Zh>全局 <code>var</code>（及函数声明）会附加到 <code>window</code> 对象上；全局 <code>let</code>/<code>const</code> 则不会——这正是在 <code>window</code> 上留存数据是已知内存泄漏风险的原因之一（它们永远不会被垃圾回收）。</Zh></li>
           </ul>
         </div>
         <p className="callout">
-          Memory model, briefly: primitives live on the <strong>stack</strong> (fixed size, fast to
+          <En>Memory model, briefly: primitives live on the <strong>stack</strong> (fixed size, fast to
           copy). Objects/arrays live on the <strong>heap</strong> (variable size); the variable itself
           just holds a reference (pointer) to that heap location — which is the actual reason copying a
-          reference doesn't copy the underlying data.
+          reference doesn't copy the underlying data.</En>
+          <Zh>内存模型简述：原始类型存储在<strong>栈（stack）</strong>上（固定大小，复制快）。Object/array 存储在<strong>堆（heap）</strong>上（可变大小）；变量本身只持有指向堆内存位置的引用（指针）——这正是复制引用不会复制底层数据的根本原因。</Zh>
         </p>
       </section>
 
       {/* ============================================================ */}
       <section id="conditionals">
-        <h2>6. Control flow: conditionals</h2>
+        <h2><En>6. Control flow: conditionals</En><Zh>6. 控制流：条件判断</Zh></h2>
         <CodeBlock code={`if (age >= 18) {
   // ...
 } else if (age >= 13) {
@@ -189,17 +194,17 @@ const label = isActive ? "Active" : "Inactive"; // ternary
 const name = userName ?? "Guest"; // only falls back on null/undefined
 const count = userCount || 10;  // falls back on ANY falsy value`} language="typescript" />
         <div className="concept">
-          <p className="concept-label">Concept</p>
+          <p className="concept-label"><En>Concept</En><Zh>概念</Zh></p>
           <ul>
-            <li><code>??</code> (nullish coalescing) only replaces <code>null</code>/<code>undefined</code>.</li>
-            <li><code>||</code> replaces <em>any</em> falsy value — including a real <code>0</code>, <code>""</code>, or <code>false</code> you actually wanted to keep. That's the classic bug <code>??</code> was added to fix.</li>
+            <li><En><code>??</code> (nullish coalescing) only replaces <code>null</code>/<code>undefined</code>.</En><Zh><code>??</code>（空值合并运算符）只替换 <code>null</code>/<code>undefined</code>。</Zh></li>
+            <li><En><code>||</code> replaces <em>any</em> falsy value — including a real <code>0</code>, <code>""</code>, or <code>false</code> you actually wanted to keep. That's the classic bug <code>??</code> was added to fix.</En><Zh><code>||</code> 会替换<em>任何</em>假值——包括你实际想保留的 <code>0</code>、<code>""</code> 或 <code>false</code>。这正是引入 <code>??</code> 所要修复的经典 bug。</Zh></li>
           </ul>
         </div>
       </section>
 
       {/* ============================================================ */}
       <section id="loops">
-        <h2>7. Control flow: loops</h2>
+        <h2><En>7. Control flow: loops</En><Zh>7. 控制流：循环</Zh></h2>
         <CodeBlock code={`for (let i = 0; i < 5; i++) {
   if (i === 3) continue; // skip just this iteration
   if (i === 4) break;    // stop the loop entirely
@@ -240,7 +245,7 @@ switch (grade) {
 
       {/* ============================================================ */}
       <section id="error-handling">
-        <h2>8. Error handling</h2>
+        <h2><En>8. Error handling</En><Zh>8. 错误处理</Zh></h2>
         <CodeBlock code={`try {
   throw new Error("something broke");
 } catch (err) {
@@ -252,50 +257,51 @@ switch (grade) {
 
       {/* ============================================================ */}
       <section id="operators">
-        <h2>9. Operators reference</h2>
+        <h2><En>9. Operators reference</En><Zh>9. 运算符参考</Zh></h2>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Category</th>
-              <th>Operators</th>
+              <th><En>Category</En><Zh>类别</Zh></th>
+              <th><En>Operators</En><Zh>运算符</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Arithmetic</td>
+              <td><En>Arithmetic</En><Zh>算术</Zh></td>
               <td><code>+ - * / % += -= *= /=</code></td>
             </tr>
             <tr>
-              <td>Comparison</td>
+              <td><En>Comparison</En><Zh>比较</Zh></td>
               <td><code>== != === !== &gt; &lt; &gt;= &lt;=</code></td>
             </tr>
             <tr>
-              <td>Logical</td>
+              <td><En>Logical</En><Zh>逻辑</Zh></td>
               <td><code>&amp;&amp; || !</code></td>
             </tr>
             <tr>
-              <td>Unary</td>
+              <td><En>Unary</En><Zh>一元</Zh></td>
               <td><code>typeof + ++ --</code></td>
             </tr>
           </tbody>
         </table>
         <div className="concept">
-          <p className="concept-label">Concept</p>
+          <p className="concept-label"><En>Concept</En><Zh>概念</Zh></p>
           <ul>
-            <li><strong>Short-circuit evaluation:</strong> <code>&amp;&amp;</code> returns its first falsy operand (or the last one if none are falsy); <code>||</code> returns its first truthy operand. That's why <code>isLoggedIn &amp;&amp; showProfile()</code> only calls <code>showProfile()</code> when <code>isLoggedIn</code> is truthy — it's not just for booleans.</li>
-            <li><strong>Type coercion:</strong> <code>1 + "1"</code> → <code>"11"</code> (a string is present, so <code>+</code> concatenates); <code>1 + 1</code> → <code>2</code> (both numbers, so <code>+</code> adds).</li>
+            <li><En><strong>Short-circuit evaluation:</strong> <code>&amp;&amp;</code> returns its first falsy operand (or the last one if none are falsy); <code>||</code> returns its first truthy operand. That's why <code>isLoggedIn &amp;&amp; showProfile()</code> only calls <code>showProfile()</code> when <code>isLoggedIn</code> is truthy — it's not just for booleans.</En><Zh><strong>短路求值（short-circuit evaluation）：</strong><code>&amp;&amp;</code> 返回第一个假值操作数（若均为真值则返回最后一个）；<code>||</code> 返回第一个真值操作数。这就是为什么 <code>isLoggedIn &amp;&amp; showProfile()</code> 只在 <code>isLoggedIn</code> 为真值时才调用 <code>showProfile()</code>——不只用于 boolean。</Zh></li>
+            <li><En><strong>Type coercion:</strong> <code>1 + "1"</code> → <code>"11"</code> (a string is present, so <code>+</code> concatenates); <code>1 + 1</code> → <code>2</code> (both numbers, so <code>+</code> adds).</En><Zh><strong>类型强制转换（type coercion）：</strong><code>1 + "1"</code> → <code>"11"</code>（有字符串时 <code>+</code> 执行拼接）；<code>1 + 1</code> → <code>2</code>（两边均为数字时 <code>+</code> 执行加法）。</Zh></li>
           </ul>
         </div>
         <p className="callout">
-          Falsy values — everything else is truthy (including <code>"0"</code>, <code>"false"</code>,
+          <En>Falsy values — everything else is truthy (including <code>"0"</code>, <code>"false"</code>,
           <code>[]</code>, and <code>{"{"}{"}"}</code>): <code>false</code>, <code>0</code>, <code>-0</code>,
-          <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>.
+          <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>.</En>
+          <Zh>假值（falsy values）——其余所有值均为真值（truthy），包括 <code>"0"</code>、<code>"false"</code>、<code>[]</code> 和 <code>{"{"}{"}"}</code>：<code>false</code>、<code>0</code>、<code>-0</code>、<code>""</code>、<code>null</code>、<code>undefined</code>、<code>NaN</code>。</Zh>
         </p>
       </section>
 
       {/* ============================================================ */}
       <section id="strings">
-        <h2>10. String operators &amp; methods</h2>
+        <h2><En>10. String operators &amp; methods</En><Zh>10. 字符串运算符与方法</Zh></h2>
         <CodeBlock code={`const first = "Ada";
 const greetingA = "Hello, " + first + "!"; // concatenation
 const greetingB = \`Hello, \${first}!\`;    // template literal — cleaner, multi-line safe
@@ -304,15 +310,16 @@ first.length;          // 3
 first.charAt(0);       // "A"
 first.substring(1, 3);  // "da"`} language="typescript" />
         <p className="callout">
-          Handy <code>console.log</code> tricks: <code>console.log("label:", value)</code> prints
+          <En>Handy <code>console.log</code> tricks: <code>console.log("label:", value)</code> prints
           several values with commas between them; <code>console.table(arrayOfObjects)</code> renders
-          a real table; <code>console.group()</code>/<code>console.groupEnd()</code> nests related logs.
+          a real table; <code>console.group()</code>/<code>console.groupEnd()</code> nests related logs.</En>
+          <Zh><code>console.log</code> 实用技巧：<code>console.log("label:", value)</code> 可同时打印多个值；<code>console.table(arrayOfObjects)</code> 渲染成表格；<code>console.group()</code>/<code>console.groupEnd()</code> 可对相关日志分组嵌套。</Zh>
         </p>
       </section>
 
       {/* ============================================================ */}
       <section id="destructuring">
-        <h2>11. Destructuring</h2>
+        <h2><En>11. Destructuring</En><Zh>11. 解构赋值（Destructuring）</Zh></h2>
         <CodeBlock code={`const [first, second] = [10, 20]; // array — by position
 
 const person = { name: "Ada", age: 36 };
@@ -322,13 +329,14 @@ const { name: fullName } = person;    // rename while destructuring`} language="
 
       {/* ============================================================ */}
       <section id="optional-chaining">
-        <h2>12. Optional chaining</h2>
+        <h2><En>12. Optional chaining</En><Zh>12. 可选链（Optional chaining）</Zh></h2>
         <CodeBlock code={`const city = user?.address?.city;              // undefined instead of throwing if address is missing
 const cityOrDefault = user?.address?.city ?? "Unknown"; // combine with ?? for a default`} language="typescript" />
         <p className="callout">
-          <code>?.</code> short-circuits to <code>undefined</code> the moment anything in the chain is
+          <En><code>?.</code> short-circuits to <code>undefined</code> the moment anything in the chain is
           <code>null</code>/<code>undefined</code>, instead of throwing — pairs naturally with
-          <code>??</code> to supply a fallback in the same expression.
+          <code>??</code> to supply a fallback in the same expression.</En>
+          <Zh><code>?.</code> 在链式访问中遇到 <code>null</code>/<code>undefined</code> 时立即短路返回 <code>undefined</code>，而不是抛出异常——与 <code>??</code> 搭配使用，可在同一表达式中提供默认值。</Zh>
         </p>
       </section>
 

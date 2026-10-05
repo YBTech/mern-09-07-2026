@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders the order confirmation 1`] = `
+<div>
+  <section>
+    <p
+      data-testid="confirmation"
+    >
+      Order placed
+    </p>
+    <p>
+      Order #
+      7
+       · total $
+      150
+    </p>
+  </section>
+</div>
+`;

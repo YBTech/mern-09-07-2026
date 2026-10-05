@@ -2,6 +2,7 @@ import DayNav from "../../components/DayNav";
 import CodeBlock from "../../components/CodeBlock";
 import { Arrow, ArrowDefs, Box, Chip, Exchange, T, type Kind } from "../../components/Diagram";
 import { Link } from "react-router-dom";
+import { En, Zh } from "../../components/Lang";
 
 export default function Notes() {
   return (
@@ -12,34 +13,35 @@ export default function Notes() {
       <header className="lecture-header">
         <p className="eyebrow">Week 4 · Day 18 · Notes</p>
         <h1>Event-Driven Architecture</h1>
-        <p className="subtitle">Executive summary → full walkthrough</p>
+        <p className="subtitle"><En>Executive summary → full walkthrough</En><Zh>执行摘要 → 完整讲解</Zh></p>
       </header>
 
       <section id="executive-summary" className="exec-summary">
-        <h2>Section 1 — Executive Summary</h2>
-        <p>The essentials — what you must be able to do by the end of today:</p>
+        <h2><En>Section 1 — Executive Summary</En><Zh>第一节 — 执行摘要</Zh></h2>
+        <p><En>The essentials — what you must be able to do by the end of today:</En><Zh>核心要点 — 今天结束后你必须能够做到：</Zh></p>
         <ul>
-          <li>Explain what synchronous service-to-service calls cost: stacked latency, chained failures, and coupling</li>
-          <li>Explain async communication and eventual consistency, and say which calls should stay sync</li>
-          <li>Explain a message queue — producer, queue, consumer, ack — and what it buys you</li>
-          <li>Explain why a plain queue can&apos;t fan out, and how an exchange with one queue per subscriber fixes it</li>
-          <li>Map RabbitMQ&apos;s queue + exchange onto AWS SQS + SNS</li>
-          <li>Explain how Kafka&apos;s log differs from a queue: retention, offsets, replay, partitions, consumer groups</li>
-          <li>Explain why duplicate messages are normal, and write an idempotent consumer</li>
+          <li><En>Explain what synchronous service-to-service calls cost: stacked latency, chained failures, and coupling</En><Zh>解释同步服务间调用的代价：叠加延迟、连锁故障和耦合</Zh></li>
+          <li><En>Explain async communication and eventual consistency, and say which calls should stay sync</En><Zh>解释异步通信和最终一致性，并说明哪些调用应保持同步</Zh></li>
+          <li><En>Explain a message queue — producer, queue, consumer, ack — and what it buys you</En><Zh>解释消息队列——producer（生产者）、queue（队列）、consumer（消费者）、ack（确认）——及其带来的好处</Zh></li>
+          <li><En>Explain why a plain queue can&apos;t fan out, and how an exchange with one queue per subscriber fixes it</En><Zh>解释为什么普通队列无法广播，以及 exchange（交换机）加每个订阅者一个队列如何解决这个问题</Zh></li>
+          <li><En>Map RabbitMQ&apos;s queue + exchange onto AWS SQS + SNS</En><Zh>将 RabbitMQ 的 queue + exchange 对应到 AWS SQS + SNS</Zh></li>
+          <li><En>Explain how Kafka&apos;s log differs from a queue: retention, offsets, replay, partitions, consumer groups</En><Zh>解释 Kafka 的日志与队列的区别：retention（保留）、offset（偏移量）、replay（回放）、partition（分区）、consumer group（消费者组）</Zh></li>
+          <li><En>Explain why duplicate messages are normal, and write an idempotent consumer</En><Zh>解释为什么重复消息是正常的，并编写幂等（idempotent）的消费者</Zh></li>
         </ul>
         <p>
-          Want more? <Link to="/week4/day18-event-driven-architecture/concepts">View all concepts?</Link>
+          <En>Want more? <Link to="/week4/day18-event-driven-architecture/concepts">View all concepts?</Link></En>
+          <Zh>想深入了解？<Link to="/week4/day18-event-driven-architecture/concepts">查看所有概念</Link></Zh>
         </p>
       </section>
 
       <section id="full-walkthrough">
-        <h2>Section 2 — Full Walkthrough</h2>
+        <h2><En>Section 2 — Full Walkthrough</En><Zh>第二节 — 完整讲解</Zh></h2>
 
         {/* ============================================================ */}
-        <h3 className="part">Part A — Why go async</h3>
+        <h3 className="part"><En>Part A — Why go async</En><Zh>A 部分 — 为什么要用异步</Zh></h3>
 
-        <h4 className="topic">A.1 Checkout, the synchronous way</h4>
-        <p>Services talk over HTTP: Orders calls each service it needs, and waits for each answer before the next.</p>
+        <h4 className="topic"><En>A.1 Checkout, the synchronous way</En><Zh>A.1 同步方式的结账流程</Zh></h4>
+        <p><En>Services talk over HTTP: Orders calls each service it needs, and waits for each answer before the next.</En><Zh>服务之间通过 HTTP 通信：Orders 逐一调用所需的每个服务，等待每个响应后再发起下一个。</Zh></p>
         <CodeBlock
           language="typescript"
           code={`// Checkout, synchronous: the customer waits for every call, one after another.
@@ -76,44 +78,44 @@ app.post("/orders/sync", async (req, res) => {
           <Arrow d="M130,182 L612,182" />
           <T x={371} y={199} color="#1c1c1c" size={11}>the customer waits this whole time: 1,680ms</T>
         </svg>
-        <p className="callout">The customer is waiting on an email server they&apos;ve never heard of.</p>
+        <p className="callout"><En>The customer is waiting on an email server they&apos;ve never heard of.</En><Zh>顾客正在等待一个他们甚至不知道存在的邮件服务器。</Zh></p>
 
-        <h4 className="topic">A.2 Where synchronous calls hurt</h4>
+        <h4 className="topic"><En>A.2 Where synchronous calls hurt</En><Zh>A.2 同步调用的痛点</Zh></h4>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Pain point</th>
-              <th>What it looks like</th>
+              <th><En>Pain point</En><Zh>痛点</Zh></th>
+              <th><En>What it looks like</En><Zh>具体表现</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Latency adds up</td>
-              <td>The slowest service in the chain sets the checkout time</td>
+              <td><En>Latency adds up</En><Zh>延迟叠加</Zh></td>
+              <td><En>The slowest service in the chain sets the checkout time</En><Zh>调用链中最慢的服务决定了结账时间</Zh></td>
             </tr>
             <tr>
-              <td>Failures chain together</td>
-              <td>Notifications is down, so checkout fails — even though the email wasn&apos;t essential</td>
+              <td><En>Failures chain together</En><Zh>故障连锁</Zh></td>
+              <td><En>Notifications is down, so checkout fails — even though the email wasn&apos;t essential</En><Zh>Notifications 宕机，导致结账失败——尽管发邮件并不是必需的</Zh></td>
             </tr>
             <tr>
-              <td>Uptime multiplies down</td>
-              <td>Five services each up 99.9% → the chain is up 99.5%, about 3.6 hours down a month</td>
+              <td><En>Uptime multiplies down</En><Zh>可用率相乘下降</Zh></td>
+              <td><En>Five services each up 99.9% → the chain is up 99.5%, about 3.6 hours down a month</En><Zh>五个服务各自可用率 99.9% → 整条链路可用率降至 99.5%，每月约宕机 3.6 小时</Zh></td>
             </tr>
             <tr>
-              <td>Spikes pass straight through</td>
-              <td>A Black Friday burst hits every downstream service at the same instant</td>
+              <td><En>Spikes pass straight through</En><Zh>流量峰值直接穿透</Zh></td>
+              <td><En>A Black Friday burst hits every downstream service at the same instant</En><Zh>黑色星期五的流量洪峰同时冲击每个下游服务</Zh></td>
             </tr>
             <tr>
-              <td>The caller knows everyone</td>
-              <td>Adding a Loyalty service means editing and redeploying Orders</td>
+              <td><En>The caller knows everyone</En><Zh>调用方与所有服务耦合</Zh></td>
+              <td><En>Adding a Loyalty service means editing and redeploying Orders</En><Zh>新增 Loyalty 服务就必须修改并重新部署 Orders</Zh></td>
             </tr>
             <tr>
-              <td>Retries are ambiguous</td>
-              <td>A timeout from Payments: did the charge go through or not?</td>
+              <td><En>Retries are ambiguous</En><Zh>重试结果不确定</Zh></td>
+              <td><En>A timeout from Payments: did the charge go through or not?</En><Zh>Payments 超时：扣款到底成功了没有？</Zh></td>
             </tr>
           </tbody>
         </table>
-        <p>One slow service backs up everything in front of it:</p>
+        <p><En>One slow service backs up everything in front of it:</En><Zh>一个慢服务会让它前面所有的服务都堵住：</Zh></p>
         <svg viewBox="0 0 640 140" role="img" aria-label="Browser calls API Gateway, which calls Orders, which calls Notifications. Notifications hangs; Orders' checkouts are stuck waiting on it; the gateway's connections pile up and it returns a 504 timeout; the browser shows a spinner, then an error.">
           <Box x={20} y={30} w={110} h={44} kind="muted" label="Browser" />
           <Box x={175} y={30} w={110} h={44} kind="warn" label="API Gateway" />
@@ -137,36 +139,36 @@ app.post("/orders/sync", async (req, res) => {
         <div className="concept">
           <p className="concept-label">Concept</p>
           <ul>
-            <li>None of this is a bug. It&apos;s the price of <strong>waiting for an answer you didn&apos;t need</strong>.</li>
-            <li>Orders needs to know the stock is there and the card was charged. It does not need to know the email went out.</li>
-            <li>Timeouts and retries soften the damage, but the caller is still coupled to every service it calls.</li>
+            <li><En>None of this is a bug. It&apos;s the price of <strong>waiting for an answer you didn&apos;t need</strong>.</En><Zh>这些都不是 bug，而是<strong>等待一个本不需要的回应</strong>所付出的代价。</Zh></li>
+            <li><En>Orders needs to know the stock is there and the card was charged. It does not need to know the email went out.</En><Zh>Orders 需要知道库存充足、扣款成功，但不需要等邮件是否发出。</Zh></li>
+            <li><En>Timeouts and retries soften the damage, but the caller is still coupled to every service it calls.</En><Zh>超时和重试能减轻损失，但调用方仍然与它调用的每个服务耦合在一起。</Zh></li>
           </ul>
         </div>
 
-        <h4 className="topic">A.3 The alternative: async and eventual consistency</h4>
+        <h4 className="topic"><En>A.3 The alternative: async and eventual consistency</En><Zh>A.3 替代方案：异步与最终一致性</Zh></h4>
         <table className="ref-table">
           <thead>
             <tr>
               <th></th>
-              <th>Phone call (sync)</th>
-              <th>Text message (async)</th>
+              <th><En>Phone call (sync)</En><Zh>打电话（同步）</Zh></th>
+              <th><En>Text message (async)</En><Zh>发短信（异步）</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Both sides available at once?</td>
-              <td>Yes, or it doesn&apos;t happen</td>
-              <td>No — it&apos;s delivered when they&apos;re ready</td>
+              <td><En>Both sides available at once?</En><Zh>双方需同时在线？</Zh></td>
+              <td><En>Yes, or it doesn&apos;t happen</En><Zh>是的，否则无法通话</Zh></td>
+              <td><En>No — it&apos;s delivered when they&apos;re ready</En><Zh>不——对方就绪时才会收到</Zh></td>
             </tr>
             <tr>
-              <td>You&apos;re blocked until…</td>
-              <td>The call ends</td>
-              <td>You hit send</td>
+              <td><En>You&apos;re blocked until…</En><Zh>你被阻塞直到……</Zh></td>
+              <td><En>The call ends</En><Zh>通话结束</Zh></td>
+              <td><En>You hit send</En><Zh>你点击发送</Zh></td>
             </tr>
             <tr>
-              <td>They&apos;re busy</td>
-              <td>You get nothing</td>
-              <td>It waits in their inbox</td>
+              <td><En>They&apos;re busy</En><Zh>对方忙碌时</Zh></td>
+              <td><En>You get nothing</En><Zh>你什么都得不到</Zh></td>
+              <td><En>It waits in their inbox</En><Zh>消息在对方收件箱里等待</Zh></td>
             </tr>
           </tbody>
         </table>
@@ -193,8 +195,9 @@ app.post("/orders/sync", async (req, res) => {
           <T x={484} y={150}>a queue in the middle holds the message</T>
         </svg>
         <p>
-          The trade: the whole system becomes correct <em>eventually</em>, not instantly. That&apos;s{" "}
-          <strong>eventual consistency</strong>:
+          <En>The trade: the whole system becomes correct <em>eventually</em>, not instantly. That&apos;s{" "}
+          <strong>eventual consistency</strong>:</En>
+          <Zh>代价是：整个系统变为<em>最终</em>一致，而非即时一致。这就是<strong>最终一致性（eventual consistency）</strong>：</Zh>
         </p>
         <svg viewBox="0 0 640 110" role="img" aria-label="Eventual consistency timeline for one order. At 0 seconds the order is saved; at 0.05 seconds the customer sees Order placed; at 2 seconds the confirmation email arrives; at 5 seconds loyalty points appear.">
           <Arrow d="M30,50 L612,50" />
@@ -215,22 +218,22 @@ app.post("/orders/sync", async (req, res) => {
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Keep it sync when…</th>
-              <th>Make it async when…</th>
+              <th><En>Keep it sync when…</En><Zh>保持同步的场景……</Zh></th>
+              <th><En>Make it async when…</En><Zh>改为异步的场景……</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>You need the answer to build your response</td>
-              <td>It should happen <em>because</em> this happened</td>
+              <td><En>You need the answer to build your response</En><Zh>你需要对方的回应才能构造自己的响应</Zh></td>
+              <td><En>It should happen <em>because</em> this happened</En><Zh>它应该<em>因为</em>这件事而发生</Zh></td>
             </tr>
             <tr>
-              <td>Price lookup, stock check, card authorization</td>
-              <td>Confirmation email, loyalty points, analytics, search re-index</td>
+              <td><En>Price lookup, stock check, card authorization</En><Zh>查询价格、检查库存、授权扣款</Zh></td>
+              <td><En>Confirmation email, loyalty points, analytics, search re-index</En><Zh>确认邮件、积分奖励、数据分析、搜索重新索引</Zh></td>
             </tr>
           </tbody>
         </table>
-        <p>What gets sent is an <strong>event</strong> — a fact about something that already happened:</p>
+        <p><En>What gets sent is an <strong>event</strong> — a fact about something that already happened:</En><Zh>发送的内容是一个<strong>事件（event）</strong>——关于已经发生的事实：</Zh></p>
         <CodeBlock
           language="typescript"
           code={`// A past-tense FACT, not a command like "SendEmail". Orders is announcing
@@ -249,18 +252,19 @@ type OrderPlaced = {
           <p className="concept-label">Concept</p>
           <ul>
             <li>
-              An <strong>event</strong> states a fact in the past tense — <code>OrderPlaced</code>. A{" "}
-              <strong>command</strong> names a receiver and tells it what to do — <code>SendEmail</code>.
+              <En>An <strong>event</strong> states a fact in the past tense — <code>OrderPlaced</code>. A{" "}
+              <strong>command</strong> names a receiver and tells it what to do — <code>SendEmail</code>.</En>
+              <Zh><strong>event（事件）</strong>用过去时陈述一个事实——<code>OrderPlaced</code>。<strong>command（命令）</strong>则指定接收方并告知其该做什么——<code>SendEmail</code>。</Zh>
             </li>
-            <li>Past-tense naming keeps the publisher ignorant of who&apos;s listening. A command-shaped event quietly re-couples the two sides.</li>
-            <li>The event carries the data consumers need. Too little and every consumer calls back for details; too much and the contract can&apos;t evolve.</li>
+            <li><En>Past-tense naming keeps the publisher ignorant of who&apos;s listening. A command-shaped event quietly re-couples the two sides.</En><Zh>用过去时命名让发布者不必知道谁在监听。形如命令的事件会悄悄将两端重新耦合。</Zh></li>
+            <li><En>The event carries the data consumers need. Too little and every consumer calls back for details; too much and the contract can&apos;t evolve.</En><Zh>事件携带消费者所需的数据。数据太少，每个消费者都要回调获取详情；数据太多，契约就难以演进。</Zh></li>
           </ul>
         </div>
 
         {/* ============================================================ */}
-        <h3 className="part">Part B — Message queues (RabbitMQ)</h3>
+        <h3 className="part"><En>Part B — Message queues (RabbitMQ)</En><Zh>B 部分 — 消息队列（RabbitMQ）</Zh></h3>
 
-        <h4 className="topic">B.1 A message queue: the mailbox in the middle</h4>
+        <h4 className="topic"><En>B.1 A message queue: the mailbox in the middle</En><Zh>B.1 消息队列：中间的邮箱</Zh></h4>
         <svg viewBox="0 0 640 170" role="img" aria-label="A producer, Orders, sends messages into a queue holding four messages. The queue delivers them to a consumer, Notifications, which sends an ack back to the queue — only then is the message deleted.">
           <Box x={20} y={55} w={120} h={46} kind="primary" label="Orders" sub="producer" />
           <T x={320} y={42} color="#1c1c1c" bold>queue: notifications.q</T>
@@ -279,26 +283,26 @@ type OrderPlaced = {
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Term</th>
-              <th>Meaning</th>
+              <th><En>Term</En><Zh>术语</Zh></th>
+              <th><En>Meaning</En><Zh>含义</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Producer</td>
-              <td>Whoever puts a message in</td>
+              <td><En>Whoever puts a message in</En><Zh>将消息放入队列的一方</Zh></td>
             </tr>
             <tr>
               <td>Queue</td>
-              <td>A named line of messages, held by the broker (RabbitMQ) until someone takes them</td>
+              <td><En>A named line of messages, held by the broker (RabbitMQ) until someone takes them</En><Zh>一个有名称的消息队列，由 broker（RabbitMQ）持有，直到有人取走</Zh></td>
             </tr>
             <tr>
               <td>Consumer</td>
-              <td>Whoever takes a message out and does the work</td>
+              <td><En>Whoever takes a message out and does the work</En><Zh>取出消息并执行任务的一方</Zh></td>
             </tr>
             <tr>
               <td>Ack</td>
-              <td>The consumer saying &quot;done&quot; — only now is the message deleted</td>
+              <td><En>The consumer saying &quot;done&quot; — only now is the message deleted</En><Zh>消费者发出"已完成"信号——此时消息才被删除</Zh></td>
             </tr>
           </tbody>
         </table>
@@ -322,27 +326,27 @@ await channel.consume("hello", (msg) => {
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Situation</th>
-              <th>What the queue does</th>
+              <th><En>Situation</En><Zh>情况</Zh></th>
+              <th><En>What the queue does</En><Zh>队列的行为</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Consumer is down</td>
-              <td>Messages wait. It catches up when it&apos;s back</td>
+              <td><En>Consumer is down</En><Zh>消费者宕机</Zh></td>
+              <td><En>Messages wait. It catches up when it&apos;s back</En><Zh>消息等待。消费者恢复后继续处理</Zh></td>
             </tr>
             <tr>
-              <td>Traffic spike</td>
-              <td>The queue absorbs it; the consumer works through it at its own pace</td>
+              <td><En>Traffic spike</En><Zh>流量峰值</Zh></td>
+              <td><En>The queue absorbs it; the consumer works through it at its own pace</En><Zh>队列吸收峰值，消费者按自己的节奏处理</Zh></td>
             </tr>
             <tr>
-              <td>Consumer too slow</td>
-              <td>Start more copies of the consumer (next section)</td>
+              <td><En>Consumer too slow</En><Zh>消费者处理太慢</Zh></td>
+              <td><En>Start more copies of the consumer (next section)</En><Zh>启动更多消费者副本（见下一节）</Zh></td>
             </tr>
           </tbody>
         </table>
 
-        <h4 className="topic">B.2 More workers on one queue</h4>
+        <h4 className="topic"><En>B.2 More workers on one queue</En><Zh>B.2 一个队列，多个工作者</Zh></h4>
         <svg viewBox="0 0 640 170" role="img" aria-label="One queue holding messages 1 to 6, read by two copies of Notifications. Copy A gets messages 1, 3, and 5; copy B gets 2, 4, and 6.">
           <rect x="40" y="60" width="210" height="50" rx="6" fill="#f3eefc" stroke="#8e5fd6" strokeWidth="1.5" />
           {[1, 2, 3, 4, 5, 6].map((n, i) => (
@@ -355,12 +359,13 @@ await channel.consume("hello", (msg) => {
           <Arrow d="M250,90 Q350,128 438,129" />
         </svg>
         <p className="callout">
-          <strong>Competing consumers</strong>: each message goes to exactly one copy. That&apos;s how a
-          queue scales — and exactly why it can&apos;t fan out.
+          <En><strong>Competing consumers</strong>: each message goes to exactly one copy. That&apos;s how a
+          queue scales — and exactly why it can&apos;t fan out.</En>
+          <Zh><strong>竞争消费（competing consumers）</strong>：每条消息只发给一个副本。这就是队列的扩展方式——也正因如此，它无法广播。</Zh>
         </p>
 
-        <h4 className="topic">B.3 The limit: one message, one reader</h4>
-        <p>Inventory, Notifications, and Loyalty all need <em>every</em> <code>OrderPlaced</code>. Put all three on one queue:</p>
+        <h4 className="topic"><En>B.3 The limit: one message, one reader</En><Zh>B.3 局限：一条消息，只有一个读取者</Zh></h4>
+        <p><En>Inventory, Notifications, and Loyalty all need <em>every</em> <code>OrderPlaced</code>. Put all three on one queue:</En><Zh>Inventory、Notifications 和 Loyalty 都需要收到<em>每一条</em> <code>OrderPlaced</code> 消息。如果把三者都放在同一个队列上：</Zh></p>
         <svg viewBox="0 0 640 200" role="img" aria-label="Orders sends three orders into one shared queue read by Inventory, Notifications, and Loyalty. Each service gets only one of the three orders: Inventory never hears about orders 2 and 3, so their stock is never deducted.">
           <Box x={20} y={78} w={100} h={44} kind="primary" label="Orders" />
           <rect x="170" y="75" width="150" height="50" rx="6" fill="#f3eefc" stroke="#8e5fd6" strokeWidth="1.5" />
@@ -376,7 +381,7 @@ await channel.consume("hello", (msg) => {
           <Arrow d="M320,100 L438,100" ink="red" />
           <Arrow d="M320,108 Q380,160 438,165" ink="red" />
         </svg>
-        <p>The tempting fix puts the coupling right back:</p>
+        <p><En>The tempting fix puts the coupling right back:</En><Zh>看似显而易见的解决方法会重新引入耦合：</Zh></p>
         <CodeBlock
           language="typescript"
           bad={[2, 3, 4]}
@@ -386,10 +391,11 @@ channel.sendToQueue("notifications", body);
 channel.sendToQueue("loyalty", body); // …and edit this list for every new team`}
         />
 
-        <h4 className="topic">B.4 Exchanges and fan-out (pub/sub)</h4>
+        <h4 className="topic"><En>B.4 Exchanges and fan-out (pub/sub)</En><Zh>B.4 交换机与广播（pub/sub）</Zh></h4>
         <p>
-          The fix is one more piece in front of the queues: an <strong>exchange</strong>. Orders publishes
-          to the exchange; the exchange copies each message into every queue bound to it.
+          <En>The fix is one more piece in front of the queues: an <strong>exchange</strong>. Orders publishes
+          to the exchange; the exchange copies each message into every queue bound to it.</En>
+          <Zh>解决方案是在队列前面加一个组件：<strong>exchange（交换机）</strong>。Orders 发布消息到 exchange，exchange 将每条消息复制到所有与之绑定的队列。</Zh>
         </p>
         <svg viewBox="0 0 680 250" role="img" aria-label="Orders publishes to the orders exchange, a fanout. The exchange copies each message into three queues: inventory.q, notifications.q, and loyalty.q. Two copies of Inventory share inventory.q and split its messages. Notifications reads notifications.q. Loyalty, added later, reads loyalty.q.">
           <Box x={10} y={103} w={90} h={44} kind="primary" label="Orders" />
@@ -420,10 +426,11 @@ channel.sendToQueue("loyalty", body); // …and edit this list for every new tea
           <T x={580} y={240}>split between copies of one service</T>
         </svg>
         <p className="callout">
-          The exchange copies messages <strong>between</strong> services. The queue splits them{" "}
-          <strong>within</strong> a service. Hold on to that — it comes back with Kafka.
+          <En>The exchange copies messages <strong>between</strong> services. The queue splits them{" "}
+          <strong>within</strong> a service. Hold on to that — it comes back with Kafka.</En>
+          <Zh>exchange 在服务<strong>之间</strong>复制消息；queue 在服务<strong>内部</strong>分发消息。记住这个区别——Kafka 部分还会用到。</Zh>
         </p>
-        <p>Orders publishes to the exchange, not to any service:</p>
+        <p><En>Orders publishes to the exchange, not to any service:</En><Zh>Orders 只发布到 exchange，不直接面向任何服务：</Zh></p>
         <CodeBlock
           language="typescript"
           code={`await channel.assertExchange("orders", "fanout", { durable: true });
@@ -431,7 +438,7 @@ channel.sendToQueue("loyalty", body); // …and edit this list for every new tea
 // Orders has no idea who is subscribed: Inventory, Notifications, Loyalty, or nobody.
 channel.publish("orders", "", Buffer.from(JSON.stringify(event)), { persistent: true });`}
         />
-        <p>Each subscriber declares its own queue and binds it to the exchange:</p>
+        <p><En>Each subscriber declares its own queue and binds it to the exchange:</En><Zh>每个订阅方声明自己的队列并绑定到 exchange：</Zh></p>
         <CodeBlock
           language="typescript"
           good={[2]}
@@ -448,16 +455,16 @@ await channel.consume("inventory.q", async (msg) => {
         <div className="concept">
           <p className="concept-label">Concept</p>
           <ul>
-            <li>Adding Loyalty tomorrow = one new queue bound to <code>orders</code>. Orders&apos; code doesn&apos;t change, and it isn&apos;t redeployed.</li>
-            <li>An exchange <strong>stores nothing</strong>. A message published while no queue is bound is simply dropped.</li>
-            <li>A queue keeps collecting while its service is down — the messages wait for it, not for the others.</li>
+            <li><En>Adding Loyalty tomorrow = one new queue bound to <code>orders</code>. Orders&apos; code doesn&apos;t change, and it isn&apos;t redeployed.</En><Zh>明天新增 Loyalty = 只需绑定一个新队列到 <code>orders</code>。Orders 的代码不用改，也不需要重新部署。</Zh></li>
+            <li><En>An exchange <strong>stores nothing</strong>. A message published while no queue is bound is simply dropped.</En><Zh>exchange <strong>不存储任何内容</strong>。若发布消息时没有绑定的队列，消息直接丢弃。</Zh></li>
+            <li><En>A queue keeps collecting while its service is down — the messages wait for it, not for the others.</En><Zh>服务宕机时，它对应的队列继续收集消息——消息等待该服务，不影响其他服务。</Zh></li>
           </ul>
         </div>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Exchange type</th>
-              <th>Copies a message to…</th>
+              <th><En>Exchange type</En><Zh>交换机类型</Zh></th>
+              <th><En>Copies a message to…</En><Zh>将消息复制到……</Zh></th>
             </tr>
           </thead>
           <tbody>
@@ -465,25 +472,26 @@ await channel.consume("inventory.q", async (msg) => {
               <td>
                 <code>fanout</code>
               </td>
-              <td>Every bound queue</td>
+              <td><En>Every bound queue</En><Zh>所有绑定的队列</Zh></td>
             </tr>
             <tr>
               <td>
                 <code>direct</code>
               </td>
-              <td>Queues bound with the exact routing key, e.g. <code>order.placed</code></td>
+              <td><En>Queues bound with the exact routing key, e.g. <code>order.placed</code></En><Zh>与精确 routing key 绑定的队列，如 <code>order.placed</code></Zh></td>
             </tr>
             <tr>
               <td>
                 <code>topic</code>
               </td>
-              <td>Queues whose pattern matches, e.g. <code>order.*</code> gets placed, paid, and shipped</td>
+              <td><En>Queues whose pattern matches, e.g. <code>order.*</code> gets placed, paid, and shipped</En><Zh>模式匹配的队列，如 <code>order.*</code> 匹配 placed、paid、shipped</Zh></td>
             </tr>
           </tbody>
         </table>
         <p>
-          <code>direct</code> — the publisher tags each message with a <strong>routing key</strong>, and a
-          queue is bound to one exact key:
+          <En><code>direct</code> — the publisher tags each message with a <strong>routing key</strong>, and a
+          queue is bound to one exact key:</En>
+          <Zh><code>direct</code> — 发布者为每条消息附上 <strong>routing key（路由键）</strong>，队列绑定到一个精确的 key：</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -497,38 +505,10 @@ await channel.bindQueue("refunds.q", "orders", "order.cancelled");
 channel.publish("orders", "order.cancelled", Buffer.from(JSON.stringify(event)));
 channel.publish("orders", "order.placed", Buffer.from(JSON.stringify(event))); // refunds.q never sees this`}
         />
-        <svg viewBox="0 0 680 250" role="img" aria-label="Orders publishes a message with routing key order.cancelled to the orders exchange, a direct exchange. Three queues are bound to it, each with one exact key: inventory.q to order.placed, shipping.q to order.paid, and refunds.q to order.cancelled. Only refunds.q matches, so only it receives the message; Refunds reads refunds.q, while Inventory and Shipping get nothing.">
-          <Box x={10} y={103} w={90} h={44} kind="primary" label="Orders" />
-          <T x={55} y={166}>publishes with key</T>
-          <T x={55} y={180} color="#e08a3c" bold>order.cancelled</T>
-          <Exchange cx={194} cy={125} label="orders" sub="direct" />
-          <Arrow d="M100,125 L148,125" />
-          {[
-            ["inventory.q", "order.placed", 30],
-            ["shipping.q", "order.paid", 107],
-            ["refunds.q", "order.cancelled", 184],
-          ].map(([q, key, y]) => (
-            <g key={q as string}>
-              <rect x="300" y={y as number} width="130" height="36" rx="6" fill="#f3eefc" stroke="#8e5fd6" strokeWidth="1.5" />
-              <T x={365} y={(y as number) + 15} size={11} color="#1c1c1c" bold>{q}</T>
-              <T x={365} y={(y as number) + 28} size={9}>bound: {key}</T>
-            </g>
-          ))}
-          <Arrow d="M238,122 Q268,50 298,48" dashed />
-          <Arrow d="M238,125 L298,125" dashed />
-          <Arrow d="M238,128 Q268,200 298,202" ink="orange" />
-          <T x={194} y={180} color="#e08a3c">only the exact key matches</T>
-          <Box x={500} y={31} w={160} h={34} kind="muted" label="Inventory" sub="gets nothing" size={11} />
-          <Box x={500} y={108} w={160} h={34} kind="muted" label="Shipping" sub="gets nothing" size={11} />
-          <Box x={500} y={185} w={160} h={34} label="Refunds" size={11} />
-          <Arrow d="M430,48 L498,48" />
-          <Arrow d="M430,125 L498,125" />
-          <Arrow d="M430,202 L498,202" />
-          <T x={365} y={240}>dashed = binding exists, but the key doesn't match</T>
-        </svg>
         <p>
-          <code>topic</code> — keys are dot-separated words, and a queue binds to a <strong>pattern</strong>{" "}
-          instead:
+          <En><code>topic</code> — keys are dot-separated words, and a queue binds to a <strong>pattern</strong>{" "}
+          instead:</En>
+          <Zh><code>topic</code> — key 是以点分隔的词语，队列绑定的是一个<strong>模式</strong>：</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -542,13 +522,13 @@ channel.publish("orders", "order.paid", Buffer.from(JSON.stringify(event))); // 
 channel.publish("orders", "payment.refunded", Buffer.from(JSON.stringify(event))); // → audit.q only`}
         />
         <ul>
-          <li><code>*</code> matches exactly one word, so <code>order.*</code> does not match <code>order.item.added</code></li>
-          <li><code>#</code> matches zero or more words, so <code>order.#</code> does</li>
-          <li>A <code>fanout</code> exchange ignores the routing key completely, which is why our code passes <code>&quot;&quot;</code></li>
+          <li><En><code>*</code> matches exactly one word, so <code>order.*</code> does not match <code>order.item.added</code></En><Zh><code>*</code> 精确匹配一个词，所以 <code>order.*</code> 不匹配 <code>order.item.added</code></Zh></li>
+          <li><En><code>#</code> matches zero or more words, so <code>order.#</code> does</En><Zh><code>#</code> 匹配零个或多个词，所以 <code>order.#</code> 可以匹配</Zh></li>
+          <li><En>A <code>fanout</code> exchange ignores the routing key completely, which is why our code passes <code>&quot;&quot;</code></En><Zh><code>fanout</code> 交换机完全忽略 routing key，这就是代码传入 <code>&quot;&quot;</code> 的原因</Zh></li>
         </ul>
 
-        <h4 className="topic">B.5 The same thing on AWS: SQS + SNS</h4>
-        <p>AWS sells both halves of this pattern as managed services — no broker to run:</p>
+        <h4 className="topic"><En>B.5 The same thing on AWS: SQS + SNS</En><Zh>B.5 AWS 上的同等方案：SQS + SNS</Zh></h4>
+        <p><En>AWS sells both halves of this pattern as managed services — no broker to run:</En><Zh>AWS 将这一模式的两个组件作为托管服务提供——无需自己运行 broker：</Zh></p>
         <svg viewBox="0 0 680 230" role="img" aria-label="Orders publishes to an SNS topic called order-placed. SNS pushes a copy into three SQS queues, one each for Inventory, Notifications, and Loyalty — the same shape as a RabbitMQ fanout exchange with three queues.">
           <Box x={10} y={93} w={90} h={44} kind="primary" label="Orders" />
           <Exchange cx={194} cy={115} label="SNS topic" sub="order-placed" />
@@ -582,73 +562,74 @@ channel.publish("orders", "payment.refunded", Buffer.from(JSON.stringify(event))
           </thead>
           <tbody>
             <tr>
-              <td>Queue</td>
+              <td><En>Queue</En><Zh>队列</Zh></td>
               <td>SQS queue</td>
             </tr>
             <tr>
-              <td>Fanout exchange</td>
+              <td><En>Fanout exchange</En><Zh>Fanout 交换机</Zh></td>
               <td>SNS topic</td>
             </tr>
             <tr>
-              <td>Binding a queue to an exchange</td>
-              <td>Subscribing an SQS queue to an SNS topic</td>
+              <td><En>Binding a queue to an exchange</En><Zh>将队列绑定到交换机</Zh></td>
+              <td><En>Subscribing an SQS queue to an SNS topic</En><Zh>将 SQS 队列订阅到 SNS topic</Zh></td>
             </tr>
             <tr>
               <td>
                 <code>ack</code>
               </td>
               <td>
-                <code>DeleteMessage</code> — until then, the message is only hidden for a visibility timeout
+                <En><code>DeleteMessage</code> — until then, the message is only hidden for a visibility timeout</En>
+                <Zh><code>DeleteMessage</code> — 在此之前，消息仅在可见性超时期间被隐藏</Zh>
               </td>
             </tr>
             <tr>
-              <td>Dead-letter queue</td>
+              <td><En>Dead-letter queue</En><Zh>死信队列</Zh></td>
               <td>SQS redrive policy → a DLQ</td>
             </tr>
             <tr>
-              <td>You run and patch the broker</td>
-              <td>AWS runs it; you pay per request</td>
+              <td><En>You run and patch the broker</En><Zh>你自己运维和修补 broker</Zh></td>
+              <td><En>AWS runs it; you pay per request</En><Zh>AWS 运维，按请求付费</Zh></td>
             </tr>
           </tbody>
         </table>
-        <p className="callout">&quot;SNS fan-out to SQS&quot; is the same pattern as an exchange with one queue per subscriber, just managed.</p>
+        <p className="callout"><En>&quot;SNS fan-out to SQS&quot; is the same pattern as an exchange with one queue per subscriber, just managed.</En><Zh>"SNS 广播到 SQS"与 exchange 加每个订阅者一个队列的模式完全相同，只是由 AWS 托管。</Zh></p>
 
-        <h4 className="topic">B.6 Where queues run out</h4>
+        <h4 className="topic"><En>B.6 Where queues run out</En><Zh>B.6 队列的局限</Zh></h4>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>How a queue works</th>
-              <th>What that costs you</th>
+              <th><En>How a queue works</En><Zh>队列的工作方式</Zh></th>
+              <th><En>What that costs you</En><Zh>带来的代价</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>An acked message is deleted</td>
-              <td>No history. Fix a bug in a consumer and you can&apos;t re-run last week&apos;s orders through it</td>
+              <td><En>An acked message is deleted</En><Zh>ack 后消息被删除</Zh></td>
+              <td><En>No history. Fix a bug in a consumer and you can&apos;t re-run last week&apos;s orders through it</En><Zh>没有历史记录。修复消费者的 bug 后，无法重跑上周的订单</Zh></td>
             </tr>
             <tr>
-              <td>A queue only collects from the moment it&apos;s bound</td>
-              <td>A Fraud service added today can&apos;t learn from last month&apos;s orders</td>
+              <td><En>A queue only collects from the moment it&apos;s bound</En><Zh>队列只从绑定那一刻起收集消息</Zh></td>
+              <td><En>A Fraud service added today can&apos;t learn from last month&apos;s orders</En><Zh>今天新增的 Fraud 服务无法从上个月的订单中学习</Zh></td>
             </tr>
             <tr>
-              <td>Competing consumers take whatever&apos;s next</td>
-              <td>Two events for the same order can be handled out of order</td>
+              <td><En>Competing consumers take whatever&apos;s next</En><Zh>竞争消费者取下一条可用消息</Zh></td>
+              <td><En>Two events for the same order can be handled out of order</En><Zh>同一订单的两个事件可能被乱序处理</Zh></td>
             </tr>
             <tr>
-              <td>Every subscriber gets its own copy of every message</td>
-              <td>At millions of events a second and dozens of subscribers, all that copying gets expensive</td>
+              <td><En>Every subscriber gets its own copy of every message</En><Zh>每个订阅者都获得每条消息的独立副本</Zh></td>
+              <td><En>At millions of events a second and dozens of subscribers, all that copying gets expensive</En><Zh>每秒数百万条事件加上数十个订阅者，大量复制开销变得很大</Zh></td>
             </tr>
           </tbody>
         </table>
-        <p className="callout">A queue is a to-do list: once a job is done, it&apos;s crossed off. Some systems need a <em>record</em> instead.</p>
+        <p className="callout"><En>A queue is a to-do list: once a job is done, it&apos;s crossed off. Some systems need a <em>record</em> instead.</En><Zh>队列是一份待办清单：任务完成就划掉。有些系统需要的是一份<em>记录</em>。</Zh></p>
 
         {/* ============================================================ */}
-        <h3 className="part">Part C — Kafka: a log, not a mailbox</h3>
+        <h3 className="part"><En>Part C — Kafka: a log, not a mailbox</En><Zh>C 部分 — Kafka：日志，而非邮箱</Zh></h3>
 
-        <h4 className="topic">C.1 A different model, not an upgrade</h4>
+        <h4 className="topic"><En>C.1 A different model, not an upgrade</En><Zh>C.1 不同的模型，而非升级版</Zh></h4>
         <ul>
-          <li><strong>A mailbox</strong> (a queue): once you take a letter out, it&apos;s gone from the box.</li>
-          <li><strong>A group chat&apos;s history</strong> (Kafka): nothing is removed when read — each reader just remembers how far they&apos;ve scrolled.</li>
+          <li><En><strong>A mailbox</strong> (a queue): once you take a letter out, it&apos;s gone from the box.</En><Zh><strong>邮箱</strong>（队列）：取出信件后，信件就从箱子里消失了。</Zh></li>
+          <li><En><strong>A group chat&apos;s history</strong> (Kafka): nothing is removed when read — each reader just remembers how far they&apos;ve scrolled.</En><Zh><strong>群聊记录</strong>（Kafka）：读取后内容不删除——每个读者只记住自己滚动到哪里了。</Zh></li>
         </ul>
         <svg viewBox="0 0 640 165" role="img" aria-label="A log of ten events, numbered 0 to 9, with new events appended on the right. Two readers keep their own bookmark: Analytics is at position 3, Notifications at position 7. Nothing is deleted when read.">
           <T x={60} y={38} anchor="start" color="#1c1c1c" bold>the log — new events are appended on the right →</T>
@@ -671,57 +652,58 @@ channel.publish("orders", "payment.refunded", Buffer.from(JSON.stringify(event))
           </thead>
           <tbody>
             <tr>
-              <td>Mental model</td>
-              <td>Mailbox / to-do list</td>
-              <td>Log / ledger</td>
+              <td><En>Mental model</En><Zh>概念模型</Zh></td>
+              <td><En>Mailbox / to-do list</En><Zh>邮箱 / 待办清单</Zh></td>
+              <td><En>Log / ledger</En><Zh>日志 / 账本</Zh></td>
             </tr>
             <tr>
-              <td>After a message is read</td>
-              <td>Deleted</td>
-              <td>Kept — for a retention period (e.g. 7 days) or forever</td>
+              <td><En>After a message is read</En><Zh>消息被读取后</Zh></td>
+              <td><En>Deleted</En><Zh>删除</Zh></td>
+              <td><En>Kept — for a retention period (e.g. 7 days) or forever</En><Zh>保留——在 retention 期内（如 7 天）或永久</Zh></td>
             </tr>
             <tr>
-              <td>Who tracks progress</td>
-              <td>The broker, per message</td>
-              <td>The consumer group, as one number per partition (the offset)</td>
+              <td><En>Who tracks progress</En><Zh>谁追踪进度</Zh></td>
+              <td><En>The broker, per message</En><Zh>broker，逐条消息追踪</Zh></td>
+              <td><En>The consumer group, as one number per partition (the offset)</En><Zh>consumer group，每个 partition 用一个数字追踪（即 offset）</Zh></td>
             </tr>
             <tr>
-              <td>Delivery</td>
-              <td>The broker pushes messages to consumers</td>
-              <td>Consumers pull from the log</td>
+              <td><En>Delivery</En><Zh>投递方式</Zh></td>
+              <td><En>The broker pushes messages to consumers</En><Zh>broker 推送消息给消费者</Zh></td>
+              <td><En>Consumers pull from the log</En><Zh>消费者从日志中拉取</Zh></td>
             </tr>
             <tr>
-              <td>Fan-out</td>
-              <td>An exchange copies into one queue per subscriber</td>
-              <td>Every consumer group reads the same log</td>
+              <td><En>Fan-out</En><Zh>广播</Zh></td>
+              <td><En>An exchange copies into one queue per subscriber</En><Zh>exchange 将消息复制到每个订阅者的队列</Zh></td>
+              <td><En>Every consumer group reads the same log</En><Zh>每个 consumer group 读取同一份日志</Zh></td>
             </tr>
             <tr>
-              <td>Replay</td>
-              <td>No</td>
-              <td>Yes — move the offset back</td>
+              <td><En>Replay</En><Zh>回放</Zh></td>
+              <td><En>No</En><Zh>不支持</Zh></td>
+              <td><En>Yes — move the offset back</En><Zh>支持——将 offset 移回去即可</Zh></td>
             </tr>
             <tr>
-              <td>Ordering</td>
-              <td>Weak once several consumers share a queue</td>
-              <td>Guaranteed within a partition</td>
+              <td><En>Ordering</En><Zh>顺序保证</Zh></td>
+              <td><En>Weak once several consumers share a queue</En><Zh>多个消费者共享队列后顺序较弱</Zh></td>
+              <td><En>Guaranteed within a partition</En><Zh>在 partition 内保证有序</Zh></td>
             </tr>
             <tr>
-              <td>Sweet spot</td>
-              <td>Distributing jobs, commands, moderate volume, flexible routing</td>
-              <td>Event streams, analytics, audit trails, very high throughput</td>
+              <td><En>Sweet spot</En><Zh>适用场景</Zh></td>
+              <td><En>Distributing jobs, commands, moderate volume, flexible routing</En><Zh>分发任务、命令，中等吞吐量，灵活路由</Zh></td>
+              <td><En>Event streams, analytics, audit trails, very high throughput</En><Zh>事件流、分析、审计追踪、极高吞吐量</Zh></td>
             </tr>
           </tbody>
         </table>
         <p className="callout">
-          On AWS, Kafka is <strong>Amazon MSK</strong> (Managed Streaming for Apache Kafka) — the same Kafka,
-          with AWS running the brokers.
+          <En>On AWS, Kafka is <strong>Amazon MSK</strong> (Managed Streaming for Apache Kafka) — the same Kafka,
+          with AWS running the brokers.</En>
+          <Zh>在 AWS 上，Kafka 对应 <strong>Amazon MSK</strong>（Managed Streaming for Apache Kafka）——同样的 Kafka，由 AWS 托管 broker。</Zh>
         </p>
 
-        <h4 className="topic">C.2 Topics and partitions</h4>
+        <h4 className="topic"><En>C.2 Topics and partitions</En><Zh>C.2 Topic 与 partition</Zh></h4>
         <ul>
-          <li>A <strong>topic</strong> is a named log — e.g. <code>orders</code>.</li>
-          <li>A topic is split into <strong>partitions</strong>: separate logs that can be written and read in parallel.</li>
-          <li>Each message has a <strong>key</strong>. Same key → same partition, every time.</li>
+          <li><En>A <strong>topic</strong> is a named log — e.g. <code>orders</code>.</En><Zh><strong>topic</strong> 是一个有名称的日志，如 <code>orders</code>。</Zh></li>
+          <li><En>A topic is split into <strong>partitions</strong>: separate logs that can be written and read in parallel.</En><Zh>topic 被分成多个 <strong>partition（分区）</strong>：各自独立的日志，可以并行写入和读取。</Zh></li>
+          <li><En>Each message has a <strong>key</strong>. Same key → same partition, every time.</En><Zh>每条消息都有一个 <strong>key</strong>。相同的 key 始终路由到相同的 partition。</Zh></li>
         </ul>
         <svg viewBox="0 0 640 190" role="img" aria-label="Orders writes events into the orders topic, which has three partitions. The key is the order id: ord-1001's placed, paid, and shipped events all land in partition 0, in order. ord-1004 goes to partition 1, and ord-1002 to partition 2.">
           <Box x={10} y={73} w={96} h={44} kind="primary" label="Orders" />
@@ -760,14 +742,16 @@ key=carol    → partition 2, offset 0
 key=alice    → partition 0, offset 1     ← same key, same partition; the offset counts up`}
         />
         <p className="callout">
-          Kafka guarantees order <em>within a partition</em>, never across a whole topic — which is why the
-          key matters.
+          <En>Kafka guarantees order <em>within a partition</em>, never across a whole topic — which is why the
+          key matters.</En>
+          <Zh>Kafka 保证<em>同一 partition 内</em>的顺序，而非整个 topic 级别——这就是 key 很重要的原因。</Zh>
         </p>
 
-        <h4 className="topic">C.3 Offsets: the bookmark</h4>
+        <h4 className="topic"><En>C.3 Offsets: the bookmark</En><Zh>C.3 Offset：书签</Zh></h4>
         <p>
-          Every message in a partition has a position, its <strong>offset</strong>. Each consumer group
-          stores one number per partition: the next offset it will read.
+          <En>Every message in a partition has a position, its <strong>offset</strong>. Each consumer group
+          stores one number per partition: the next offset it will read.</En>
+          <Zh>partition 中的每条消息都有一个位置，即它的 <strong>offset（偏移量）</strong>。每个 consumer group 为每个 partition 存储一个数字：它下次要读取的 offset。</Zh>
         </p>
         <svg viewBox="0 0 640 185" role="img" aria-label="One partition with messages at offsets 0 to 9. Offsets 0 to 5 are shaded as already read by the notifications group, whose committed offset is 6. A dashed arrow from offset 6 back to offset 2 shows a reset: replaying from an earlier point. A brand-new group reading from the beginning starts at offset 0.">
           {Array.from({ length: 10 }, (_, i) => (
@@ -783,9 +767,9 @@ key=alice    → partition 0, offset 1     ← same key, same partition; the off
           <T x={291} y={24} color="#e08a3c">reset offsets → replay from 2</T>
         </svg>
         <ul>
-          <li><strong>Resume</strong> — a consumer crashes, restarts, and picks up at its committed offset. Nothing lost.</li>
-          <li><strong>Replay</strong> — fix a bug, move the group&apos;s offset back, and re-process history with the fixed code.</li>
-          <li><strong>Late joiners</strong> — a brand-new group can start at offset 0 and read everything the topic still holds.</li>
+          <li><En><strong>Resume</strong> — a consumer crashes, restarts, and picks up at its committed offset. Nothing lost.</En><Zh><strong>恢复</strong>——消费者崩溃后重启，从已提交的 offset 继续。不丢失任何消息。</Zh></li>
+          <li><En><strong>Replay</strong> — fix a bug, move the group&apos;s offset back, and re-process history with the fixed code.</En><Zh><strong>回放</strong>——修复 bug 后，将 group 的 offset 移回，用修复后的代码重新处理历史消息。</Zh></li>
+          <li><En><strong>Late joiners</strong> — a brand-new group can start at offset 0 and read everything the topic still holds.</En><Zh><strong>后来者</strong>——全新的 consumer group 可以从 offset 0 开始，读取 topic 至今保留的所有内容。</Zh></li>
         </ul>
         <CodeBlock
           language="typescript"
@@ -808,11 +792,12 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
   --group analytics --topic orders --reset-offsets --to-earliest --execute`}
         />
         <p className="callout">
-          <code>fromBeginning</code> only matters the first time a group ever reads a topic. After that, the
-          committed offset decides.
+          <En><code>fromBeginning</code> only matters the first time a group ever reads a topic. After that, the
+          committed offset decides.</En>
+          <Zh><code>fromBeginning</code> 只在 group 第一次读取 topic 时生效。之后由已提交的 offset 决定从哪里读。</Zh>
         </p>
 
-        <h4 className="topic">C.4 Consumer groups: fan-out and scaling in one idea</h4>
+        <h4 className="topic"><En>C.4 Consumer groups: fan-out and scaling in one idea</En><Zh>C.4 Consumer group：广播与扩展合二为一</Zh></h4>
         <svg viewBox="0 0 680 250" role="img" aria-label="The orders topic has three partitions. On the left, the inventory group has four copies: copies 1 to 3 each own one partition, and copy 4 owns nothing and sits idle. On the right, the notifications group has a single copy that reads all three partitions.">
           <rect x="8" y="8" width="176" height="200" rx="10" fill="none" stroke="#7ea6e0" strokeDasharray="5,4" />
           <T x={96} y={26} color="#1c1c1c" bold>group: inventory</T>
@@ -845,10 +830,10 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
         <div className="concept">
           <p className="concept-label">Concept</p>
           <ul>
-            <li><strong>Across groups = fan-out.</strong> Each group has its own offsets, so each gets every event — like one queue per subscriber.</li>
-            <li><strong>Within a group = split the work.</strong> Each partition is owned by exactly one copy — like competing consumers on one queue.</li>
-            <li><strong>Partition count caps parallelism.</strong> Three partitions → at most three busy copies per group; a fourth sits idle.</li>
-            <li>A copy joining or leaving triggers a <strong>rebalance</strong>: the group hands the partitions out again.</li>
+            <li><En><strong>Across groups = fan-out.</strong> Each group has its own offsets, so each gets every event — like one queue per subscriber.</En><Zh><strong>跨 group = 广播。</strong>每个 group 有自己的 offset，因此每个 group 都能收到每个事件——类似每个订阅者一个队列。</Zh></li>
+            <li><En><strong>Within a group = split the work.</strong> Each partition is owned by exactly one copy — like competing consumers on one queue.</En><Zh><strong>同一 group 内 = 分担工作。</strong>每个 partition 恰好由一个副本负责——类似同一队列上的竞争消费者。</Zh></li>
+            <li><En><strong>Partition count caps parallelism.</strong> Three partitions → at most three busy copies per group; a fourth sits idle.</En><Zh><strong>partition 数量限制并行度。</strong>三个 partition → 每个 group 最多三个副本同时工作；第四个副本空闲。</Zh></li>
+            <li><En>A copy joining or leaving triggers a <strong>rebalance</strong>: the group hands the partitions out again.</En><Zh>副本加入或离开会触发 <strong>rebalance（再平衡）</strong>：group 重新分配各 partition 的归属。</Zh></li>
           </ul>
         </div>
         <CodeBlock
@@ -859,66 +844,68 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
 🔀 [inventory :4322] I own partitions: none (idle)`}
         />
 
-        <h4 className="topic">C.5 Choosing: a queue or Kafka</h4>
+        <h4 className="topic"><En>C.5 Choosing: a queue or Kafka</En><Zh>C.5 如何选择：队列还是 Kafka</Zh></h4>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Scenario</th>
-              <th>Pick</th>
-              <th>Why</th>
+              <th><En>Scenario</En><Zh>场景</Zh></th>
+              <th><En>Pick</En><Zh>选择</Zh></th>
+              <th><En>Why</En><Zh>原因</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Send a welcome email after sign-up</td>
-              <td>Queue</td>
-              <td>A job to do once; nobody needs it afterwards</td>
+              <td><En>Send a welcome email after sign-up</En><Zh>注册后发送欢迎邮件</Zh></td>
+              <td><En>Queue</En><Zh>队列</Zh></td>
+              <td><En>A job to do once; nobody needs it afterwards</En><Zh>只需执行一次，之后无人需要</Zh></td>
             </tr>
             <tr>
-              <td>Resize every uploaded image</td>
-              <td>Queue</td>
-              <td>Spread work across workers</td>
+              <td><En>Resize every uploaded image</En><Zh>对每张上传图片进行压缩</Zh></td>
+              <td><En>Queue</En><Zh>队列</Zh></td>
+              <td><En>Spread work across workers</En><Zh>将任务分发给多个工作者</Zh></td>
             </tr>
             <tr>
-              <td>Several teams react to orders, and new teams keep appearing</td>
-              <td>Either</td>
-              <td>Exchange/SNS fan-out handles this at moderate scale</td>
+              <td><En>Several teams react to orders, and new teams keep appearing</En><Zh>多个团队响应订单事件，且团队不断增加</Zh></td>
+              <td><En>Either</En><Zh>均可</Zh></td>
+              <td><En>Exchange/SNS fan-out handles this at moderate scale</En><Zh>exchange / SNS 广播在中等规模下足够用</Zh></td>
             </tr>
             <tr>
-              <td>A new service must learn from past orders</td>
+              <td><En>A new service must learn from past orders</En><Zh>新服务需要从历史订单中学习</Zh></td>
               <td>Kafka</td>
-              <td>Retention + a new group starting at offset 0</td>
+              <td><En>Retention + a new group starting at offset 0</En><Zh>retention + 新 group 从 offset 0 开始</Zh></td>
             </tr>
             <tr>
-              <td>Clickstream analytics, millions of events a second</td>
+              <td><En>Clickstream analytics, millions of events a second</En><Zh>点击流分析，每秒数百万事件</Zh></td>
               <td>Kafka</td>
-              <td>Built for throughput; partitions scale out</td>
+              <td><En>Built for throughput; partitions scale out</En><Zh>为高吞吐量而生；partition 可水平扩展</Zh></td>
             </tr>
             <tr>
-              <td>Audit trail, or re-processing after a bug</td>
+              <td><En>Audit trail, or re-processing after a bug</En><Zh>审计追踪，或 bug 修复后重新处理</Zh></td>
               <td>Kafka</td>
-              <td>The log is the history; replay by moving offsets</td>
+              <td><En>The log is the history; replay by moving offsets</En><Zh>日志即历史；移动 offset 即可回放</Zh></td>
             </tr>
           </tbody>
         </table>
         <p className="callout">
-          Most systems start with a queue. Kafka earns its extra operational weight when you need history or
+          <En>Most systems start with a queue. Kafka earns its extra operational weight when you need history or
           massive scale. On AWS, besides MSK, there&apos;s <strong>Kinesis</strong> — AWS&apos;s own log-style
-          stream.
+          stream.</En>
+          <Zh>大多数系统从队列开始。当需要历史记录或超大规模时，Kafka 的额外运维成本才值得付出。AWS 上除 MSK 外，还有 <strong>Kinesis</strong>——AWS 自家的日志流服务。</Zh>
         </p>
 
         {/* ============================================================ */}
         <hr className="section-divider" />
         <p className="section-label">Advanced</p>
-        <p className="section-note">Past today&apos;s bare minimum — what it takes to live with async in production.</p>
+        <p className="section-note"><En>Past today&apos;s bare minimum — what it takes to live with async in production.</En><Zh>超出今天必知范围——在生产环境中与异步系统共存所需掌握的内容。</Zh></p>
 
-        <h3 className="part">Part D — Living with async</h3>
+        <h3 className="part"><En>Part D — Living with async</En><Zh>D 部分 — 与异步系统共存</Zh></h3>
 
-        <h4 className="topic">D.1 Duplicates are normal: at-least-once delivery</h4>
+        <h4 className="topic"><En>D.1 Duplicates are normal: at-least-once delivery</En><Zh>D.1 重复是正常的：至少一次投递</Zh></h4>
         <p>
-          A consumer does two things with every message: <strong>the work</strong> (send the email) and{" "}
+          <En>A consumer does two things with every message: <strong>the work</strong> (send the email) and{" "}
           <strong>the ack</strong> (tell the broker &quot;done, delete it&quot;). A crash can land between the two —
-          so which one goes first?
+          so which one goes first?</En>
+          <Zh>消费者处理每条消息时做两件事：<strong>执行任务</strong>（发邮件）和<strong>发送 ack</strong>（告知 broker "完成，删除它"）。崩溃可能发生在两者之间——那先做哪个？</Zh>
         </p>
         <svg viewBox="0 0 680 235" role="img" aria-label="Two orderings of work and ack, each with a crash in the middle. Work then ack: the email is sent, the consumer crashes before acking, the broker redelivers the message, and the email is sent twice — a duplicate. Ack then work: the message is acked and deleted, the consumer crashes before sending the email, the broker has nothing left to resend, and the email is never sent — lost.">
           <T x={6} y={58} anchor="start" size={12} color="#1c1c1c" bold>Work, then ack</T>
@@ -955,21 +942,21 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Order</th>
-              <th>A crash in between…</th>
-              <th>Called</th>
+              <th><En>Order</En><Zh>顺序</Zh></th>
+              <th><En>A crash in between…</En><Zh>中间崩溃……</Zh></th>
+              <th><En>Called</En><Zh>称为</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Work, then ack</td>
-              <td>The message comes back and the work runs <strong>twice</strong></td>
-              <td>At-least-once</td>
+              <td><En>Work, then ack</En><Zh>先执行，后 ack</Zh></td>
+              <td><En>The message comes back and the work runs <strong>twice</strong></En><Zh>消息重新投递，任务执行<strong>两次</strong></Zh></td>
+              <td><En>At-least-once</En><Zh>至少一次</Zh></td>
             </tr>
             <tr>
-              <td>Ack, then work</td>
-              <td>The message is gone and the work <strong>never</strong> runs</td>
-              <td>At-most-once</td>
+              <td><En>Ack, then work</En><Zh>先 ack，后执行</Zh></td>
+              <td><En>The message is gone and the work <strong>never</strong> runs</En><Zh>消息已删除，任务<strong>永远</strong>不会执行</Zh></td>
+              <td><En>At-most-once</En><Zh>至多一次</Zh></td>
             </tr>
           </tbody>
         </table>
@@ -977,29 +964,33 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
           <p className="concept-label">Concept</p>
           <ul>
             <li>
-              Almost every system picks <strong>at-least-once</strong>. A lost message is silent — nobody notices
-              the stock was never deducted. A duplicate is something you can guard against in code.
+              <En>Almost every system picks <strong>at-least-once</strong>. A lost message is silent — nobody notices
+              the stock was never deducted. A duplicate is something you can guard against in code.</En>
+              <Zh>几乎所有系统都选择<strong>至少一次</strong>。丢失的消息是无声的——没人会注意到库存没有被扣减。重复消息则可以在代码中防范。</Zh>
             </li>
             <li>
-              So duplicates aren&apos;t a rare bug: crashes, deploys, and network blips all cause redelivery. Every
-              consumer has to expect them.
+              <En>So duplicates aren&apos;t a rare bug: crashes, deploys, and network blips all cause redelivery. Every
+              consumer has to expect them.</En>
+              <Zh>因此重复消息不是罕见的 bug：崩溃、部署和网络抖动都会触发重新投递。每个消费者都必须做好应对准备。</Zh>
             </li>
             <li>
-              The guard is making the consumer <strong>idempotent</strong>: handling the same message twice ends in
-              the same state as handling it once.
+              <En>The guard is making the consumer <strong>idempotent</strong>: handling the same message twice ends in
+              the same state as handling it once.</En>
+              <Zh>防范方法是让消费者具备<strong>幂等性（idempotent）</strong>：处理同一条消息两次与处理一次结果相同。</Zh>
             </li>
             <li>
-              &quot;Exactly-once&quot; exists in Kafka only for Kafka-to-Kafka work. The moment a handler writes to a
-              database or sends an email, you&apos;re back to at-least-once.
+              <En>&quot;Exactly-once&quot; exists in Kafka only for Kafka-to-Kafka work. The moment a handler writes to a
+              database or sends an email, you&apos;re back to at-least-once.</En>
+              <Zh>"精确一次"在 Kafka 中仅适用于 Kafka 到 Kafka 的操作。一旦 handler 写入数据库或发送邮件，就回到了至少一次的语义。</Zh>
             </li>
           </ul>
         </div>
-        <p>Some work is already safe to repeat; some isn&apos;t:</p>
+        <p><En>Some work is already safe to repeat; some isn&apos;t:</En><Zh>有些操作天然可以重复，有些则不行：</Zh></p>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>Safe to repeat — same result the 2nd time</th>
-              <th>Not safe — the 2nd time does it again</th>
+              <th><En>Safe to repeat — same result the 2nd time</En><Zh>可以重复——第二次结果相同</Zh></th>
+              <th><En>Not safe — the 2nd time does it again</En><Zh>不可重复——第二次会再执行一遍</Zh></th>
             </tr>
           </thead>
           <tbody>
@@ -1008,26 +999,30 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
                 <code>SET status = &apos;paid&apos;</code>
               </td>
               <td>
-                <code>SET qty = qty - 1</code> — stock drops twice
+                <En><code>SET qty = qty - 1</code> — stock drops twice</En>
+                <Zh><code>SET qty = qty - 1</code> — 库存被扣两次</Zh>
               </td>
             </tr>
             <tr>
               <td>
-                <code>DELETE</code> a row by its id
+                <En><code>DELETE</code> a row by its id</En>
+                <Zh>按 id <code>DELETE</code> 一行</Zh>
               </td>
               <td>
-                <code>INSERT</code> a new row — two rows
+                <En><code>INSERT</code> a new row — two rows</En>
+                <Zh><code>INSERT</code> 新行——会产生两行</Zh>
               </td>
             </tr>
             <tr>
-              <td>Upsert a row keyed by the order id</td>
-              <td>Send an email, charge a card, add loyalty points</td>
+              <td><En>Upsert a row keyed by the order id</En><Zh>以 order id 为键做 upsert</Zh></td>
+              <td><En>Send an email, charge a card, add loyalty points</En><Zh>发送邮件、扣款、添加积分</Zh></td>
             </tr>
           </tbody>
         </table>
         <p>
-          For the unsafe kind, remember which events you&apos;ve already handled. Every event carries a unique{" "}
-          <code>eventId</code>; record it <strong>in the same transaction</strong> as the work:
+          <En>For the unsafe kind, remember which events you&apos;ve already handled. Every event carries a unique{" "}
+          <code>eventId</code>; record it <strong>in the same transaction</strong> as the work:</En>
+          <Zh>对于不可重复的操作，需要记录哪些事件已经处理过。每个事件都携带唯一的 <code>eventId</code>；将它与业务操作<strong>放在同一个事务中</strong>记录：</Zh>
         </p>
         <CodeBlock
           language="typescript"
@@ -1063,52 +1058,56 @@ export async function handleOrderPlaced(event: OrderPlaced) {
         />
         <ul>
           <li>
-            <strong>Why the event id, not the order id?</strong> <code>OrderPlaced</code> and <code>OrderPaid</code>{" "}
-            for the same order are different events, and both must run.
+            <En><strong>Why the event id, not the order id?</strong> <code>OrderPlaced</code> and <code>OrderPaid</code>{" "}
+            for the same order are different events, and both must run.</En>
+            <Zh><strong>为什么用 event id 而不是 order id？</strong>同一订单的 <code>OrderPlaced</code> 和 <code>OrderPaid</code> 是不同的事件，两者都必须被处理。</Zh>
           </li>
           <li>
-            <strong>Why one transaction?</strong> Record the id and crash before the work, and the redelivery is
-            wrongly skipped. Together, they either both happen or neither does.
+            <En><strong>Why one transaction?</strong> Record the id and crash before the work, and the redelivery is
+            wrongly skipped. Together, they either both happen or neither does.</En>
+            <Zh><strong>为什么用同一个事务？</strong>如果记录了 id 却在执行任务前崩溃，重新投递会被错误地跳过。放在一个事务里，要么都执行，要么都不执行。</Zh>
           </li>
           <li>
-            <strong>Work outside your database</strong> (an email, a card charge) can&apos;t join that transaction.
+            <En><strong>Work outside your database</strong> (an email, a card charge) can&apos;t join that transaction.
             Pass the event id to the provider as an idempotency key — Stripe, for one, answers a repeated key with
-            the first result instead of charging again.
+            the first result instead of charging again.</En>
+            <Zh><strong>数据库之外的操作</strong>（发邮件、扣款）无法加入事务。将 event id 作为幂等键传给服务提供商——Stripe 等服务对相同的幂等键只响应第一次的结果，不会重复扣款。</Zh>
           </li>
         </ul>
 
-        <h4 className="topic">D.2 When a message keeps failing: the dead-letter queue</h4>
+        <h4 className="topic"><En>D.2 When a message keeps failing: the dead-letter queue</En><Zh>D.2 消息持续失败时：死信队列</Zh></h4>
         <ul>
-          <li>A <strong>poison message</strong> — bad JSON, a missing field — fails every time it&apos;s retried.</li>
-          <li>Requeued forever, it blocks the queue behind it and burns CPU.</li>
-          <li>Fix: after it fails (or after N retries), move it to a <strong>dead-letter queue</strong> for a human to look at.</li>
+          <li><En>A <strong>poison message</strong> — bad JSON, a missing field — fails every time it&apos;s retried.</En><Zh><strong>毒消息（poison message）</strong>——格式错误的 JSON、缺少必需字段——每次重试都会失败。</Zh></li>
+          <li><En>Requeued forever, it blocks the queue behind it and burns CPU.</En><Zh>无限重新入队会阻塞后续消息并浪费 CPU。</Zh></li>
+          <li><En>Fix: after it fails (or after N retries), move it to a <strong>dead-letter queue</strong> for a human to look at.</En><Zh>解决方案：失败后（或经过 N 次重试后），将其移入<strong>死信队列（dead-letter queue）</strong>，等待人工排查。</Zh></li>
         </ul>
         <table className="ref-table">
           <thead>
             <tr>
               <th>Broker</th>
-              <th>Dead-letter support</th>
+              <th><En>Dead-letter support</En><Zh>死信队列支持</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>RabbitMQ</td>
-              <td>Built in — declare the queue with a dead-letter exchange, then reject without requeue</td>
+              <td><En>Built in — declare the queue with a dead-letter exchange, then reject without requeue</En><Zh>内置——声明队列时指定 dead-letter exchange，然后拒绝消息且不重新入队</Zh></td>
             </tr>
             <tr>
               <td>SQS</td>
-              <td>Built in — a redrive policy moves a message to a DLQ after N failed receives</td>
+              <td><En>Built in — a redrive policy moves a message to a DLQ after N failed receives</En><Zh>内置——redrive policy 在 N 次接收失败后将消息移入 DLQ</Zh></td>
             </tr>
             <tr>
               <td>Kafka</td>
               <td>
-                <strong>Not built in.</strong> Your consumer publishes the bad event to a topic of your own (e.g.{" "}
-                <code>orders.dlq</code>) and commits past it
+                <En><strong>Not built in.</strong> Your consumer publishes the bad event to a topic of your own (e.g.{" "}
+                <code>orders.dlq</code>) and commits past it</En>
+                <Zh><strong>不内置。</strong>由消费者自行将坏消息发布到自定义 topic（如 <code>orders.dlq</code>），然后提交 offset 跳过它</Zh>
               </td>
             </tr>
           </tbody>
         </table>
-        <p>In RabbitMQ:</p>
+        <p><En>In RabbitMQ:</En><Zh>在 RabbitMQ 中：</Zh></p>
         <CodeBlock
           language="typescript"
           code={`// The queue is declared with a dead-letter exchange…
@@ -1126,39 +1125,46 @@ try {
 }`}
         />
 
-        <h4 className="topic">D.3 What async costs you</h4>
+        <h4 className="topic"><En>D.3 What async costs you</En><Zh>D.3 异步的代价</Zh></h4>
         <table className="ref-table">
           <thead>
             <tr>
-              <th>You gain</th>
-              <th>You pay</th>
+              <th><En>You gain</En><Zh>收益</Zh></th>
+              <th><En>You pay</En><Zh>代价</Zh></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Fast responses; one slow service doesn&apos;t slow the rest</td>
-              <td>The UI shows &quot;processing&quot; states — the data is eventually consistent</td>
+              <td><En>Fast responses; one slow service doesn&apos;t slow the rest</En><Zh>响应更快；一个慢服务不会拖慢其他服务</Zh></td>
+              <td><En>The UI shows &quot;processing&quot; states — the data is eventually consistent</En><Zh>UI 需要展示"处理中"状态——数据是最终一致的</Zh></td>
             </tr>
             <tr>
-              <td>New subscribers without touching the publisher</td>
-              <td>&quot;Who reacts to this event?&quot; is no longer answered by reading one file</td>
+              <td><En>New subscribers without touching the publisher</En><Zh>新增订阅者无需修改发布者</Zh></td>
+              <td><En>&quot;Who reacts to this event?&quot; is no longer answered by reading one file</En><Zh>"谁响应这个事件？"不再能通过读一个文件来回答</Zh></td>
             </tr>
             <tr>
-              <td>Bursts are buffered</td>
-              <td>A broker to run, monitor, and pay for</td>
+              <td><En>Bursts are buffered</En><Zh>流量峰值被缓冲</Zh></td>
+              <td><En>A broker to run, monitor, and pay for</En><Zh>需要运维、监控并为 broker 付费</Zh></td>
             </tr>
             <tr>
-              <td>Services fail independently</td>
-              <td>Debugging one request across hops — a correlation ID goes in every message&apos;s headers</td>
+              <td><En>Services fail independently</En><Zh>服务独立失败</Zh></td>
+              <td><En>Debugging one request across hops — a correlation ID goes in every message&apos;s headers</En><Zh>跨多个跳点调试一个请求——每条消息的 header 中都需要加入 correlation ID</Zh></td>
             </tr>
             <tr>
-              <td>Teams deploy independently</td>
-              <td>Event shapes are now contracts; changing one is a versioning problem</td>
+              <td><En>Teams deploy independently</En><Zh>团队独立部署</Zh></td>
+              <td><En>Event shapes are now contracts; changing one is a versioning problem</En><Zh>事件结构现在是契约；修改契约是一个版本管理问题</Zh></td>
             </tr>
           </tbody>
         </table>
         <p className="callout">
-          Real systems mix both: sync for questions you need answered, async for facts you&apos;re announcing.
+          <En>Real systems mix both: sync for questions you need answered, async for facts you&apos;re announcing.</En>
+          <Zh>真实系统两者兼用：需要回答的问题用同步，公告已发生事实用异步。</Zh>
+        </p>
+        <p>
+          <En>Going further — the outbox pattern, sagas, consumer lag, and choosing a partition count:{" "}
+          <Link to="/additional/backend/event-driven-deep-dive/notes">Event-Driven Deep Dive</Link>.</En>
+          <Zh>深入了解——outbox 模式、saga、consumer lag 以及如何选择 partition 数量：
+          <Link to="/additional/backend/event-driven-deep-dive/notes">Event-Driven Deep Dive</Link>。</Zh>
         </p>
       </section>
     </div>

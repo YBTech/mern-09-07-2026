@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 
 import IdeShortcuts from "./general/IdeShortcuts";
@@ -112,6 +112,19 @@ import D18Lecture from "./week4/day18-event-driven-architecture/lecture/Lecture"
 import D18Notes from "./week4/day18-event-driven-architecture/Notes";
 import D18Concepts from "./week4/day18-event-driven-architecture/Concepts";
 import D18Lab from "./week4/day18-event-driven-architecture/Lab";
+
+import D19Lecture from "./week4/day19-realtime-graphql/lecture/Lecture";
+import D19GraphqlDemo from "./week4/day19-realtime-graphql/lecture/GraphqlDemo";
+import D19RealtimeDemo from "./week4/day19-realtime-graphql/lecture/RealtimeDemo";
+import D19GraphqlNotes from "./week4/day19-realtime-graphql/Notes/Graphql";
+import D19RealtimeNotes from "./week4/day19-realtime-graphql/Notes/Realtime";
+import D19Concepts from "./week4/day19-realtime-graphql/Concepts";
+import D20Lecture from "./week4/day20-system-design/lecture/Lecture";
+import D20Notes from "./week4/day20-system-design/Notes";
+import D20Concepts from "./week4/day20-system-design/Concepts";
+import D21Lecture from "./week5/day21-testing-code-quality/lecture/Lecture";
+import D21Notes from "./week5/day21-testing-code-quality/Notes";
+import D21Concepts from "./week5/day21-testing-code-quality/Concepts";
 
 function App() {
   return (
@@ -414,6 +427,21 @@ function App() {
       <Route path="/week4/day18-event-driven-architecture/notes" element={<D18Notes />} />
       <Route path="/week4/day18-event-driven-architecture/concepts" element={<D18Concepts />} />
       <Route path="/week4/day18-event-driven-architecture/lab" element={<D18Lab />} />
+
+      <Route path="/week4/day19-realtime-graphql/lecture" element={<D19Lecture />} />
+      <Route path="/week4/day19-realtime-graphql/lecture/graphql" element={<D19GraphqlDemo />} />
+      <Route path="/week4/day19-realtime-graphql/lecture/realtime" element={<D19RealtimeDemo />} />
+      <Route path="/week4/day19-realtime-graphql/notes" element={<Navigate to="/week4/day19-realtime-graphql/notes/graphql" replace />} />
+      <Route path="/week4/day19-realtime-graphql/notes/graphql" element={<D19GraphqlNotes />} />
+      <Route path="/week4/day19-realtime-graphql/notes/realtime" element={<D19RealtimeNotes />} />
+      <Route path="/week4/day19-realtime-graphql/concepts" element={<D19Concepts />} />
+
+      <Route path="/week4/day20-system-design/lecture" element={<D20Lecture />} />
+      <Route path="/week4/day20-system-design/notes" element={<D20Notes />} />
+      <Route path="/week4/day20-system-design/concepts" element={<D20Concepts />} />
+      <Route path="/week5/day21-testing-code-quality/lecture" element={<D21Lecture />} />
+      <Route path="/week5/day21-testing-code-quality/notes" element={<D21Notes />} />
+      <Route path="/week5/day21-testing-code-quality/concepts" element={<D21Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
