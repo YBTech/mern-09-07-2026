@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import DayNav from "./components/DayNav";
 import {
+  EVALUATION_PAGE,
   GENERAL_NOTES,
   PAGE_LABELS,
   WEEKS,
@@ -127,6 +128,19 @@ export default function Home() {
               <span className="not-built">{note.blurb}</span>
             </li>
           ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2>Final Evaluation</h2>
+        <ul>
+          <li>
+            <strong>
+              <Link to={EVALUATION_PAGE.href}>{EVALUATION_PAGE.title}</Link>
+            </strong>
+            <br />
+            <span className="not-built">{EVALUATION_PAGE.blurb}</span>
+          </li>
         </ul>
       </section>
     </div>
