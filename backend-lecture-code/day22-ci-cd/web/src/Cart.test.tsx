@@ -50,6 +50,10 @@ afterEach(() => {
 });
 
 describe("<Cart />", () => {
+  it("fail on purpose", async ()=>{
+    expect(true).toBeFalsy();
+  })
+
   it("loads the products from the API", async () => {
     render(<Cart />);
     expect(await screen.findByText("Mechanical keyboard")).toBeInTheDocument();
