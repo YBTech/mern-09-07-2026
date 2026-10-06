@@ -1,0 +1,160 @@
+# Day 22 — the CI/CD pipeline for the demo in backend-lecture-code/day22-ci-cd.
+#
+#   any branch:  CI only (type check, test, build)
+#   main:        CI → build the Docker image → deploy it to DEV automatically
+#   prod:        not here. A human releases to prod with the "Day 22 Release to prod"
+#                workflow (day22-release.yml).
+#
+# GitHub only runs workflows from <repo root>/.github/workflows/, never from a subfolder.
+# This copy lives inside the day's folder so copying the folder brings it along. Install both
+# files once from the repo root (see README):
+#   mkdir -p .github/workflows && cp backend-lecture-code/day22-ci-cd/.github/workflows/*.yml .github/workflows/
+
+name: Day 22 CI/CD
+
+# WHEN does the pipeline run?
+on:
+  push:
+    # Every branch, but only when something in this demo (or this file) changed.
+    # A commit that only touches other folders won't start a run.
+    paths:
+      - "backend-lecture-code/day22-ci-cd/**"
+      - ".github/workflows/day22-ci.yml"
+  # Adds a "Run workflow" button on the Actions tab, handy for a live demo.
+  workflow_dispatch:
+
+# WHAT does it run? Jobs run in parallel on separate fresh machines unless one "needs" another.
+jobs:
+  # ───────────────────────────── CI ─────────────────────────────
+  api:
+    name: "API: type check, test, build"
+    runs-on: ubuntu-latest # a brand-new, throwaway Linux machine for every run
+    defaults:
+      run:
+        working-directory: backend-lecture-code/day22-ci-cd/api
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm # reuse downloaded packages between runs
+          cache-dependency-path: backend-lecture-code/day22-ci-cd/api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci # exact versions from package-lock.json, nothing else
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Run tests (Vitest + Supertest)
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  web:
+    name: "Web: type check, test, build"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend-lecture-code/day22-ci-cd/web
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend-lecture-code/day22-ci-cd/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Run tests (Vitest + React Testing Library)
+        run: npm test
+
+      - name: Build the production bundle
+        run: npm run build
+
+  # The gate: only runs if BOTH jobs above passed. If either is red, everything after is skipped.
+  all-checks-passed:
+    name: All checks passed
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "API and web are both green. This commit is safe to merge."
+
+  # ───────────────────────────── CD ─────────────────────────────
+  # Only on main, and only while the demo servers exist (infra/up.sh turns this variable on,
+  # infra/down.sh turns it off). On any other branch the pipeline stops after CI.
+
+  build-image:
+    name: Build and push the Docker image
+    needs: all-checks-passed
+    if: github.ref == 'refs/heads/main' && vars.DAY22_CD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # allows pushing to GitHub's container registry (GHCR)
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Name the image and its version
+        # Version = the first 7 characters of the commit ID, e.g. a1b2c3d.
+        # (Registry names must be lowercase, hence ,, which lowercases in bash.)
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/day22-ci-cd" >> "$GITHUB_ENV"
+          echo "VERSION=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Log in to GitHub's container registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build the image (built ONCE, then promoted to dev and prod)
+        run: docker build -t "$IMAGE:$VERSION" backend-lecture-code/day22-ci-cd
+
+      - name: Push the image to the registry
+        run: docker push "$IMAGE:$VERSION"
+
+  deploy-dev:
+    name: Deploy to dev
+    needs: build-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read # lets the server pull the image
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Name the image and its version
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/day22-ci-cd" >> "$GITHUB_ENV"
+          echo "VERSION=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Deploy and smoke test
+        env:
+          HOST: ${{ secrets.DAY22_DEV_HOST }}
+          SSH_KEY: ${{ secrets.DAY22_SSH_KEY }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash backend-lecture-code/day22-ci-cd/deploy/deploy.sh dev "$IMAGE:$VERSION" "$VERSION"
+
+      - name: Next step — release to prod
+        # Shows up as a box on this run's summary page, with a link to the release button.
+        run: |
+          {
+            echo "### ✅ Dev is running \`$VERSION\`"
+            echo "Check the dev site. When it looks good, release this version to prod:"
+            echo ""
+            echo "**[Open Day 22 Release to prod →](${{ github.server_url }}/${{ github.repository }}/actions/workflows/day22-release.yml)**"
+            echo "then **Run workflow** (top right) → version: \`$VERSION\` → **Run workflow**."
+          } >> "$GITHUB_STEP_SUMMARY"

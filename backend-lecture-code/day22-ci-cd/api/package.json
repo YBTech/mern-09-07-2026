@@ -1,0 +1,27 @@
+{
+  "name": "day22-ci-cd-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 22 lecture: a tiny Express API with tests, for the CI pipeline to run",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "ci": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.15.0",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.3"
+  }
+}
