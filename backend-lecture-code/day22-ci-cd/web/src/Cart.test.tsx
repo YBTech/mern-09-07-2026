@@ -51,7 +51,7 @@ afterEach(() => {
 
 describe("<Cart />", () => {
   it("fail on purpose", async ()=>{
-    expect(true).toBeFalsy();
+    expect(true).toBeTruthy();
   })
 
   it("loads the products from the API", async () => {
