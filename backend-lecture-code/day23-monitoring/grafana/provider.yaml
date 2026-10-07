@@ -1,0 +1,10 @@
+# Tells Grafana to load every dashboard JSON in /otel-lgtm/day23-dashboards at startup.
+apiVersion: 1
+
+providers:
+  - name: "Day 23"
+    folder: "Day 23"
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /otel-lgtm/day23-dashboards

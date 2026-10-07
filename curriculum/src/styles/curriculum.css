@@ -3161,3 +3161,197 @@ pre .ln {
   color: #2e7d32;
   font-size: 0.9rem;
 }
+
+/* Small metric cards (week 5 day 23 notes): two per row, one card per metric. */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 1.25rem;
+}
+.metric-grid svg {
+  width: 100%;
+  height: auto;
+}
+
+/* An underlined topic heading, so back-to-back topics are easy to tell apart (day 23's
+   metrics / logs / traces). */
+.notes-page h4.topic.topic-line {
+  margin-top: 2.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid #4a6fa5;
+}
+
+/* ------------------------------------------------------------------ */
+/* day 23 lecture — before / after demos for INP and CLS               */
+/* ------------------------------------------------------------------ */
+.lecture-page.lecture-wide {
+  max-width: 1280px;
+}
+.lecture-page h2.fe-title {
+  font-size: 1.25rem;
+  margin: 2.5rem 0 0.5rem;
+  border-bottom: 2px solid #4a6fa5;
+  padding-bottom: 0.3rem;
+}
+.fe-block h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0.25rem;
+  font-size: 1.05rem;
+}
+.fe-hint {
+  margin: 0 0 0.6rem;
+  color: #5b6b82;
+  font-size: 0.9rem;
+}
+.fe-replay {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.6rem;
+  cursor: pointer;
+}
+.fe-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .fe-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.fe-col {
+  border: 1px solid #d6dbe6;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  min-width: 0;
+}
+.fe-col > header {
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+.fe-col.before > header {
+  background: #fdf3f3;
+  color: #a33;
+  border-bottom: 2px solid #d98b8b;
+}
+.fe-col.after > header {
+  background: #eef8ee;
+  color: #2e7d32;
+  border-bottom: 2px solid #7dbb7d;
+}
+.fe-demo {
+  padding: 0.75rem 0.8rem;
+  min-height: 15rem;
+}
+.fe-col pre {
+  margin: 0;
+  border-radius: 0;
+  font-size: 0.78rem;
+  overflow-x: auto;
+}
+.fe-demo input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+}
+.fe-stat {
+  margin: 0.4rem 0;
+  font-size: 0.8rem;
+  color: #555;
+  font-variant-numeric: tabular-nums;
+}
+.fe-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  max-height: 9rem;
+  overflow: auto;
+  font-size: 0.8rem;
+  border: 1px solid #eee;
+}
+.fe-cards {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.25rem;
+}
+.fe-card {
+  background: #eef3ff;
+  border: 1px solid #7ea6e0;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 0.2rem 0;
+}
+.fe-ticker {
+  margin: 0 0 0.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.fe-scroll {
+  overflow: auto;
+  border: 1px solid #ddd;
+  font-size: 0.8rem;
+}
+.fe-vrow {
+  box-sizing: border-box;
+  padding: 0 0.5rem;
+  line-height: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.fe-banner {
+  height: 72px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff1e6;
+  border: 1px solid #e8a060;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.fe-banner-slot {
+  height: 72px;
+}
+.fe-skeleton {
+  height: 100%;
+  background: #eee;
+  border-radius: 6px;
+}
+.fe-products {
+  margin: 0.6rem 0;
+  padding-left: 1.2rem;
+}
+.fe-cls {
+  margin: 0.6rem 0 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fe-cls.ok {
+  color: #2e7d32;
+}
+.fe-cls.bad {
+  color: #c0392b;
+}
+.fe-cls small {
+  font-weight: 400;
+  color: #777;
+}
+.fe-video {
+  margin: 0.75rem 0 0;
+  max-width: 560px;
+}
+.fe-video video {
+  width: 100%;
+  border: 1px solid #d6dbe6;
+  border-radius: 8px;
+}
+.fe-video figcaption {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 0.25rem;
+}

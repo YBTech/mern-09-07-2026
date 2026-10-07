@@ -228,6 +228,7 @@ export const WEEKS: Week[] = [
     days: [
       { slug: "day21-testing-code-quality", title: "Day 21 - Testing & Code Quality", pages: NO_PRACTICE_LAB },
       { slug: "day22-ci-cd", title: "Day 22 - CI/CD", pages: NO_PRACTICE_LAB },
+      { slug: "day23-monitoring", title: "Day 23 - Monitoring & Observability", pages: NO_PRACTICE_LAB },
     ],
   },
 ];

@@ -129,6 +129,9 @@ import D21Concepts from "./week5/day21-testing-code-quality/Concepts";
 import D22Lecture from "./week5/day22-ci-cd/lecture/Lecture";
 import D22Notes from "./week5/day22-ci-cd/Notes";
 import D22Concepts from "./week5/day22-ci-cd/Concepts";
+import D23Lecture from "./week5/day23-monitoring/lecture/Lecture";
+import D23Notes from "./week5/day23-monitoring/Notes";
+import D23Concepts from "./week5/day23-monitoring/Concepts";
 
 function App() {
   return (
@@ -449,6 +452,9 @@ function App() {
       <Route path="/week5/day22-ci-cd/lecture" element={<D22Lecture />} />
       <Route path="/week5/day22-ci-cd/notes" element={<D22Notes />} />
       <Route path="/week5/day22-ci-cd/concepts" element={<D22Concepts />} />
+      <Route path="/week5/day23-monitoring/lecture" element={<D23Lecture />} />
+      <Route path="/week5/day23-monitoring/notes" element={<D23Notes />} />
+      <Route path="/week5/day23-monitoring/concepts" element={<D23Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
