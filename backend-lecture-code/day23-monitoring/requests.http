@@ -1,0 +1,49 @@
+# Hand-made requests for the demos. Open in IntelliJ / WebStorm (built-in HTTP client) or VS Code
+# (REST Client extension) and click the ▶ next to a request. Same thing as curl, minus the quoting.
+
+@host = http://localhost:4000
+
+### Browse
+GET {{host}}/api/products
+
+### One product (the gateway asks catalog, catalog asks its database)
+GET {{host}}/api/products/p1
+
+### Place an order: 2 keyboards. Watch ONE trace span gateway → orders → catalog → inventory → payments → notifications
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{ "customer": "demo@example.com", "items": [{ "productId": "p1", "quantity": 2 }] }
+
+### THE PRODUCTION BUG: 5 monitor stands → HTTP 500 (demo 2 explains why)
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{ "customer": "demo@example.com", "items": [{ "productId": "p3", "quantity": 5 }] }
+
+### 5 keyboards works (this product HAS a bulk discount)
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{ "customer": "demo@example.com", "items": [{ "productId": "p1", "quantity": 5 }] }
+
+### The CPU-heavy revenue report: ~120ms with nothing to wait for. Fire it a few times while an order runs.
+GET {{host}}/api/orders/summary
+
+### BEFORE / AFTER pairs (demo 3)
+GET {{host}}/api/orders/recent/n-plus-one
+
+###
+GET {{host}}/api/orders/recent/batched
+
+###
+GET {{host}}/api/products/p1/recommendations/uncached
+
+###
+GET {{host}}/api/products/p1/recommendations/cached
+
+###
+GET {{host}}/api/dashboard/sequential
+
+###
+GET {{host}}/api/dashboard/parallel

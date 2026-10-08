@@ -8,6 +8,8 @@ import bash from "highlight.js/lib/languages/bash";
 import sql from "highlight.js/lib/languages/sql";
 import graphql from "highlight.js/lib/languages/graphql";
 import gherkin from "highlight.js/lib/languages/gherkin";
+import yaml from "highlight.js/lib/languages/yaml";
+import groovy from "highlight.js/lib/languages/groovy";
 import plaintext from "highlight.js/lib/languages/plaintext";
 
 // Only the languages this curriculum actually uses, so the bundle doesn't pull in all
@@ -23,6 +25,9 @@ hljs.registerLanguage("sql", sql);
 hljs.registerLanguage("graphql", graphql);
 // BDD .feature files (Feature / Scenario / Given / When / Then)
 hljs.registerLanguage("gherkin", gherkin);
+// CI/CD pipeline files: GitHub Actions workflow (yaml) and Jenkinsfile (groovy)
+hljs.registerLanguage("yaml", yaml);
+hljs.registerLanguage("groovy", groovy);
 // for "Expected" blocks that show console output rather than source
 hljs.registerLanguage("plaintext", plaintext);
 

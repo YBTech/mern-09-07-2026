@@ -1,0 +1,38 @@
+{
+  "name": "day23-monitoring",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 23 lecture: an e-commerce backend (gateway + 5 microservices) sending logs, metrics and traces to Grafana's LGTM stack, plus k6 load tests that find its bottlenecks",
+  "scripts": {
+    "setup": "npm install",
+    "dev": "concurrently --names gateway,catalog,orders,inventory,payments,notifications --prefix-colors auto \"npm run gateway\" \"npm run catalog\" \"npm run orders\" \"npm run inventory\" \"npm run payments\" \"npm run notifications\"",
+    "gateway": "OTEL_SERVICE_NAME=gateway tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/gateway/server.ts",
+    "catalog": "OTEL_SERVICE_NAME=catalog tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/catalog/server.ts",
+    "orders": "OTEL_SERVICE_NAME=orders tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/orders/server.ts",
+    "inventory": "OTEL_SERVICE_NAME=inventory tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/inventory/server.ts",
+    "payments": "OTEL_SERVICE_NAME=payments tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/payments/server.ts",
+    "notifications": "OTEL_SERVICE_NAME=notifications tsx watch --env-file=otel.env --import ./services/shared/otel.ts services/notifications/server.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dashboards": "python3 grafana/build-dashboards.py",
+    "load:shop": "docker compose run --rm k6 run /scripts/shop.js",
+    "load:stress": "docker compose run --rm k6 run /scripts/stress.js",
+    "load:compare": "docker compose run --rm k6 run /scripts/compare.js"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.80.0",
+    "@opentelemetry/sdk-metrics": "^2.11.0",
+    "@opentelemetry/sdk-node": "^0.222.0",
+    "express": "^5.2.1",
+    "pino": "^10.4.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "concurrently": "^10.0.5",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.3"
+  }
+}

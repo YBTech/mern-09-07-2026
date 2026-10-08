@@ -1,0 +1,48 @@
+# Day 22 — release a version to PROD. Started by a human, never automatically.
+#
+# This is continuous DELIVERY: every green commit on main is already built and running on dev,
+# ready to ship; a person decides when it goes to production.
+#
+#   Release:   Actions → Day 22 Release to prod → Run workflow → version = the one on dev
+#   Rollback:  run it again with an OLDER version. Same image, already built, just redeployed.
+#
+# Install at <repo root>/.github/workflows/ together with day22-ci.yml (see README).
+
+name: Day 22 Release to prod
+run-name: Release ${{ inputs.version }} to prod # each run is listed by version: a release history
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release: the 7-character commit ID shown on the dev site"
+        required: true
+        type: string
+
+jobs:
+  deploy-prod:
+    name: Deploy ${{ inputs.version }} to prod
+    if: vars.DAY22_CD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Pick the image
+        # No build here: prod gets the exact image that was built once and tested on dev.
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/day22-ci-cd" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Deploy and smoke test
+        env:
+          HOST: ${{ secrets.DAY22_PROD_HOST }}
+          SSH_KEY: ${{ secrets.DAY22_SSH_KEY }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash backend-lecture-code/day22-ci-cd/deploy/deploy.sh prod "$IMAGE:$VERSION" "$VERSION"

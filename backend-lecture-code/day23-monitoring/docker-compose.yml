@@ -1,0 +1,49 @@
+# Day 23 backend: the observability stack, plus k6 for load testing.
+#
+#   docker compose up -d                          start Grafana's LGTM stack
+#   docker compose run --rm k6 run /scripts/shop.js   run a load test (k6 is not started by "up")
+#
+# Both containers have hard CPU and memory limits, so a load test can't take over your laptop.
+# The Node services run on your machine (npm run dev), not in Docker, so you
+# can edit code live and watch the dashboard change.
+
+services:
+  # One container with the whole LGTM stack:
+  #   OpenTelemetry Collector  receives OTLP on :4317 (gRPC) and :4318 (HTTP)
+  #   Loki        logs
+  #   Prometheus  metrics (the "M": this image uses Prometheus; Mimir is its scaled-up sibling)
+  #   Tempo       traces
+  #   Grafana     dashboards on :3000 (no login needed)
+  lgtm:
+    image: grafana/otel-lgtm:latest
+    container_name: day23-lgtm
+    ports:
+      - "3000:3000" # Grafana
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP (what our services use)
+    volumes:
+      # Our dashboard, loaded automatically at startup.
+      - ./grafana/provider.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/day23.yaml:ro
+      - ./grafana/dashboards:/otel-lgtm/day23-dashboards:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2560M
+
+  # Load generator. Pretends to be many users at once. Only runs when you call it.
+  k6:
+    image: grafana/k6:latest
+    profiles: ["load"]
+    volumes:
+      - ./load:/scripts:ro
+    environment:
+      # The gateway runs on your machine, so from inside the container that's the host.
+      BASE_URL: http://host.docker.internal:4000
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # makes the line above work on Linux too
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
