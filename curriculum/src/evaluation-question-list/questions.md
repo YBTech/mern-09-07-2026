@@ -529,7 +529,7 @@ Name a web component framework
 Storybook
 What is Storybook and its purpose?
 Comprehensive:
-How do you improve the performance of your React app? ❗
+How do you improve the performance of your React app? 
 Other frameworks
 React Native
 Difference between React and React Native?
@@ -704,7 +704,7 @@ What is Kubernetes and its purpose?
 What is a pod, a deployment, and a service in Kubernetes?
 How do Kubernetes and Docker work together?
 
-Backend Performance ❗
+Backend Performance 
 How do you identify backend performance issues (e.g., long response times, slow query logs, identifying slow functions)?
 How do you solve performance bottlenecks (e.g., caching, Redis, query optimization)?
 What are the core pillars of performance monitoring tools (Error, APM, Log, Metrics)?
@@ -766,7 +766,7 @@ Answer: Environment variables, AWS Secrets Manager)
 What is SQL Injection, and how do you prevent it using ORMs, sanitizing inputs, or parameterized queries?
 Comprehensive
 How do you ensure a secure web application?
-How do you protect user data? ❗
+How do you protect user data? 
 SDLC & Agile
 
 Roles
@@ -787,7 +787,7 @@ What do you discuss during the Daily Standup (DSU) meetings?
 What is sprint planning meeting?
 What is sprint Review/Demo
 What is sprint retrospective
-What is the typical Git workflow when working on a Jira ticket? ❗
+What is the typical Git workflow when working on a Jira ticket? 
 What is the “Definition of Done”? What is acceptance criteria? How are they different?
 How do you make sure you finish your tasks on time?
 What do you do if you fall behind or are about to miss a deadline?
@@ -831,4 +831,4 @@ What is code splitting, and how is it combined with lazy loading? Why do we need
 What is Hot Module Replacement (HMR) and a dev server?
 Comprehensive
 Give a detailed explanation on how your code is shipped to production
-If there's a bug in production, how would you know? And what are the steps you take to fix it? ❗
+If there's a bug in production, how would you know? And what are the steps you take to fix it? 

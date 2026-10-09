@@ -629,7 +629,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       },
       {
         title: "Comprehensive",
-        questions: ["How do you improve the performance of your React app? ❗"],
+        questions: ["How do you improve the performance of your React app? "],
       },
     ],
   },
@@ -909,7 +909,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         ],
       },
       {
-        title: "Backend Performance ❗",
+        title: "Backend Performance ",
         questions: [
           "How do you identify backend performance issues (e.g., long response times, slow query logs, identifying slow functions)?",
           "How do you solve performance bottlenecks (e.g., caching, Redis, query optimization)?",
@@ -1072,7 +1072,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       },
       {
         title: "Comprehensive",
-        questions: ["How do you ensure a secure web application?", "How do you protect user data? ❗"],
+        questions: ["How do you ensure a secure web application?", "How do you protect user data? "],
       },
     ],
   },
@@ -1101,7 +1101,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
           "What is sprint planning meeting?",
           "What is sprint Review/Demo?",
           "What is sprint retrospective?",
-          "What is the typical Git workflow when working on a Jira ticket? ❗",
+          "What is the typical Git workflow when working on a Jira ticket? ",
           "What is the “Definition of Done”? What is acceptance criteria? How are they different?",
           "How do you make sure you finish your tasks on time?",
           "What do you do if you fall behind or are about to miss a deadline?",
@@ -1172,7 +1172,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         title: "Comprehensive",
         questions: [
           "Give a detailed explanation on how your code is shipped to production",
-          "If there's a bug in production, how would you know? And what are the steps you take to fix it? ❗",
+          "If there's a bug in production, how would you know? And what are the steps you take to fix it? ",
         ],
       },
     ],
