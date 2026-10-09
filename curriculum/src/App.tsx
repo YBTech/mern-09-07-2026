@@ -137,6 +137,9 @@ import D24Lecture from "./week5/day24-agile-sdlc/lecture/Lecture";
 import D24Notes from "./week5/day24-agile-sdlc/Notes";
 import D24Concepts from "./week5/day24-agile-sdlc/Concepts";
 
+import D25Lecture from "./week5/day25-backend-review/lecture/Lecture";
+import D25Notes from "./week5/day25-backend-review/Notes";
+
 function App() {
   return (
     <Routes>
@@ -463,6 +466,9 @@ function App() {
       <Route path="/week5/day24-agile-sdlc/lecture" element={<D24Lecture />} />
       <Route path="/week5/day24-agile-sdlc/notes" element={<D24Notes />} />
       <Route path="/week5/day24-agile-sdlc/concepts" element={<D24Concepts />} />
+
+      <Route path="/week5/day25-backend-review/lecture" element={<D25Lecture />} />
+      <Route path="/week5/day25-backend-review/notes" element={<D25Notes />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
