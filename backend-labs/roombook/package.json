@@ -1,0 +1,22 @@
+{
+  "name": "roombook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RoomBook: an office meeting-room booking app (React + Express + SQLite) used as a brownfield AI-coding lab",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "test": "npm test -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "build": "npm run build -w client",
+    "format": "prettier --write .",
+    "session:summary": "node .claude/hooks/summarize-log.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "prettier": "^3.9.9"
+  }
+}
