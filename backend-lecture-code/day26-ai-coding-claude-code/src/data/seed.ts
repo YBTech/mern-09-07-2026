@@ -1,0 +1,68 @@
+import type { Book } from "../models/types";
+
+export const seedBooks: Book[] = [
+  {
+    id: "b1",
+    title: "The Pragmatic Programmer",
+    author: "Andrew Hunt",
+    genre: "tech",
+    priceCents: 4500,
+    stock: 12,
+  },
+  {
+    id: "b2",
+    title: "Eloquent JavaScript",
+    author: "Marijn Haverbeke",
+    genre: "tech",
+    priceCents: 3200,
+    stock: 8,
+  },
+  {
+    id: "b3",
+    title: "Dune",
+    author: "Frank Herbert",
+    genre: "fiction",
+    priceCents: 1000,
+    stock: 20,
+  },
+  {
+    id: "b4",
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    genre: "fiction",
+    priceCents: 1200,
+    stock: 3,
+  },
+  {
+    id: "b5",
+    title: "Sapiens",
+    author: "Yuval Noah Harari",
+    genre: "history",
+    priceCents: 1800,
+    stock: 15,
+  },
+  {
+    id: "b6",
+    title: "Guns, Germs, and Steel",
+    author: "Jared Diamond",
+    genre: "history",
+    priceCents: 2000,
+    stock: 2,
+  },
+  {
+    id: "b7",
+    title: "Goodnight Moon",
+    author: "Margaret Wise Brown",
+    genre: "kids",
+    priceCents: 800,
+    stock: 30,
+  },
+  {
+    id: "b8",
+    title: "Designing Data-Intensive Applications",
+    author: "Martin Kleppmann",
+    genre: "tech",
+    priceCents: 5500,
+    stock: 4,
+  },
+];

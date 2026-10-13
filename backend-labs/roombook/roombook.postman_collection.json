@@ -1,0 +1,728 @@
+{
+  "info": {
+    "name": "RoomBook API",
+    "description": "The RoomBook brownfield lab (Express + TypeScript + in-memory SQLite).\n\n1. `npm install`, then `npm run dev` (API on http://localhost:3001).\n2. The collection pre-request script sets `today` and `tomorrow`, so the seeded bookings are always found.\n3. **Create a booking** saves `bookingId`, so **Cancel** acts on it. `userId` is who is acting (1 = Ana, 2 = Ben, ...).\n\nSeed (today): Aspen 09:00-10:00 and 10:00-11:00, Birch 13:00-14:30, Cedar 09:30-11:00, Dogwood 15:00-16:00. Rooms: 1 Aspen (4), 2 Birch (6), 3 Cedar (8), 4 Dogwood (12), 5 Elm (2), 6 Fir (20). Times are office-local text like 2030-01-07T09:30.\n\nThe last two folders are the tickets: they fail until the work is done.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const pad = n => String(n).padStart(2, '0');",
+          "const fmt = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());",
+          "const now = new Date();",
+          "const next = new Date(now.getTime() + 24 * 60 * 60 * 1000);",
+          "pm.collectionVariables.set('today', fmt(now));",
+          "pm.collectionVariables.set('tomorrow', fmt(next));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "today",
+      "value": ""
+    },
+    {
+      "key": "tomorrow",
+      "value": ""
+    },
+    {
+      "key": "bookingId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Rooms, users and the day view",
+      "item": [
+        {
+          "name": "List rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"6 rooms\", () => pm.expect(pm.response.json()).to.have.length(6));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bookings for today",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?date={{today}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"5 seeded bookings\", () => pm.expect(pm.response.json()).to.have.length(5));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bookings for tomorrow",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?date={{tomorrow}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{tomorrow}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Missing date (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Create and cancel bookings",
+      "item": [
+        {
+          "name": "Create a booking (Elm, 09:00-10:00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 5,\n  \"userId\": {{userId}},\n  \"title\": \"Interview\",\n  \"start\": \"{{today}}T09:00\",\n  \"end\": \"{{today}}T10:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"bookingId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Overlapping booking (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 1,\n  \"userId\": {{userId}},\n  \"title\": \"Clash\",\n  \"start\": \"{{today}}T10:30\",\n  \"end\": \"{{today}}T11:30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 409\", () => pm.response.to.have.status(409));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "End before start (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 5,\n  \"userId\": {{userId}},\n  \"title\": \"Backwards\",\n  \"start\": \"{{today}}T10:00\",\n  \"end\": \"{{today}}T09:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown room (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 99,\n  \"userId\": {{userId}},\n  \"title\": \"Nowhere\",\n  \"start\": \"{{today}}T09:00\",\n  \"end\": \"{{today}}T10:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel as someone else (403)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}?userId=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 403\", () => pm.response.to.have.status(403));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel the booking as its owner",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. TICKET-1: back-to-back bookings",
+      "item": [
+        {
+          "name": "Book Aspen 11:00-12:00 (right after Design sync)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Aspen has a 10:00-11:00 booking. Returns 409 until the overlap bug is fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 1,\n  \"userId\": {{userId}},\n  \"title\": \"Back to back\",\n  \"start\": \"{{today}}T11:00\",\n  \"end\": \"{{today}}T12:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 201\", () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Book Aspen 08:00-09:00 (right before the standup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Aspen's first booking starts at 09:00. Returns 409 until the overlap bug is fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 1,\n  \"userId\": {{userId}},\n  \"title\": \"Early bird\",\n  \"start\": \"{{today}}T08:00\",\n  \"end\": \"{{today}}T09:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 201\", () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Both requests return 409 until TICKET-1 is fixed."
+    },
+    {
+      "name": "4. TICKET-2 and TICKET-3 (not built yet)",
+      "item": [
+        {
+          "name": "TICKET-2: weekly series, 4 weeks (Fir 17:00-18:00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 6,\n  \"userId\": {{userId}},\n  \"title\": \"Team weekly\",\n  \"start\": \"{{today}}T17:00\",\n  \"end\": \"{{today}}T18:00\",\n  \"repeatWeeks\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"a series of 4\", () => { pm.expect(b.bookings).to.have.length(4); pm.expect(b.seriesId).to.be.a(\"string\"); });",
+                  "pm.collectionVariables.set(\"bookingId\", b.bookings[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-2: cancel this and all future bookings",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}?userId={{userId}}&scope=future",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "future"
+                }
+              ]
+            },
+            "description": "Run the weekly series request first."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 204\", () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-2: series with a conflict (409 + conflicts)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Fir already has a booking tomorrow 14:00-16:00, so the first date clashes and nothing should be saved.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 6,\n  \"userId\": {{userId}},\n  \"title\": \"Clash with tomorrow's review\",\n  \"start\": \"{{tomorrow}}T14:00\",\n  \"end\": \"{{tomorrow}}T16:00\",\n  \"repeatWeeks\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"lists the clashing dates\", () => pm.expect(pm.response.json().conflicts).to.be.an(\"array\").that.is.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-2: invalid repeatWeeks (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": 5,\n  \"userId\": {{userId}},\n  \"title\": \"Too many weeks\",\n  \"start\": \"{{today}}T12:00\",\n  \"end\": \"{{today}}T13:00\",\n  \"repeatWeeks\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-3: find a room for 6 (10:00-11:00)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/available?date={{today}}&start=10:00&end=11:00&capacity=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "available"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                },
+                {
+                  "key": "start",
+                  "value": "10:00"
+                },
+                {
+                  "key": "end",
+                  "value": "11:00"
+                },
+                {
+                  "key": "capacity",
+                  "value": "6"
+                }
+              ]
+            },
+            "description": "Expected: Birch (6), Dogwood (12), Fir (20). Cedar is busy until 11:00 and Aspen seats only 4."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "const caps = pm.response.json().map(r => r.capacity);",
+                  "pm.test(\"all seat at least 6, smallest first\", () => { pm.expect(caps.every(c => c >= 6)).to.be.true; pm.expect(caps).to.eql([...caps].sort((a, b) => a - b)); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-3: back-to-back counts as free (Aspen 11:00-12:00)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/available?date={{today}}&start=11:00&end=12:00&capacity=4",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "available"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                },
+                {
+                  "key": "start",
+                  "value": "11:00"
+                },
+                {
+                  "key": "end",
+                  "value": "12:00"
+                },
+                {
+                  "key": "capacity",
+                  "value": "4"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Aspen is available\", () => pm.expect(pm.response.json().map(r => r.name)).to.include(\"Aspen\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TICKET-3: end before start (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/available?date={{today}}&start=12:00&end=11:00",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "available"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                },
+                {
+                  "key": "start",
+                  "value": "12:00"
+                },
+                {
+                  "key": "end",
+                  "value": "11:00"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "These fail until the tickets are built."
+    }
+  ]
+}

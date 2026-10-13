@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/log-session.mjs" },
+          { "type": "command", "command": "node .claude/hooks/pair-mode.mjs" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Edit|Write",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/require-approval.mjs" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/log-session.mjs" }]
+      }
+    ]
+  }
+}

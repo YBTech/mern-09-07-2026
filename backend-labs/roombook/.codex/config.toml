@@ -1,0 +1,9 @@
+# Codex project config for the RoomBook lab (the counterpart of .claude/settings.json).
+# Codex only reads this when the project is trusted, and asks you to trust the hooks once (/hooks).
+
+# Codex reads AGENTS.md. This repo keeps its instructions in CLAUDE.md, so use that file too.
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
+# Edits stay inside the project folder; Codex asks before anything riskier.
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"

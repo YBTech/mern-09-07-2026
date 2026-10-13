@@ -8,6 +8,7 @@ import bash from "highlight.js/lib/languages/bash";
 import sql from "highlight.js/lib/languages/sql";
 import graphql from "highlight.js/lib/languages/graphql";
 import gherkin from "highlight.js/lib/languages/gherkin";
+import markdown from "highlight.js/lib/languages/markdown";
 import yaml from "highlight.js/lib/languages/yaml";
 import groovy from "highlight.js/lib/languages/groovy";
 import plaintext from "highlight.js/lib/languages/plaintext";
@@ -27,6 +28,9 @@ hljs.registerLanguage("graphql", graphql);
 hljs.registerLanguage("gherkin", gherkin);
 // CI/CD pipeline files: GitHub Actions workflow (yaml) and Jenkinsfile (groovy)
 hljs.registerLanguage("yaml", yaml);
+
+// AI instruction files: CLAUDE.md, AGENTS.md, SKILL.md
+hljs.registerLanguage("markdown", markdown);
 hljs.registerLanguage("groovy", groovy);
 // for "Expected" blocks that show console output rather than source
 hljs.registerLanguage("plaintext", plaintext);

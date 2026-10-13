@@ -44,12 +44,15 @@ export type TopicPart = {
   blurb: string;
 };
 
-export type Week = {
+/** Anything that groups days under one URL segment: a week, or the AI training. */
+export type Track = {
+  /** URL segment, e.g. "week1" or "ai-training". */
   slug: string;
-  number: number;
   title: string;
   days: Day[];
 };
+
+export type Week = Track & { number: number };
 
 const ALL: PageKind[] = ["lecture", "notes", "practice", "concepts", "lab"];
 
@@ -235,6 +238,18 @@ export const WEEKS: Week[] = [
   },
 ];
 
+/**
+ * The AI training. Not organised by week: every day sits in one folder, src/ai-training/dayN-…/,
+ * numbered on from day 26, and is served at /ai-training/dayN-…/<page>.
+ */
+export const AI_TRAINING: Track = {
+  slug: "ai-training",
+  title: "AI Training",
+  days: [
+    { slug: "day26-ai-overview-coding-tools", title: "AI Overview & AI Coding Tools", pages: NO_PRACTICE_LAB },
+  ],
+};
+
 /** Standalone notes that belong to no week — the cross-cutting "how to work" material. */
 export type GeneralNote = { slug: string; title: string; blurb: string };
 
@@ -278,6 +293,6 @@ export function topicPartHref(week: string, day: string, topic: string, part: st
   return `/${week}/${day}/${topic}/${part}`;
 }
 
-export function findWeekByDaySlug(daySlug: string): Week | undefined {
-  return WEEKS.find((w) => w.days.some((d) => d.slug === daySlug));
+export function findWeekByDaySlug(daySlug: string): Track | undefined {
+  return [...WEEKS, AI_TRAINING].find((w) => w.days.some((d) => d.slug === daySlug));
 }
