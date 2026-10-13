@@ -140,6 +140,10 @@ import D24Concepts from "./week5/day24-agile-sdlc/Concepts";
 import D25Lecture from "./week5/day25-backend-review/lecture/Lecture";
 import D25Notes from "./week5/day25-backend-review/Notes";
 
+import Ai26Lecture from "./ai-training/day26-ai-overview-coding-tools/lecture/Lecture";
+import Ai26Notes from "./ai-training/day26-ai-overview-coding-tools/Notes";
+import Ai26Concepts from "./ai-training/day26-ai-overview-coding-tools/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -469,6 +473,10 @@ function App() {
 
       <Route path="/week5/day25-backend-review/lecture" element={<D25Lecture />} />
       <Route path="/week5/day25-backend-review/notes" element={<D25Notes />} />
+
+      <Route path="/ai-training/day26-ai-overview-coding-tools/lecture" element={<Ai26Lecture />} />
+      <Route path="/ai-training/day26-ai-overview-coding-tools/notes" element={<Ai26Notes />} />
+      <Route path="/ai-training/day26-ai-overview-coding-tools/concepts" element={<Ai26Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

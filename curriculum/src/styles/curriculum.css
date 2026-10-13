@@ -586,14 +586,16 @@ summary::marker {
 .answer p:last-child {
   margin-bottom: 0;
 }
-.answer ul {
+.answer ul,
+.answer ol {
   margin: 0 0 0.6rem;
   padding-left: 1.2rem;
 }
 .answer li {
   margin-bottom: 0.3rem;
 }
-.answer ul:last-child {
+.answer ul:last-child,
+.answer ol:last-child {
   margin-bottom: 0;
 }
 
@@ -3354,4 +3356,49 @@ pre .ln {
   font-size: 0.8rem;
   color: #777;
   margin-top: 0.25rem;
+}
+
+/* Claude Code / Codex switch above a tool-specific section (day 26). */
+.tool-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 1rem;
+  font-size: 0.82rem;
+  color: #555;
+}
+.tool-toggle button {
+  padding: 0.25rem 0.9rem;
+  border: 1px solid #c0c8d4;
+  border-radius: 999px;
+  background: #fff;
+  color: #444;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+.tool-toggle button:hover {
+  border-color: #2255cc;
+  color: #2255cc;
+}
+.tool-toggle button.active {
+  background: #2255cc;
+  border-color: #2255cc;
+  color: #fff;
+}
+.notes-page h5.topic-sub {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 0.95rem;
+  color: #4a6fa5;
+}
+
+/* A bigger section heading than h3.part, for pages whose sections must stand apart from the
+   topic headings under them (day 26). */
+.notes-page h3.part.part-lg {
+  margin-top: 3.6rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #14233c;
+  border-left-width: 8px;
+  border-left-color: #2255cc;
+  padding: 0.7rem 1rem;
 }

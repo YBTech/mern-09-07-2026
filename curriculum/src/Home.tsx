@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import DayNav from "./components/DayNav";
 import {
+  AI_TRAINING,
   EVALUATION_PAGE,
   GENERAL_NOTES,
   PAGE_LABELS,
@@ -11,13 +12,13 @@ import {
   topicPartHref,
   type Day,
   type Topic,
-  type Week,
+  type Track,
 } from "./curriculum";
 
 // A topic split across several named pages rather than the usual notes/practice/concepts
 // trio: each part is listed under its group heading ("Foundation" / "Advanced") with its
 // own one-line blurb, since the titles alone don't say what's on them.
-function TopicParts({ week, day, topic }: { week: Week; day: Day; topic: Topic }) {
+function TopicParts({ week, day, topic }: { week: Track; day: Day; topic: Topic }) {
   const groups = [...new Set(topic.parts!.map((p) => p.group))];
 
   return (
@@ -44,7 +45,7 @@ function TopicParts({ week, day, topic }: { week: Week; day: Day; topic: Topic }
   );
 }
 
-function DayRow({ week, day }: { week: Week; day: Day }) {
+function DayRow({ week, day }: { week: Track; day: Day }) {
   if (day.topics) {
     return (
       <li>
@@ -115,6 +116,15 @@ export default function Home() {
           </ul>
         </section>
       ))}
+
+      <section>
+        <h2>{AI_TRAINING.title}</h2>
+        <ul>
+          {AI_TRAINING.days.map((day) => (
+            <DayRow key={day.slug} week={AI_TRAINING} day={day} />
+          ))}
+        </ul>
+      </section>
 
       <section>
         <h2>General Notes</h2>
