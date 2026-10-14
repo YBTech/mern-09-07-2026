@@ -1,0 +1,37 @@
+{
+  "name": "day27-playground",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Day 27 lecture playground: raw Claude API calls, one file per topic, edited live",
+  "scripts": {
+    "play": "tsx --env-file=.env src/00-playground.ts",
+    "play:watch": "tsx watch --env-file=.env src/00-playground.ts",
+    "anatomy": "tsx --env-file=.env src/01-anatomy.ts",
+    "anatomy:watch": "tsx watch --env-file=.env src/01-anatomy.ts",
+    "system": "tsx --env-file=.env src/02-system-prompts.ts",
+    "system:watch": "tsx watch --env-file=.env src/02-system-prompts.ts",
+    "shots": "tsx --env-file=.env src/03-shots.ts",
+    "shots:watch": "tsx watch --env-file=.env src/03-shots.ts",
+    "structured": "tsx --env-file=.env src/04-structured-output.ts",
+    "structured:watch": "tsx watch --env-file=.env src/04-structured-output.ts",
+    "chat": "tsx --env-file=.env src/05-multi-turn.ts",
+    "stream": "tsx --env-file=.env src/06-streaming.ts",
+    "errors": "tsx --env-file=.env src/07-errors.ts",
+    "eval:new": "tsx --env-file=.env src/eval/new-scenario.ts",
+    "eval:tests": "tsx --env-file=.env src/eval/generate-tests.ts",
+    "eval:run": "tsx --env-file=.env src/eval/run.ts",
+    "eval:classifier:generate": "tsx --env-file=.env src/eval/classifier/generate-dataset.ts",
+    "eval:classifier": "tsx --env-file=.env src/eval/classifier/run-eval.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}

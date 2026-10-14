@@ -144,6 +144,10 @@ import Ai26Lecture from "./ai-training/day26-ai-overview-coding-tools/lecture/Le
 import Ai26Notes from "./ai-training/day26-ai-overview-coding-tools/Notes";
 import Ai26Concepts from "./ai-training/day26-ai-overview-coding-tools/Concepts";
 
+import Ai27Lecture from "./ai-training/day27-llm-prompts-sdk/lecture/Lecture";
+import Ai27Notes from "./ai-training/day27-llm-prompts-sdk/Notes";
+import Ai27Concepts from "./ai-training/day27-llm-prompts-sdk/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -477,6 +481,10 @@ function App() {
       <Route path="/ai-training/day26-ai-overview-coding-tools/lecture" element={<Ai26Lecture />} />
       <Route path="/ai-training/day26-ai-overview-coding-tools/notes" element={<Ai26Notes />} />
       <Route path="/ai-training/day26-ai-overview-coding-tools/concepts" element={<Ai26Concepts />} />
+
+      <Route path="/ai-training/day27-llm-prompts-sdk/lecture" element={<Ai27Lecture />} />
+      <Route path="/ai-training/day27-llm-prompts-sdk/notes" element={<Ai27Notes />} />
+      <Route path="/ai-training/day27-llm-prompts-sdk/concepts" element={<Ai27Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
