@@ -247,7 +247,7 @@ export const AI_TRAINING: Track = {
   title: "AI Training",
   days: [
     { slug: "day26-ai-overview-coding-tools", title: "AI Overview & AI Coding Tools", pages: NO_PRACTICE_LAB },
-    { slug: "day27-llm-prompts-sdk", title: "LLM Fundamentals, Prompting & SDK", pages: NO_PRACTICE_LAB },
+    { slug: "day27-llm-prompts-sdk", title: "LLM Fundamentals, Prompting & SDK", pages: ["lecture", "notes", "concepts" ,"lab"] },
   ],
 };
 
