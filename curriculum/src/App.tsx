@@ -149,6 +149,10 @@ import Ai27Notes from "./ai-training/day27-llm-prompts-sdk/Notes";
 import Ai27Concepts from "./ai-training/day27-llm-prompts-sdk/Concepts";
 import Ai28Lab from "./ai-training/day27-llm-prompts-sdk/Lab";
 
+import Ai28Lecture from "./ai-training/day28-tools-mcp-agent-loop/lecture/Lecture";
+import Ai28Notes from "./ai-training/day28-tools-mcp-agent-loop/Notes";
+import Ai28Concepts from "./ai-training/day28-tools-mcp-agent-loop/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -487,6 +491,10 @@ function App() {
       <Route path="/ai-training/day27-llm-prompts-sdk/notes" element={<Ai27Notes />} />
       <Route path="/ai-training/day27-llm-prompts-sdk/concepts" element={<Ai27Concepts />} />
       <Route path="/ai-training/day27-llm-prompts-sdk/lab" element={<Ai28Lab />} />
+
+      <Route path="/ai-training/day28-tools-mcp-agent-loop/lecture" element={<Ai28Lecture />} />
+      <Route path="/ai-training/day28-tools-mcp-agent-loop/notes" element={<Ai28Notes />} />
+      <Route path="/ai-training/day28-tools-mcp-agent-loop/concepts" element={<Ai28Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

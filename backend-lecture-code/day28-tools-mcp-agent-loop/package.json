@@ -1,0 +1,19 @@
+{
+  "name": "day28-tools-mcp-agent-loop",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm install --prefix calendar-app/backend && npm install --prefix calendar-app/frontend && npm install --prefix ai-chat && npm install --prefix mcp-server",
+    "app": "concurrently -n backend,frontend -c blue,green \"npm run dev --prefix calendar-app/backend\" \"npm run dev --prefix calendar-app/frontend\"",
+    "chat:01": "npm run 01 --prefix ai-chat",
+    "chat:02": "npm run 02 --prefix ai-chat",
+    "chat:03": "npm run 03 --prefix ai-chat",
+    "chat:04": "npm run 04 --prefix ai-chat",
+    "chat:05": "npm run 05 --prefix ai-chat",
+    "chat:06": "npm run 06 --prefix ai-chat",
+    "mcp:inspect": "npm run inspect --prefix mcp-server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
