@@ -1,0 +1,25 @@
+{
+  "name": "day28-ai-chat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "00": "tsx --env-file=.env src/00-playground.ts",
+    "01": "tsx --env-file=.env src/01-no-hands.ts",
+    "02": "tsx --env-file=.env src/02-pick-a-function.ts",
+    "03": "tsx --env-file=.env src/03-run-the-function.ts",
+    "04": "tsx --env-file=.env src/04-native-tools.ts",
+    "05": "tsx --env-file=.env src/05-agent-loop.ts",
+    "06": "tsx --env-file=.env src/06-mcp-agent.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0",
+    "@modelcontextprotocol/sdk": "^1.32.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}
