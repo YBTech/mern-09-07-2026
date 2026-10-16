@@ -152,6 +152,11 @@ import Ai28Lab from "./ai-training/day27-llm-prompts-sdk/Lab";
 import Ai28Lecture from "./ai-training/day28-tools-mcp-agent-loop/lecture/Lecture";
 import Ai28Notes from "./ai-training/day28-tools-mcp-agent-loop/Notes";
 import Ai28Concepts from "./ai-training/day28-tools-mcp-agent-loop/Concepts";
+import Ai28DayLab from "./ai-training/day28-tools-mcp-agent-loop/Lab";
+
+import Ai29Lecture from "./ai-training/day29-rag-vector-databases/lecture/Lecture";
+import Ai29Notes from "./ai-training/day29-rag-vector-databases/Notes";
+import Ai29Concepts from "./ai-training/day29-rag-vector-databases/Concepts";
 
 function App() {
   return (
@@ -495,6 +500,11 @@ function App() {
       <Route path="/ai-training/day28-tools-mcp-agent-loop/lecture" element={<Ai28Lecture />} />
       <Route path="/ai-training/day28-tools-mcp-agent-loop/notes" element={<Ai28Notes />} />
       <Route path="/ai-training/day28-tools-mcp-agent-loop/concepts" element={<Ai28Concepts />} />
+      <Route path="/ai-training/day28-tools-mcp-agent-loop/lab" element={<Ai28DayLab />} />
+
+      <Route path="/ai-training/day29-rag-vector-databases/lecture" element={<Ai29Lecture />} />
+      <Route path="/ai-training/day29-rag-vector-databases/notes" element={<Ai29Notes />} />
+      <Route path="/ai-training/day29-rag-vector-databases/concepts" element={<Ai29Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

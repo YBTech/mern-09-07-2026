@@ -1,0 +1,19 @@
+{
+  "name": "day29-rag-vector-database",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix playground && npm run install:all --prefix shop-app",
+    "rag:01": "npm run 01 --prefix playground",
+    "rag:02": "npm run 02 --prefix playground",
+    "rag:03": "npm run 03 --prefix playground",
+    "rag:04": "npm run 04 --prefix playground",
+    "rag:05": "npm run 05 --prefix playground",
+    "rag:06": "npm run 06 --prefix playground",
+    "rag:07": "npm run 07 --prefix playground",
+    "rag:08": "npm run 08 --prefix playground",
+    "rag:09": "npm run 09 --prefix playground",
+    "ingest": "npm run ingest --prefix shop-app",
+    "app": "npm run dev:all --prefix shop-app"
+  }
+}

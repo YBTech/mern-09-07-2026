@@ -1,0 +1,28 @@
+{
+  "name": "day29-playground",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "00": "tsx --env-file=../.env src/00-playground.ts",
+    "01": "tsx --env-file=../.env src/01-no-rag.ts",
+    "02": "tsx --env-file=../.env src/02-paste-everything.ts",
+    "03": "tsx --env-file=../.env src/03-too-big.ts",
+    "04": "tsx --env-file=../.env src/04-chunk.ts",
+    "05": "tsx --env-file=../.env src/05-keyword-search.ts",
+    "06": "tsx --env-file=../.env src/06-embeddings.ts",
+    "07": "tsx --env-file=../.env src/07-vector-search.ts",
+    "08": "tsx --env-file=../.env src/08-hybrid-search.ts",
+    "09": "tsx --env-file=../.env src/09-rag-as-tool.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "@huggingface/transformers": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

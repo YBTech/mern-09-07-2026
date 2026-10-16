@@ -248,7 +248,8 @@ export const AI_TRAINING: Track = {
   days: [
     { slug: "day26-ai-overview-coding-tools", title: "AI Overview & AI Coding Tools", pages: NO_PRACTICE_LAB },
     { slug: "day27-llm-prompts-sdk", title: "LLM Fundamentals, Prompting & SDK", pages: ["lecture", "notes", "concepts" ,"lab"] },
-    { slug: "day28-tools-mcp-agent-loop", title: "Tools, MCP & the Agent Loop", pages: ["lecture", "notes", "concepts"] },
+    { slug: "day28-tools-mcp-agent-loop", title: "Tools, MCP & the Agent Loop", pages: ["lecture", "notes", "concepts", "lab"] },
+    { slug: "day29-rag-vector-databases", title: "RAG & Vector Databases", pages: NO_PRACTICE_LAB },
   ],
 };
 
