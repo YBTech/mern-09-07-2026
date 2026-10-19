@@ -1,0 +1,33 @@
+{
+  "name": "day30-playground",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "00": "tsx --env-file=../.env src/00-playground.ts",
+    "01": "tsx --env-file=../.env src/1-workflows/01-prompt-chain.ts",
+    "02": "tsx --env-file=../.env src/1-workflows/02-router.ts",
+    "03": "tsx --env-file=../.env src/1-workflows/03-parallel.ts",
+    "04": "tsx --env-file=../.env src/1-workflows/04-evaluator-loop.ts",
+    "05": "tsx --env-file=../.env src/2-agents/05-agent-loop.ts",
+    "06": "tsx --env-file=../.env src/2-agents/06-compare.ts",
+    "07": "tsx --env-file=../.env src/3-context/07-context-bloat.ts",
+    "08": "tsx --env-file=../.env src/3-context/08-trim-and-select.ts",
+    "09": "tsx --env-file=../.env src/3-context/09-compact-and-notes.ts",
+    "10": "tsx --env-file=../.env src/4-subagents/10-orchestrator-workers.ts",
+    "11": "tsx --env-file=../.env src/4-subagents/11-subagent-tool.ts",
+    "12": "tsx --env-file=../.env src/5-long-running/12-checkpoint-approval.ts",
+    "13": "tsx --env-file=../.env src/5-long-running/13-stop-conditions.ts",
+    "14": "tsx --env-file=../.env src/5-long-running/14-memory.ts",
+    "generate": "tsx scripts/generate-incident-files.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

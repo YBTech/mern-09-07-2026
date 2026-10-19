@@ -158,6 +158,11 @@ import Ai29Lecture from "./ai-training/day29-rag-vector-databases/lecture/Lectur
 import Ai29Notes from "./ai-training/day29-rag-vector-databases/Notes";
 import Ai29Concepts from "./ai-training/day29-rag-vector-databases/Concepts";
 
+import Ai30Lecture from "./ai-training/day30-workflows-agents-context/lecture/Lecture";
+import Ai30Demo from "./ai-training/day30-workflows-agents-context/lecture/DemoPage";
+import Ai30Notes from "./ai-training/day30-workflows-agents-context/Notes";
+import Ai30Concepts from "./ai-training/day30-workflows-agents-context/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -505,6 +510,11 @@ function App() {
       <Route path="/ai-training/day29-rag-vector-databases/lecture" element={<Ai29Lecture />} />
       <Route path="/ai-training/day29-rag-vector-databases/notes" element={<Ai29Notes />} />
       <Route path="/ai-training/day29-rag-vector-databases/concepts" element={<Ai29Concepts />} />
+
+      <Route path="/ai-training/day30-workflows-agents-context/lecture" element={<Ai30Lecture />} />
+      <Route path="/ai-training/day30-workflows-agents-context/lecture/:demo" element={<Ai30Demo />} />
+      <Route path="/ai-training/day30-workflows-agents-context/notes" element={<Ai30Notes />} />
+      <Route path="/ai-training/day30-workflows-agents-context/concepts" element={<Ai30Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

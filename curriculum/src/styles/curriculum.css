@@ -3531,3 +3531,442 @@ pre .ln {
   background: #eef8ee;
   font-size: 0.86rem;
 }
+
+/* ------------------------------------------------------------------ */
+/* ai day 30 lecture — simulated chatbots for the workflow patterns    */
+/* ------------------------------------------------------------------ */
+.wf-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 2px solid #222;
+  margin: 0 0 1.25rem;
+}
+.wf-tabs a {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: #f7f8f9;
+  color: #5a6470;
+  text-decoration: none;
+}
+.wf-tabs a.is-active {
+  background: #222;
+  border-color: #222;
+  color: #fff;
+}
+.wf-blurb {
+  margin: -1rem 0 1.25rem;
+  color: #5a6470;
+  font-size: 0.92rem;
+}
+.wf-chat {
+  border: 1px solid #d5dae0;
+  border-radius: 10px;
+  background: #fff;
+  overflow: visible;
+}
+.wf-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid #e4e7eb;
+  background: #f7f8fa;
+  border-radius: 10px 10px 0 0;
+}
+.wf-chat-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.wf-reset {
+  margin-left: auto;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+}
+.wf-reset:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.wf-chat-toolbar {
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid #e4e7eb;
+}
+.wf-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.wf-modes button {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+}
+.wf-modes button.is-active {
+  background: #2e5fa8;
+  border-color: #2e5fa8;
+  color: #fff;
+}
+.wf-log {
+  height: 30rem;
+  overflow-y: auto;
+  padding: 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: #fbfcfd;
+}
+.wf-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 88%;
+}
+.wf-msg.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.wf-msg.bot {
+  align-self: flex-start;
+}
+.wf-bubble {
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  background: #eef1f5;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+}
+.wf-msg.user .wf-bubble {
+  background: #2e5fa8;
+  color: #fff;
+}
+.wf-typing {
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+.wf-step {
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 0.84rem;
+}
+.wf-step-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+}
+.wf-step-icon {
+  width: 1rem;
+  text-align: center;
+  color: #3d8b40;
+  font-weight: 700;
+}
+.wf-spinner {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid #c9d3e0;
+  border-top-color: #2e5fa8;
+  border-radius: 50%;
+  animation: wf-spin 0.7s linear infinite;
+}
+@keyframes wf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.wf-kind {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  cursor: help;
+}
+.wf-kind.kind-model {
+  background: #e3ecf8;
+  color: #2e5fa8;
+}
+.wf-kind.kind-code {
+  background: #efe6f7;
+  color: #6b3fa0;
+}
+.wf-kind.kind-tool {
+  background: #fdf0dc;
+  color: #a36200;
+}
+.wf-step-label {
+  font-weight: 600;
+}
+.wf-step-wait {
+  color: #888;
+  font-style: italic;
+}
+.wf-step-result.tone-ok {
+  color: #2f6f32;
+}
+.wf-step-result.tone-bad {
+  color: #c0392b;
+}
+.wf-step-result.tone-warn {
+  color: #b36b00;
+}
+.wf-step-ms {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #8a929c;
+  font-variant-numeric: tabular-nums;
+}
+.wf-step-more {
+  font-size: 0.72rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+.wf-step-detail {
+  border-top: 1px dashed #e1e5ea;
+  padding: 0.4rem 0.6rem 0.5rem;
+}
+.wf-io {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8a929c;
+}
+.wf-step-detail pre {
+  margin: 0.15rem 0 0.4rem;
+  padding: 0.4rem 0.55rem;
+  background: #f5f6f8;
+  color: #1c1c1c;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.wf-note {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border-left: 3px solid;
+}
+.wf-note.tone-info {
+  background: #eef4fc;
+  border-color: #2e5fa8;
+}
+.wf-note.tone-warn {
+  background: #fff6e6;
+  border-color: #d08a00;
+}
+.wf-note.tone-bad {
+  background: #fdeeee;
+  border-color: #c0392b;
+}
+.wf-note.tone-ok {
+  background: #edf7ee;
+  border-color: #3d8b40;
+}
+.wf-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0.9rem 0;
+  border-top: 1px solid #e4e7eb;
+}
+.wf-suggest button {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid #c9d3e0;
+  border-radius: 999px;
+  background: #f5f8fc;
+  color: #2e5fa8;
+  cursor: pointer;
+  text-align: left;
+}
+.wf-suggest button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.wf-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem 0.8rem;
+}
+.wf-input input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #c7cdd4;
+  border-radius: 6px;
+}
+.wf-input button {
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #2e5fa8;
+  color: #fff;
+  cursor: pointer;
+}
+.wf-input button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* hover / focus tooltip: <span class="wf-tip" data-tip="…"> */
+.wf-tip {
+  position: relative;
+}
+.wf-tip:hover::after,
+.wf-tip:focus::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  width: max-content;
+  max-width: 18rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+}
+.wf-sim {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: #fff6e6;
+  border: 1px solid #e8c37a;
+  color: #8a5a00;
+  cursor: help;
+}
+/* the "Show AI reasoning" switch above the demo tabs */
+.wf-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+}
+.wf-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.wf-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.wf-switch-track {
+  position: relative;
+  width: 2.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: #c7cdd4;
+  transition: background 0.15s;
+}
+.wf-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+.wf-switch input:checked + .wf-switch-track {
+  background: #2e5fa8;
+}
+.wf-switch input:checked + .wf-switch-track::after {
+  transform: translateX(1rem);
+}
+.wf-switch input:focus-visible + .wf-switch-track {
+  outline: 2px solid #2e5fa8;
+  outline-offset: 2px;
+}
+.wf-switch-hint {
+  font-weight: 400;
+  color: #8a929c;
+}
+/* typing indicator shown instead of the steps when reasoning is hidden */
+.wf-dots {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.75rem 0.9rem;
+}
+.wf-dots span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #8a929c;
+  animation: wf-bounce 1.2s infinite ease-in-out;
+}
+.wf-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.wf-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes wf-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-0.3rem);
+    opacity: 1;
+  }
+}
+/* labelled suggestion rows (Easy / Hard) and the model's reasoning notes */
+.wf-suggest-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+.wf-suggest-label {
+  min-width: 2.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a929c;
+}
+.wf-note.tone-think {
+  background: none;
+  border-color: #c9d3e0;
+  color: #5a6470;
+  font-style: italic;
+}

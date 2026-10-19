@@ -250,6 +250,7 @@ export const AI_TRAINING: Track = {
     { slug: "day27-llm-prompts-sdk", title: "LLM Fundamentals, Prompting & SDK", pages: ["lecture", "notes", "concepts" ,"lab"] },
     { slug: "day28-tools-mcp-agent-loop", title: "Tools, MCP & the Agent Loop", pages: ["lecture", "notes", "concepts", "lab"] },
     { slug: "day29-rag-vector-databases", title: "RAG & Vector Databases", pages: NO_PRACTICE_LAB },
+    { slug: "day30-workflows-agents-context", title: "Workflows, Agents & Context Engineering", pages: NO_PRACTICE_LAB },
   ],
 };
 
