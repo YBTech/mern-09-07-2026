@@ -49,6 +49,16 @@ For every decision we need:
   finds the problem.
 - **When unsure, ask a person.** Sending a claim to Finance is always better than guessing.
 
+## Who decides what
+
+| Who                | Decides                                                                                       |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| The AI, on its own | every claim the policy clearly covers: approve, partly approve, reject, and it pays them      |
+| The manager        | every claim with more than $500 to pay: the AI prepares it, the manager approves or rejects   |
+| My team (Finance)  | every claim the AI sends to Finance: gifts, possible splitting, a stay with no trip, or doubt |
+
+The AI never pays a claim that still needs a person.
+
 ## What you have to work with
 
 - The claims in the inbox, each with the employee's note and the receipt as OCR text.

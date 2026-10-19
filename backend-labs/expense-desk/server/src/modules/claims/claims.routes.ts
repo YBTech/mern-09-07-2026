@@ -7,4 +7,3 @@ claimsRouter.get("/", controller.list);
 claimsRouter.post("/", controller.create);
 claimsRouter.get("/:id", controller.get);
 claimsRouter.post("/:id/process", controller.process);
-claimsRouter.get("/:id/trace", controller.trace);

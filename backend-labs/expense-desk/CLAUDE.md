@@ -15,7 +15,7 @@ npm run typecheck    # run before saying anything is done
 - **Follow `docs/design.md`.** It is the student's architecture. If it is empty, ask them to fill it
   in first instead of inventing an architecture. If the code needs to differ from it, say so and
   let them update it.
-- **Do not edit** `server/src/tools/`, `server/src/llm.ts`, `server/src/trace/` or `server/data/`.
+- **Do not edit** `server/src/tools/`, `server/src/llm.ts` or `server/data/`.
   They are the lab's fixed parts.
 - All company data goes through `tools.*`; all model calls go through `ai.messages.create` from
   `server/src/llm.ts`. Never import `@anthropic-ai/sdk` to create a client directly, and never read

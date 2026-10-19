@@ -1,7 +1,6 @@
 import { processClaim } from "../../ai/workflow";
 import { AppError, ConflictError, NotFoundError, ValidationError } from "../../errors";
 import { db } from "../../store";
-import { getTrace, record, runWithTrace } from "../../trace/trace";
 import type { Claim, ClaimResult } from "../../types";
 import type { ClaimDetail, ClaimSummary, NewClaim } from "./claims.types";
 
@@ -62,7 +61,7 @@ export function createClaim(input: NewClaim): Claim {
   return claim;
 }
 
-// Runs YOUR processClaim inside a fresh trace, checks the shape of what it returns, and stores it
+// Runs YOUR processClaim (src/ai/workflow.ts), checks the shape of what it returns, and stores it
 export async function processClaimById(id: string): Promise<ClaimResult> {
   const claim = findClaim(id);
   if (db.payments.some((p) => p.claimId === id)) {
@@ -71,14 +70,7 @@ export async function processClaimById(id: string): Promise<ClaimResult> {
 
   let result: ClaimResult;
   try {
-    result = await runWithTrace(id, async () => {
-      try {
-        return await processClaim(id);
-      } catch (err) {
-        record({ kind: "error", message: (err as Error).message });
-        throw err;
-      }
-    });
+    result = await processClaim(id);
   } catch (err) {
     console.error(err);
     throw new AppError(500, `processClaim failed: ${(err as Error).message}`);
@@ -105,9 +97,4 @@ function checkResult(r: ClaimResult): string | null {
     }
   }
   return null;
-}
-
-export function getClaimTrace(id: string) {
-  findClaim(id);
-  return getTrace(id);
 }

@@ -16,7 +16,3 @@ export function create(req: Request, res: Response) {
 export async function process(req: Request<{ id: string }>, res: Response) {
   res.json(await service.processClaimById(req.params.id));
 }
-
-export function trace(req: Request<{ id: string }>, res: Response) {
-  res.json(service.getClaimTrace(req.params.id));
-}

@@ -2,8 +2,7 @@ import { readFileSync } from "node:fs";
 import type { Claim, Employee, PastClaim, Payment, PolicyRule, StoredResult, Trip } from "./types";
 
 // An in-memory "database", loaded from server/data/*.json. Everything resets when the server restarts
-// (or when you press "Reset data" in the app). Read it through src/tools, not directly, so your AI's
-// tool use shows up in the trace.
+// (or when you press "Reset data" in the app). Your AI code reads it through src/tools, not directly.
 
 const DATA_DIR = new URL("../data/", import.meta.url);
 

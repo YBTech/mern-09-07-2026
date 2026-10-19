@@ -1,4 +1,4 @@
-# What you get: tools, the model client, the trace
+# What you get: tools and the model client
 
 Everything below is already built. Import it from your code in `server/src/ai/`.
 
@@ -51,23 +51,5 @@ const response = await ai.messages.create({
 ```
 
 - The model is always `claude-haiku-5-5`, and thinking is off. You do not pass `model`.
-- Every call is recorded in the claim's trace: tokens in and out, stop reason, tools asked for.
-- If a forced tool call comes back with missing fields, check the trace for `stop: max_tokens` and
-  raise `max_tokens`.
-
-## `note` (server/src/trace)
-
-Label your own steps so the app's timeline shows your architecture:
-
-```ts
-import { note } from "../trace/trace";
-
-note("router", "category = hotel");
-note("gate", "submitted after 78 days → reject");
-```
-
-## The trace
-
-Every time a claim is processed, the app records a trace: each model call, each tool call with its
-input and output, and your notes, in order. You see it under the claim in the app: use it to check
-which path a claim took (workflow or agent) and what each step looked at. You never pass it around: the app starts a trace before it calls your `processClaim`.
+- If a forced tool call comes back with missing fields, check that `response.stop_reason` is not
+  `"max_tokens"`, and raise `max_tokens`.
