@@ -1,0 +1,23 @@
+{
+  "name": "day30-workflows-agents-context",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix playground",
+    "flow:00": "npm run 00 --prefix playground",
+    "flow:01": "npm run 01 --prefix playground",
+    "flow:02": "npm run 02 --prefix playground",
+    "flow:03": "npm run 03 --prefix playground",
+    "flow:04": "npm run 04 --prefix playground",
+    "flow:05": "npm run 05 --prefix playground",
+    "flow:06": "npm run 06 --prefix playground",
+    "flow:07": "npm run 07 --prefix playground",
+    "flow:08": "npm run 08 --prefix playground",
+    "flow:09": "npm run 09 --prefix playground",
+    "flow:10": "npm run 10 --prefix playground",
+    "flow:11": "npm run 11 --prefix playground",
+    "flow:12": "npm run 12 --prefix playground",
+    "flow:13": "npm run 13 --prefix playground",
+    "flow:14": "npm run 14 --prefix playground"
+  }
+}
