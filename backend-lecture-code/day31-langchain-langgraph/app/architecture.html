@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Slice Pizza: agent architecture</title>
+<style>
+  :root {
+    --bg: #faf7f2; --ink: #231f1c; --muted: #7a726a; --edge: #6b625a; --card: #ffffff; --line: #e6dfd5;
+    --llm-f: #e3edff; --llm-s: #3b6fd4;
+    --agent-f: #efe5ff; --agent-s: #7a4fd0;
+    --code-f: #eeece8; --code-s: #8a8279;
+    --human-f: #ffeedd; --human-s: #d9731e;
+    --bar-f: #f3efe8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1c1917; --ink: #f1ece6; --muted: #a39a90; --edge: #b5aba0; --card: #262220; --line: #3a3430;
+      --llm-f: #1f2f4d; --llm-s: #7aa5ff;
+      --agent-f: #2f2250; --agent-s: #b79cff;
+      --code-f: #302c29; --code-s: #a39a90;
+      --human-f: #4a2f17; --human-s: #ffab6b;
+      --bar-f: #2a2623;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, sans-serif; line-height: 1.5; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 26px; }
+  h2 { margin: 36px 0 8px; font-size: 18px; }
+  p.lead { margin: 0 0 16px; color: var(--muted); }
+  svg { width: 100%; height: auto; display: block; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+  .legend span:not(.plain)::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 2px solid; }
+  .legend .llm::before { background: var(--llm-f); border-color: var(--llm-s); }
+  .legend .agent::before { background: var(--agent-f); border-color: var(--agent-s); }
+  .legend .code::before { background: var(--code-f); border-color: var(--code-s); }
+  .legend .human::before { background: var(--human-f); border-color: var(--human-s); }
+  ul.map { margin: 0; padding-left: 18px; font-size: 14px; }
+  ul.map li { margin: 4px 0; }
+  code { font-family: ui-monospace, monospace; font-size: 0.9em; background: var(--bar-f); padding: 1px 5px; border-radius: 4px; }
+
+  /* diagram vocabulary */
+  .node { stroke-width: 2; }
+  .llm .node { fill: var(--llm-f); stroke: var(--llm-s); }
+  .agent .node { fill: var(--agent-f); stroke: var(--agent-s); }
+  .code .node { fill: var(--code-f); stroke: var(--code-s); }
+  .human .node { fill: var(--human-f); stroke: var(--human-s); }
+  .llm .tag { fill: var(--llm-s); } .agent .tag { fill: var(--agent-s); } .code .tag { fill: var(--code-s); } .human .tag { fill: var(--human-s); }
+  .tagtext { fill: #fff; font-size: 11px; font-weight: 700; }
+  .code .tagtext { fill: #fff; }
+  .name { fill: var(--ink); font-size: 15px; font-weight: 700; }
+  .sub { fill: var(--muted); font-size: 12px; }
+  .edge { fill: none; stroke: var(--edge); stroke-width: 2; }
+  .dash { stroke-dasharray: 6 5; }
+  .elabel { fill: var(--muted); font-size: 11px; font-family: ui-monospace, monospace; }
+  .arrowhead { fill: var(--edge); }
+  .terminal { fill: var(--ink); }
+  .terminal-text { fill: var(--bg); font-size: 10px; font-weight: 700; }
+  .bar { fill: var(--bar-f); stroke: var(--line); stroke-width: 1.5; }
+  .bar-text { fill: var(--ink); font-size: 13px; }
+  .bar-text b { font-weight: 700; }
+  .note { fill: var(--muted); font-size: 12px; }
+
+
+
+  /* added: sequence diagrams, explanations */
+  .life { stroke: var(--code-s); stroke-width: 1.5; stroke-dasharray: 3 6; opacity: .55; }
+  .badge { fill: var(--ink); }
+  .badge-t { fill: var(--bg); font-size: 10px; font-weight: 700; }
+  .ntext { fill: var(--ink); font-size: 11.5px; }
+  .head-t { fill: var(--ink); font-size: 13px; font-weight: 700; }
+  .bandbox { fill: var(--human-f); stroke: var(--human-s); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .bandtext { fill: var(--ink); font-size: 12.5px; }
+  .container { fill: none; stroke: var(--agent-s); stroke-width: 2; stroke-dasharray: 8 6; }
+  ol.steps { margin: 14px 0 0; padding-left: 24px; font-size: 14px; }
+  ol.steps li { margin: 7px 0; }
+  ul.plain { margin: 0; padding-left: 18px; font-size: 14px; }
+  ul.plain li { margin: 6px 0; }
+  .callout { border-left: 4px solid var(--human-s); background: var(--human-f); padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-top: 14px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.matrix th, table.matrix td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.matrix th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  p.sub-lead { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z" /></marker>
+</defs></svg>
+<main>
+  <h1>🍕 Slice Pizza: how the chatbot works</h1>
+  <p class="lead">
+    A plain chat window talks to an Express server. The server runs <b>one LangGraph graph</b> for every message. <b>LangGraph</b> draws the boxes and arrows,
+    keeps the shared state, saves a checkpoint after every box and pauses for a human. <b>LangChain</b> supplies what runs inside each box: the model,
+    structured output, the retriever, <code>createAgent</code> and the tools. All the agent logic is in the backend.
+  </p>
+
+  <h2>1. The big picture</h2>
+  <p class="sub-lead">Four moving parts. The browser only knows three routes and five event types; it has no idea a graph exists.</p>
+  <div class="panel">
+    
+<svg viewBox="0 0 1060 450" role="img" aria-label="System overview: browser, Express server, LangGraph graph, and the services the graph uses">
+  <g class="code"><rect class="node" x="10" y="130" width="180" height="170" rx="12" />
+    <text class="name" x="100" y="160" text-anchor="middle">Browser</text>
+    <text class="sub" x="100" y="182" text-anchor="middle">React chat (App.tsx)</text>
+    <text class="sub" x="100" y="202" text-anchor="middle">chat · cart · Confirm card</text>
+    <text class="sub" x="100" y="232" text-anchor="middle">thread id kept in</text>
+    <text class="sub" x="100" y="248" text-anchor="middle">localStorage</text></g>
+  <path class="edge" d="M190,185 H290" marker-end="url(#arrow)" />
+  <text class="elabel" x="240" y="177" text-anchor="middle">request</text>
+  <path class="edge dash" d="M290,250 H190" marker-end="url(#arrow)" />
+  <text class="elabel" x="240" y="242" text-anchor="middle">SSE stream</text>
+
+  <g class="code"><rect class="node" x="290" y="130" width="180" height="170" rx="12" />
+    <text class="name" x="380" y="160" text-anchor="middle">Express :3031</text>
+    <text class="sub" x="380" y="182" text-anchor="middle">server.ts</text>
+    <text class="sub" x="380" y="206" text-anchor="middle">POST /api/chat</text>
+    <text class="sub" x="380" y="222" text-anchor="middle">POST /api/chat/resume</text>
+    <text class="sub" x="380" y="238" text-anchor="middle">GET /api/chat/:threadId</text>
+    <text class="sub" x="380" y="264" text-anchor="middle">graph events → SSE</text></g>
+  <path class="edge" d="M470,185 H540" marker-end="url(#arrow)" />
+  <text class="elabel" x="505" y="177" text-anchor="middle">stream</text>
+  <path class="edge dash" d="M540,250 H470" marker-end="url(#arrow)" />
+  <text class="elabel" x="505" y="242" text-anchor="middle">events</text>
+
+  <rect class="container" x="540" y="30" width="500" height="290" rx="14" />
+  <text class="name" x="556" y="56">LangGraph graph (graph.ts)</text>
+  <text class="sub" x="556" y="74">decides what runs next · keeps the state · pauses for people</text>
+  <g class="llm"><rect class="node" x="556" y="90" width="148" height="40" rx="9" /><text class="name" x="630" y="115" text-anchor="middle" font-size="13">classify</text></g>
+  <g class="llm"><rect class="node" x="716" y="90" width="148" height="40" rx="9" /><text class="name" x="790" y="115" text-anchor="middle" font-size="13">answer (RAG)</text></g>
+  <g class="agent"><rect class="node" x="876" y="90" width="148" height="40" rx="9" /><text class="name" x="950" y="115" text-anchor="middle" font-size="13">orderAgent</text></g>
+  <g class="human"><rect class="node" x="556" y="140" width="148" height="40" rx="9" /><text class="name" x="630" y="165" text-anchor="middle" font-size="13">confirm</text></g>
+  <g class="code"><rect class="node" x="716" y="140" width="148" height="40" rx="9" /><text class="name" x="790" y="165" text-anchor="middle" font-size="13">placeOrder · cancel</text></g>
+  <g class="code"><rect class="node" x="876" y="140" width="148" height="40" rx="9" /><text class="name" x="950" y="165" text-anchor="middle" font-size="13">orderStatus</text></g>
+
+  <text class="sub" x="556" y="208">LangChain parts the nodes use:</text>
+  <g class="llm"><rect class="node" x="556" y="218" width="148" height="76" rx="9" /><text class="name" x="630" y="246" text-anchor="middle" font-size="13">Chat model</text><text class="sub" x="630" y="266" text-anchor="middle">initChatModel</text><text class="sub" x="630" y="282" text-anchor="middle">+ structured output</text></g>
+  <g class="code"><rect class="node" x="716" y="218" width="148" height="76" rx="9" /><text class="name" x="790" y="246" text-anchor="middle" font-size="13">Retriever</text><text class="sub" x="790" y="266" text-anchor="middle">top 3 document</text><text class="sub" x="790" y="282" text-anchor="middle">chunks</text></g>
+  <g class="agent"><rect class="node" x="876" y="218" width="148" height="76" rx="9" /><text class="name" x="950" y="246" text-anchor="middle" font-size="12">createAgent + tools</text><text class="sub" x="950" y="266" text-anchor="middle">cart and prices</text><text class="sub" x="950" y="282" text-anchor="middle">live in code</text></g>
+
+  <path class="edge" d="M630,294 V370" marker-end="url(#arrow)" />
+  <text class="elabel" x="638" y="346">API call</text>
+  <path class="edge" d="M790,294 V370" marker-end="url(#arrow)" />
+  <text class="elabel" x="798" y="346">search</text>
+  <path class="edge" d="M950,320 V370" marker-end="url(#arrow)" />
+  <text class="elabel" x="958" y="352">checkpoint</text>
+
+  <g class="llm"><rect class="node" x="556" y="370" width="148" height="66" rx="10" /><text class="name" x="630" y="397" text-anchor="middle" font-size="13">Anthropic API</text><text class="sub" x="630" y="416" text-anchor="middle">Claude Haiku</text></g>
+  <g class="code"><rect class="node" x="716" y="370" width="148" height="66" rx="10" /><text class="name" x="790" y="397" text-anchor="middle" font-size="13">Vector store</text><text class="sub" x="790" y="416" text-anchor="middle">13 chunks, in memory</text></g>
+  <g class="code"><rect class="node" x="876" y="370" width="148" height="66" rx="10" /><text class="name" x="950" y="397" text-anchor="middle" font-size="13">SQLite</text><text class="sub" x="950" y="416" text-anchor="middle">backend/runs/app.db</text></g>
+</svg>
+
+    <div class="legend">
+      <span class="llm">calls the model</span>
+      <span class="agent">model + tools in a loop</span>
+      <span class="human">waits for a person</span>
+      <span class="code">plain code, storage</span>
+      <span class="plain" style="margin-left:auto">solid arrow = a request · dashed arrow = a return or a stream</span>
+    </div>
+  </div>
+
+  <h2>2. One message, start to finish</h2>
+  <p class="sub-lead">The customer types "two large pepperonis and a coke". Read the arrows top to bottom.</p>
+  <div class="panel">
+    <svg viewBox="0 0 1000 562" role="img"><line class="life" x1="90" y1="44" x2="90" y2="552" /><line class="life" x1="300" y1="44" x2="300" y2="552" /><line class="life" x1="520" y1="44" x2="520" y2="552" /><line class="life" x1="740" y1="44" x2="740" y2="552" /><line class="life" x1="920" y1="44" x2="920" y2="552" /><g class="code"><rect class="node" x="24" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="90" y="30" text-anchor="middle">Browser</text><g class="code"><rect class="node" x="234" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="300" y="30" text-anchor="middle">Express server</text><g class="agent"><rect class="node" x="454" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="520" y="30" text-anchor="middle">LangGraph</text><g class="llm"><rect class="node" x="674" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="740" y="30" text-anchor="middle">Claude Haiku</text><g class="code"><rect class="node" x="854" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="920" y="30" text-anchor="middle">SQLite</text><path class="edge" d="M93,86 H297" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="78" text-anchor="middle">POST /api/chat</text><circle class="badge" cx="110" cy="86" r="9" /><text class="badge-t" x="110" y="89.5" text-anchor="middle">1</text><path class="edge" d="M303,128 H517" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="120" text-anchor="middle">graph.stream(…)</text><circle class="badge" cx="320" cy="128" r="9" /><text class="badge-t" x="320" y="131.5" text-anchor="middle">2</text><path class="edge" d="M523,170 H917" marker-end="url(#arrow)" /><text class="elabel" x="720.0" y="162" text-anchor="middle">load saved state</text><circle class="badge" cx="540" cy="170" r="9" /><text class="badge-t" x="540" y="173.5" text-anchor="middle">3</text><path class="edge" d="M523,212 H737" marker-end="url(#arrow)" /><text class="elabel" x="630.0" y="204" text-anchor="middle">classify: which path?</text><circle class="badge" cx="540" cy="212" r="9" /><text class="badge-t" x="540" y="215.5" text-anchor="middle">4</text><path class="edge dash" d="M737,254 H523" marker-end="url(#arrow)" /><text class="elabel" x="630.0" y="246" text-anchor="middle">{ intent: order }</text><circle class="badge" cx="720" cy="254" r="9" /><text class="badge-t" x="720" y="257.5" text-anchor="middle">5</text><path class="edge" d="M523,296 H737" marker-end="url(#arrow)" /><text class="elabel" x="630.0" y="288" text-anchor="middle">model ⇄ tools loop</text><circle class="badge" cx="540" cy="296" r="9" /><text class="badge-t" x="540" y="299.5" text-anchor="middle">6</text><path class="edge dash" d="M737,338 H523" marker-end="url(#arrow)" /><text class="elabel" x="630.0" y="330" text-anchor="middle">final reply text</text><circle class="badge" cx="720" cy="338" r="9" /><text class="badge-t" x="720" y="341.5" text-anchor="middle">7</text><path class="edge" d="M523,380 H917" marker-end="url(#arrow)" /><text class="elabel" x="720.0" y="372" text-anchor="middle">save checkpoint (every node)</text><circle class="badge" cx="540" cy="380" r="9" /><text class="badge-t" x="540" y="383.5" text-anchor="middle">8</text><path class="edge dash" d="M517,422 H303" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="414" text-anchor="middle">stream events</text><circle class="badge" cx="500" cy="422" r="9" /><text class="badge-t" x="500" y="425.5" text-anchor="middle">9</text><path class="edge dash" d="M297,464 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="456" text-anchor="middle">SSE: node · token</text><circle class="badge" cx="280" cy="464" r="9" /><text class="badge-t" x="280" y="467.5" text-anchor="middle">10</text><path class="edge" d="M297,506 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="498" text-anchor="middle">SSE: done</text><circle class="badge" cx="280" cy="506" r="9" /><text class="badge-t" x="280" y="509.5" text-anchor="middle">11</text></svg>
+    <ol class="steps">
+      <li>The browser sends the message with its <b>thread id</b>. The response stays open: it is a stream, not one JSON reply.</li>
+      <li>The server hands the message to the graph under that thread id.</li>
+      <li>The checkpointer loads everything saved for that thread: earlier messages and the cart.</li>
+      <li><code>classify</code> asks the model for a structured answer: one of four intents. The model only <i>labels</i> the message.</li>
+      <li>The intent is written to the state. A conditional edge reads it, and <b>our code</b> picks the path (here <code>orderAgent</code>).</li>
+      <li>The agent loop: the model asks for tools, LangChain runs them on the cart, the model reads the results, and so on until it has nothing left to ask for (capped at six model calls).</li>
+      <li>The final reply text is added to the state as a new message.</li>
+      <li>After <b>every</b> node, LangGraph saves a checkpoint. That one habit makes pausing and restarting possible.</li>
+      <li>While the graph runs, it streams events back to the server: "a node finished" and "the model wrote some text".</li>
+      <li>The server forwards them as <code>node</code> and <code>token</code> events. Tokens come only from the nodes the customer reads, not from <code>classify</code>.</li>
+      <li>When the stream ends, the server reads the saved end state and sends one closing <code>done</code> event with the cart, the total and the final reply.</li>
+    </ol>
+  </div>
+
+  <h2>3. The graph</h2>
+  <p class="sub-lead">The whole graph is a <b>workflow</b>: the paths are fixed by us. Only one box, <code>orderAgent</code>, is an <b>agent</b>, because cart edits are open-ended and need a variable number of steps.</p>
+  <div class="panel">
+    <svg viewBox="0 0 990 745" role="img" aria-label="The Slice Pizza graph: classify routes to answer, orderAgent, confirm or orderStatus">
+      
+
+      <!-- START → classify -->
+      <circle class="terminal" cx="50" cy="300" r="22" />
+      <text class="terminal-text" x="50" y="304" text-anchor="middle">START</text>
+      <text class="note" x="50" y="342" text-anchor="middle">customer</text>
+      <text class="note" x="50" y="356" text-anchor="middle">message</text>
+      <path class="edge" d="M72,300 H110" marker-end="url(#arrow)" />
+
+      <!-- classify -->
+      <g class="llm">
+        <rect class="node" x="110" y="265" width="150" height="70" rx="10" />
+        <text class="name" x="185" y="296" text-anchor="middle">classify</text>
+        <text class="sub" x="185" y="316" text-anchor="middle">structured output: intent</text>
+        <rect class="tag" x="118" y="254" width="66" height="18" rx="9" />
+        <text class="tagtext" x="151" y="267" text-anchor="middle">ROUTER</text>
+      </g>
+
+      <!-- routing: one bus, four conditional edges -->
+      <path class="edge dash" d="M260,300 H290 V80 H388" marker-end="url(#arrow)" />
+      <path class="edge dash" d="M290,215 H388" marker-end="url(#arrow)" />
+      <path class="edge dash" d="M290,300 V370 H388" marker-end="url(#arrow)" />
+      <path class="edge dash" d="M290,370 V590 H388" marker-end="url(#arrow)" />
+      <text class="elabel" x="298" y="72">question</text>
+      <text class="elabel" x="298" y="207">order</text>
+      <text class="elabel" x="298" y="362">checkout</text>
+      <text class="elabel" x="298" y="582">order_status</text>
+
+      <!-- answer -->
+      <g class="llm">
+        <rect class="node" x="390" y="45" width="200" height="70" rx="10" />
+        <text class="name" x="490" y="77" text-anchor="middle">answer</text>
+        <text class="sub" x="490" y="97" text-anchor="middle">top 3 chunks → write the reply</text>
+        <rect class="tag" x="398" y="34" width="48" height="18" rx="9" />
+        <text class="tagtext" x="422" y="47" text-anchor="middle">RAG</text>
+      </g>
+
+      <!-- orderAgent -->
+      <g class="agent">
+        <rect class="node" x="390" y="180" width="200" height="70" rx="10" />
+        <text class="name" x="490" y="212" text-anchor="middle">orderAgent</text>
+        <text class="sub" x="490" y="232" text-anchor="middle">createAgent + cart tools</text>
+        <rect class="tag" x="398" y="169" width="86" height="18" rx="9" />
+        <text class="tagtext" x="441" y="182" text-anchor="middle">AGENT LOOP</text>
+      </g>
+
+      <!-- confirm -->
+      <g class="human">
+        <rect class="node" x="390" y="335" width="200" height="70" rx="10" />
+        <text class="name" x="490" y="367" text-anchor="middle">confirm</text>
+        <text class="sub" x="490" y="387" text-anchor="middle">interrupt() pauses here</text>
+        <rect class="tag" x="398" y="324" width="136" height="18" rx="9" />
+        <text class="tagtext" x="466" y="337" text-anchor="middle">HUMAN IN THE LOOP</text>
+      </g>
+
+      <!-- confirm → placeOrder / cancel -->
+      <path class="edge dash" d="M590,370 H620 V335 H650" marker-end="url(#arrow)" />
+      <path class="edge dash" d="M620,370 V430 H650" marker-end="url(#arrow)" />
+      <text class="elabel" x="630" y="328">yes</text>
+      <text class="elabel" x="626" y="446">no</text>
+
+      <g class="code">
+        <rect class="node" x="650" y="305" width="150" height="60" rx="10" />
+        <text class="name" x="725" y="332" text-anchor="middle">placeOrder</text>
+        <text class="sub" x="725" y="350" text-anchor="middle">charge, new order id</text>
+        <rect class="tag" x="658" y="294" width="80" height="18" rx="9" />
+        <text class="tagtext" x="698" y="307" text-anchor="middle">PLAIN CODE</text>
+      </g>
+      <g class="code">
+        <rect class="node" x="650" y="400" width="150" height="60" rx="10" />
+        <text class="name" x="725" y="427" text-anchor="middle">cancel</text>
+        <text class="sub" x="725" y="445" text-anchor="middle">nothing is charged</text>
+        <rect class="tag" x="658" y="389" width="80" height="18" rx="9" />
+        <text class="tagtext" x="698" y="402" text-anchor="middle">PLAIN CODE</text>
+      </g>
+
+      <!-- orderStatus -->
+      <g class="code">
+        <rect class="node" x="390" y="555" width="200" height="70" rx="10" />
+        <text class="name" x="490" y="587" text-anchor="middle">orderStatus</text>
+        <text class="sub" x="490" y="607" text-anchor="middle">looks the order up, no model</text>
+        <rect class="tag" x="398" y="544" width="80" height="18" rx="9" />
+        <text class="tagtext" x="438" y="557" text-anchor="middle">PLAIN CODE</text>
+      </g>
+
+      <!-- everything meets at END -->
+      <path class="edge" d="M590,80 H900" />
+      <path class="edge" d="M590,215 H900" />
+      <path class="edge" d="M800,335 H900" />
+      <path class="edge" d="M800,430 H900" />
+      <path class="edge" d="M590,590 H900" />
+      <path class="edge" d="M900,80 V590" />
+      <path class="edge" d="M900,330 H920" marker-end="url(#arrow)" />
+      <circle class="terminal" cx="945" cy="330" r="22" />
+      <text class="terminal-text" x="945" y="334" text-anchor="middle">END</text>
+
+      <!-- guardrail note -->
+      <text class="note" x="110" y="372">Guardrail in code:</text>
+      <text class="note" x="110" y="388">checkout with an empty</text>
+      <text class="note" x="110" y="404">cart goes to answer,</text>
+      <text class="note" x="110" y="420">never to confirm.</text>
+
+      <!-- state + checkpointer -->
+      <rect class="bar" x="110" y="650" width="790" height="34" rx="8" />
+      <text class="bar-text" x="505" y="672" text-anchor="middle"><tspan font-weight="700">Shared state</tspan> every node reads and updates:  messages · intent · cart · confirmed</text>
+      <rect class="bar" x="110" y="696" width="790" height="34" rx="8" />
+      <text class="bar-text" x="505" y="718" text-anchor="middle"><tspan font-weight="700">Checkpointer (SQLite)</tspan> saves that state after every node, per thread_id: restart-proof</text>
+    </svg>
+    <div class="legend">
+      <span class="llm">calls the model</span>
+      <span class="agent">model + tools in a loop</span>
+      <span class="human">waits for a person</span>
+      <span class="code">plain code, no model</span>
+      <span class="plain" style="margin-left:auto">solid arrow = always · dashed arrow = a condition picks one</span>
+    </div>
+  </div>
+
+  
+
+  <h2>Zoom in: the two boxes that hide a pipeline</h2>
+  <div class="grid">
+    <div class="panel">
+      <svg viewBox="0 0 500 170" role="img" aria-label="Inside answer: retrieve then generate">
+        <text class="name" x="10" y="20">answer: RAG</text>
+        <g class="code"><rect class="node" x="10" y="45" width="100" height="60" rx="10" /><text class="name" x="60" y="72" text-anchor="middle" font-size="13">question</text><text class="sub" x="60" y="90" text-anchor="middle">last message</text></g>
+        <path class="edge" d="M110,75 H145" marker-end="url(#arrow)" />
+        <g class="code"><rect class="node" x="145" y="45" width="150" height="60" rx="10" /><text class="name" x="220" y="68" text-anchor="middle" font-size="13">retriever</text><text class="sub" x="220" y="85" text-anchor="middle">3 closest chunks</text><text class="sub" x="220" y="99" text-anchor="middle">from the shop docs</text></g>
+        <path class="edge" d="M295,75 H330" marker-end="url(#arrow)" />
+        <g class="llm"><rect class="node" x="330" y="45" width="160" height="60" rx="10" /><text class="name" x="410" y="68" text-anchor="middle" font-size="13">model</text><text class="sub" x="410" y="85" text-anchor="middle">answers using only</text><text class="sub" x="410" y="99" text-anchor="middle">prices + cart + chunks</text></g>
+        <text class="note" x="10" y="140">The docs are loaded, split, embedded and stored once at server start (knowledge.ts).</text>
+        <text class="note" x="10" y="157">The allergen facts exist only in the docs, so a wrong retrieval means a wrong answer.</text>
+      </svg>
+    </div>
+    <div class="panel">
+      <svg viewBox="0 0 500 170" role="img" aria-label="Inside orderAgent: the model and tools loop">
+        <text class="name" x="10" y="20">orderAgent: the agent loop</text>
+        <g class="llm"><rect class="node" x="10" y="45" width="150" height="60" rx="10" /><text class="name" x="85" y="72" text-anchor="middle" font-size="13">model_request</text><text class="sub" x="85" y="90" text-anchor="middle">decides the next step</text></g>
+        <g class="code"><rect class="node" x="250" y="45" width="140" height="60" rx="10" /><text class="name" x="320" y="68" text-anchor="middle" font-size="13">tools</text><text class="sub" x="320" y="85" text-anchor="middle">add · remove · view</text><text class="sub" x="320" y="99" text-anchor="middle">cart tools</text></g>
+        <path class="edge" d="M160,62 H250" marker-end="url(#arrow)" />
+        <path class="edge" d="M250,90 H160" marker-end="url(#arrow)" />
+        <text class="elabel" x="205" y="55" text-anchor="middle">asks</text>
+        <text class="elabel" x="205" y="108" text-anchor="middle">result</text>
+        <path class="edge" d="M85,105 V138 H470" marker-end="url(#arrow)" />
+        <text class="elabel" x="270" y="130" text-anchor="middle">no tool call left: this is the final reply</text>
+        <text class="note" x="400" y="62">modelCallLimit</text>
+        <text class="note" x="400" y="77">stops it after 6</text>
+        <text class="note" x="400" y="92">model calls</text>
+      </svg>
+    </div>
+  </div>
+
+  <h2>4. Checkout: pause, then resume</h2>
+  <p class="sub-lead">The part that is hardest to picture. The graph stops in the middle of a node and continues later, even after a server restart.</p>
+  <div class="panel">
+    <svg viewBox="0 0 1000 790" role="img"><line class="life" x1="90" y1="44" x2="90" y2="780" /><line class="life" x1="300" y1="44" x2="300" y2="780" /><line class="life" x1="520" y1="44" x2="520" y2="780" /><line class="life" x1="760" y1="44" x2="760" y2="780" /><g class="code"><rect class="node" x="24" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="90" y="30" text-anchor="middle">Browser</text><g class="code"><rect class="node" x="234" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="300" y="30" text-anchor="middle">Express server</text><g class="agent"><rect class="node" x="454" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="520" y="30" text-anchor="middle">LangGraph</text><g class="code"><rect class="node" x="694" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="760" y="30" text-anchor="middle">SQLite</text><path class="edge" d="M93,86 H297" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="78" text-anchor="middle">POST “check out”</text><circle class="badge" cx="110" cy="86" r="9" /><text class="badge-t" x="110" y="89.5" text-anchor="middle">1</text><path class="edge" d="M303,128 H517" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="120" text-anchor="middle">graph.stream(…)</text><circle class="badge" cx="320" cy="128" r="9" /><text class="badge-t" x="320" y="131.5" text-anchor="middle">2</text><g class="llm"><rect class="node" x="410.0" y="156" width="220" height="28" rx="7" /></g><text class="ntext" x="520" y="174" text-anchor="middle">classify says: checkout</text><circle class="badge" cx="396.0" cy="170" r="9" /><text class="badge-t" x="396.0" y="173.5" text-anchor="middle">3</text><g class="human"><rect class="node" x="395.0" y="198" width="250" height="28" rx="7" /></g><text class="ntext" x="520" y="216" text-anchor="middle">confirm: interrupt() stops here</text><circle class="badge" cx="381.0" cy="212" r="9" /><text class="badge-t" x="381.0" y="215.5" text-anchor="middle">4</text><path class="edge" d="M523,254 H757" marker-end="url(#arrow)" /><text class="elabel" x="640.0" y="246" text-anchor="middle">save checkpoint (paused)</text><circle class="badge" cx="540" cy="254" r="9" /><text class="badge-t" x="540" y="257.5" text-anchor="middle">5</text><path class="edge dash" d="M517,296 H303" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="288" text-anchor="middle">stream ends</text><circle class="badge" cx="500" cy="296" r="9" /><text class="badge-t" x="500" y="299.5" text-anchor="middle">6</text><path class="edge" d="M297,338 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="330" text-anchor="middle">SSE: interrupt</text><circle class="badge" cx="280" cy="338" r="9" /><text class="badge-t" x="280" y="341.5" text-anchor="middle">7</text><g class="code"><rect class="node" x="10.0" y="366" width="160" height="28" rx="7" /></g><text class="ntext" x="90" y="384" text-anchor="middle">Confirm card, input off</text><circle class="badge" cx="184.0" cy="380" r="9" /><text class="badge-t" x="184.0" y="383.5" text-anchor="middle">8</text><rect class="bandbox" x="20" y="412" width="960" height="40" rx="8" /><text class="bandtext" x="500.0" y="436" text-anchor="middle">Time passes. The customer can reload the page, or the server can restart. Nothing is lost: the pause is in SQLite.</text><path class="edge" d="M93,482 H297" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="474" text-anchor="middle">POST /resume</text><circle class="badge" cx="110" cy="482" r="9" /><text class="badge-t" x="110" y="485.5" text-anchor="middle">9</text><path class="edge" d="M303,524 H517" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="516" text-anchor="middle">Command({resume})</text><circle class="badge" cx="320" cy="524" r="9" /><text class="badge-t" x="320" y="527.5" text-anchor="middle">10</text><path class="edge" d="M523,566 H757" marker-end="url(#arrow)" /><text class="elabel" x="640.0" y="558" text-anchor="middle">load the checkpoint</text><circle class="badge" cx="540" cy="566" r="9" /><text class="badge-t" x="540" y="569.5" text-anchor="middle">11</text><g class="human"><rect class="node" x="370.0" y="594" width="300" height="28" rx="7" /></g><text class="ntext" x="520" y="612" text-anchor="middle">confirm runs again; interrupt() returns true</text><circle class="badge" cx="356.0" cy="608" r="9" /><text class="badge-t" x="356.0" y="611.5" text-anchor="middle">12</text><g class="code"><rect class="node" x="410.0" y="636" width="220" height="28" rx="7" /></g><text class="ntext" x="520" y="654" text-anchor="middle">placeOrder: charge the card</text><circle class="badge" cx="396.0" cy="650" r="9" /><text class="badge-t" x="396.0" y="653.5" text-anchor="middle">13</text><path class="edge dash" d="M517,692 H303" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="684" text-anchor="middle">stream events</text><circle class="badge" cx="500" cy="692" r="9" /><text class="badge-t" x="500" y="695.5" text-anchor="middle">14</text><path class="edge" d="M297,734 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="726" text-anchor="middle">SSE: done</text><circle class="badge" cx="280" cy="734" r="9" /><text class="badge-t" x="280" y="737.5" text-anchor="middle">15</text></svg>
+    <ol class="steps">
+      <li>The customer says "check out". The browser sends it like any other message.</li>
+      <li>The server starts the graph.</li>
+      <li><code>classify</code> labels the message <code>checkout</code>. The cart is not empty, so the route goes to <code>confirm</code>.</li>
+      <li><code>confirm</code> calls <code>interrupt()</code>. The node stops there, and nothing below that line runs.</li>
+      <li>LangGraph saves a checkpoint that says "paused inside <code>confirm</code>", together with the question and the cart.</li>
+      <li>The stream ends. The graph is not running any more; it is just a saved row.</li>
+      <li>The server sees the pause and sends an <code>interrupt</code> event instead of <code>done</code>.</li>
+      <li>The browser shows the Confirm card and disables the text box. New messages are refused (HTTP 409) until the card is answered.</li>
+      <li>The customer clicks Confirm. The browser calls <code>POST /api/chat/resume</code> with <code>{ approved: true }</code>.</li>
+      <li>The server resumes the same thread with <code>Command({ resume: true })</code>, the answer to the question <code>interrupt()</code> asked.</li>
+      <li>The checkpointer loads the paused state. This could be a different server process from the one that paused it.</li>
+      <li><code>confirm</code> runs <b>again from its first line</b>. This time <code>interrupt()</code> returns the customer's answer instead of stopping.</li>
+      <li>The edge after <code>confirm</code> sees <code>confirmed = true</code> and runs <code>placeOrder</code>, which charges the card and creates the order id.</li>
+      <li>Events stream back as in a normal run.</li>
+      <li>The browser gets <code>done</code> with the confirmation, and the cart is now empty.</li>
+    </ol>
+    <div class="callout"><b>Why the charge is in <code>placeOrder</code>, not in <code>confirm</code>:</b> a resumed node re-runs from its first line, so anything with a side effect placed above the <code>interrupt()</code> would happen twice (and would happen even if the customer said no).</div>
+  </div>
+
+  <h2>5. State: what the graph remembers</h2>
+  <p class="sub-lead">Every node reads one shared object and returns only the keys it changes. This is the <code>PizzaState</code> in <code>graph.ts</code>.</p>
+  <div class="panel">
+    <table class="matrix">
+      <tr><th>Key</th><th>How a new value is merged</th><th>Who reads and writes it</th></tr>
+      <tr><td><code>messages</code></td><td>Appended: new messages are added to the list, never replace it</td><td><code>classify</code> reads. <code>answer</code>, <code>orderAgent</code>, <code>placeOrder</code>, <code>cancel</code> and <code>orderStatus</code> each add one reply.</td></tr>
+      <tr><td><code>intent</code></td><td>Last write wins</td><td><code>classify</code> writes it. The routing function reads it.</td></tr>
+      <tr><td><code>cart</code></td><td>Last write wins: a node returns the whole new cart</td><td><code>orderAgent</code> writes it (through its tools). <code>placeOrder</code> empties it. <code>answer</code> and <code>confirm</code> read it.</td></tr>
+      <tr><td><code>confirmed</code></td><td>Last write wins</td><td><code>confirm</code> writes the customer's answer. The next edge reads it.</td></tr>
+    </table>
+  </div>
+
+  <h2>6. How the app behaves</h2>
+  <div class="panel">
+    <ul class="plain">
+      <li><b>One chat = one thread id.</b> Messages, the cart and any open approval are saved under it. "New chat" makes a new, empty thread.</li>
+      <li><b>The model labels, our code routes.</b> A wrong label means a wrong path, which is why <code>classify</code>'s prompt describes each intent.</li>
+      <li><b>Questions are answered from the documents.</b> <code>answer</code> uses only the retrieved chunks, the price list and the cart, and says it is not sure if they do not cover the question.</li>
+      <li><b>The agent edits the cart only through three tools</b> (add, remove, view). Prices and totals are worked out in code (<code>shop.ts</code>), never by the model, and the loop is capped at six model calls.</li>
+      <li><b>Replies stream as they are written.</b> Text written before a tool call ("Let me add that…") is cleared when the tools run, and the final reply replaces the bubble.</li>
+      <li><b>Checkout always asks first.</b> Nothing is charged until the customer confirms. Cancel keeps the cart. Checking out an empty cart is routed to <code>answer</code>, so it never reaches the payment steps.</li>
+      <li><b>Reload or restart is safe.</b> <code>GET /api/chat/:threadId</code> rebuilds the chat, the cart and any open Confirm card from the saved checkpoint.</li>
+      <li><b>Errors are shown, not swallowed.</b> A failed run sends an <code>error</code> event and the bubble says "Something went wrong".</li>
+    </ul>
+  </div>
+
+  <h2>7. Known limits (on purpose, for a demo)</h2>
+  <div class="panel">
+    <ul class="plain">
+      <li>Placed orders and their numbers (S-1004, …) live in server memory (<code>shop.ts</code>), not in SQLite. After a restart the app forgets them and numbering starts again.</li>
+      <li>The vector store is rebuilt from the three documents at every start. A real app would use a persistent vector database.</li>
+      <li>The path label under each reply is not saved, so replies loaded after a reload show without it.</li>
+      <li>No login (any thread id works) and no real payment provider: "charging the card" is a log line.</li>
+    </ul>
+  </div>
+
+  
+
+  <h2>4. Checkout: pause, then resume</h2>
+  <p class="sub-lead">The part that is hardest to picture. The graph stops in the middle of a node and continues later, even after a server restart.</p>
+  <div class="panel">
+    <svg viewBox="0 0 1000 790" role="img"><line class="life" x1="90" y1="44" x2="90" y2="780" /><line class="life" x1="300" y1="44" x2="300" y2="780" /><line class="life" x1="520" y1="44" x2="520" y2="780" /><line class="life" x1="760" y1="44" x2="760" y2="780" /><g class="code"><rect class="node" x="24" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="90" y="30" text-anchor="middle">Browser</text><g class="code"><rect class="node" x="234" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="300" y="30" text-anchor="middle">Express server</text><g class="agent"><rect class="node" x="454" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="520" y="30" text-anchor="middle">LangGraph</text><g class="code"><rect class="node" x="694" y="8" width="132" height="34" rx="8" /></g><text class="head-t" x="760" y="30" text-anchor="middle">SQLite</text><path class="edge" d="M93,86 H297" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="78" text-anchor="middle">POST “check out”</text><circle class="badge" cx="110" cy="86" r="9" /><text class="badge-t" x="110" y="89.5" text-anchor="middle">1</text><path class="edge" d="M303,128 H517" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="120" text-anchor="middle">graph.stream(…)</text><circle class="badge" cx="320" cy="128" r="9" /><text class="badge-t" x="320" y="131.5" text-anchor="middle">2</text><g class="llm"><rect class="node" x="410.0" y="156" width="220" height="28" rx="7" /></g><text class="ntext" x="520" y="174" text-anchor="middle">classify says: checkout</text><circle class="badge" cx="396.0" cy="170" r="9" /><text class="badge-t" x="396.0" y="173.5" text-anchor="middle">3</text><g class="human"><rect class="node" x="395.0" y="198" width="250" height="28" rx="7" /></g><text class="ntext" x="520" y="216" text-anchor="middle">confirm: interrupt() stops here</text><circle class="badge" cx="381.0" cy="212" r="9" /><text class="badge-t" x="381.0" y="215.5" text-anchor="middle">4</text><path class="edge" d="M523,254 H757" marker-end="url(#arrow)" /><text class="elabel" x="640.0" y="246" text-anchor="middle">save checkpoint (paused)</text><circle class="badge" cx="540" cy="254" r="9" /><text class="badge-t" x="540" y="257.5" text-anchor="middle">5</text><path class="edge dash" d="M517,296 H303" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="288" text-anchor="middle">stream ends</text><circle class="badge" cx="500" cy="296" r="9" /><text class="badge-t" x="500" y="299.5" text-anchor="middle">6</text><path class="edge" d="M297,338 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="330" text-anchor="middle">SSE: interrupt</text><circle class="badge" cx="280" cy="338" r="9" /><text class="badge-t" x="280" y="341.5" text-anchor="middle">7</text><g class="code"><rect class="node" x="10.0" y="366" width="160" height="28" rx="7" /></g><text class="ntext" x="90" y="384" text-anchor="middle">Confirm card, input off</text><circle class="badge" cx="184.0" cy="380" r="9" /><text class="badge-t" x="184.0" y="383.5" text-anchor="middle">8</text><rect class="bandbox" x="20" y="412" width="960" height="40" rx="8" /><text class="bandtext" x="500.0" y="436" text-anchor="middle">Time passes. The customer can reload the page, or the server can restart. Nothing is lost: the pause is in SQLite.</text><path class="edge" d="M93,482 H297" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="474" text-anchor="middle">POST /resume</text><circle class="badge" cx="110" cy="482" r="9" /><text class="badge-t" x="110" y="485.5" text-anchor="middle">9</text><path class="edge" d="M303,524 H517" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="516" text-anchor="middle">Command({resume})</text><circle class="badge" cx="320" cy="524" r="9" /><text class="badge-t" x="320" y="527.5" text-anchor="middle">10</text><path class="edge" d="M523,566 H757" marker-end="url(#arrow)" /><text class="elabel" x="640.0" y="558" text-anchor="middle">load the checkpoint</text><circle class="badge" cx="540" cy="566" r="9" /><text class="badge-t" x="540" y="569.5" text-anchor="middle">11</text><g class="human"><rect class="node" x="370.0" y="594" width="300" height="28" rx="7" /></g><text class="ntext" x="520" y="612" text-anchor="middle">confirm runs again; interrupt() returns true</text><circle class="badge" cx="356.0" cy="608" r="9" /><text class="badge-t" x="356.0" y="611.5" text-anchor="middle">12</text><g class="code"><rect class="node" x="410.0" y="636" width="220" height="28" rx="7" /></g><text class="ntext" x="520" y="654" text-anchor="middle">placeOrder: charge the card</text><circle class="badge" cx="396.0" cy="650" r="9" /><text class="badge-t" x="396.0" y="653.5" text-anchor="middle">13</text><path class="edge dash" d="M517,692 H303" marker-end="url(#arrow)" /><text class="elabel" x="410.0" y="684" text-anchor="middle">stream events</text><circle class="badge" cx="500" cy="692" r="9" /><text class="badge-t" x="500" y="695.5" text-anchor="middle">14</text><path class="edge" d="M297,734 H93" marker-end="url(#arrow)" /><text class="elabel" x="195.0" y="726" text-anchor="middle">SSE: done</text><circle class="badge" cx="280" cy="734" r="9" /><text class="badge-t" x="280" y="737.5" text-anchor="middle">15</text></svg>
+    <ol class="steps">
+      <li>The customer says "check out". The browser sends it like any other message.</li>
+      <li>The server starts the graph.</li>
+      <li><code>classify</code> labels the message <code>checkout</code>. The cart is not empty, so the route goes to <code>confirm</code>.</li>
+      <li><code>confirm</code> calls <code>interrupt()</code>. The node stops there, and nothing below that line runs.</li>
+      <li>LangGraph saves a checkpoint that says "paused inside <code>confirm</code>", together with the question and the cart.</li>
+      <li>The stream ends. The graph is not running any more; it is just a saved row.</li>
+      <li>The server sees the pause and sends an <code>interrupt</code> event instead of <code>done</code>.</li>
+      <li>The browser shows the Confirm card and disables the text box. New messages are refused (HTTP 409) until the card is answered.</li>
+      <li>The customer clicks Confirm. The browser calls <code>POST /api/chat/resume</code> with <code>{ approved: true }</code>.</li>
+      <li>The server resumes the same thread with <code>Command({ resume: true })</code>, the answer to the question <code>interrupt()</code> asked.</li>
+      <li>The checkpointer loads the paused state. This could be a different server process from the one that paused it.</li>
+      <li><code>confirm</code> runs <b>again from its first line</b>. This time <code>interrupt()</code> returns the customer's answer instead of stopping.</li>
+      <li>The edge after <code>confirm</code> sees <code>confirmed = true</code> and runs <code>placeOrder</code>, which charges the card and creates the order id.</li>
+      <li>Events stream back as in a normal run.</li>
+      <li>The browser gets <code>done</code> with the confirmation, and the cart is now empty.</li>
+    </ol>
+    <div class="callout"><b>Why the charge is in <code>placeOrder</code>, not in <code>confirm</code>:</b> a resumed node re-runs from its first line, so anything with a side effect placed above the <code>interrupt()</code> would happen twice (and would happen even if the customer said no).</div>
+  </div>
+
+  <h2>5. State: what the graph remembers</h2>
+  <p class="sub-lead">Every node reads one shared object and returns only the keys it changes. This is the <code>PizzaState</code> in <code>graph.ts</code>.</p>
+  <div class="panel">
+    <table class="matrix">
+      <tr><th>Key</th><th>How a new value is merged</th><th>Who reads and writes it</th></tr>
+      <tr><td><code>messages</code></td><td>Appended: new messages are added to the list, never replace it</td><td><code>classify</code> reads. <code>answer</code>, <code>orderAgent</code>, <code>placeOrder</code>, <code>cancel</code> and <code>orderStatus</code> each add one reply.</td></tr>
+      <tr><td><code>intent</code></td><td>Last write wins</td><td><code>classify</code> writes it. The routing function reads it.</td></tr>
+      <tr><td><code>cart</code></td><td>Last write wins: a node returns the whole new cart</td><td><code>orderAgent</code> writes it (through its tools). <code>placeOrder</code> empties it. <code>answer</code> and <code>confirm</code> read it.</td></tr>
+      <tr><td><code>confirmed</code></td><td>Last write wins</td><td><code>confirm</code> writes the customer's answer. The next edge reads it.</td></tr>
+    </table>
+  </div>
+
+  <h2>6. How the app behaves</h2>
+  <div class="panel">
+    <ul class="plain">
+      <li><b>One chat = one thread id.</b> Messages, the cart and any open approval are saved under it. "New chat" makes a new, empty thread.</li>
+      <li><b>The model labels, our code routes.</b> A wrong label means a wrong path, which is why <code>classify</code>'s prompt describes each intent.</li>
+      <li><b>Questions are answered from the documents.</b> <code>answer</code> uses only the retrieved chunks, the price list and the cart, and says it is not sure if they do not cover the question.</li>
+      <li><b>The agent edits the cart only through three tools</b> (add, remove, view). Prices and totals are worked out in code (<code>shop.ts</code>), never by the model, and the loop is capped at six model calls.</li>
+      <li><b>Replies stream as they are written.</b> Text written before a tool call ("Let me add that…") is cleared when the tools run, and the final reply replaces the bubble.</li>
+      <li><b>Checkout always asks first.</b> Nothing is charged until the customer confirms. Cancel keeps the cart. Checking out an empty cart is routed to <code>answer</code>, so it never reaches the payment steps.</li>
+      <li><b>Reload or restart is safe.</b> <code>GET /api/chat/:threadId</code> rebuilds the chat, the cart and any open Confirm card from the saved checkpoint.</li>
+      <li><b>Errors are shown, not swallowed.</b> A failed run sends an <code>error</code> event and the bubble says "Something went wrong".</li>
+    </ul>
+  </div>
+
+  <h2>7. Known limits (on purpose, for a demo)</h2>
+  <div class="panel">
+    <ul class="plain">
+      <li>Placed orders and their numbers (S-1004, …) live in server memory (<code>shop.ts</code>), not in SQLite. After a restart the app forgets them and numbering starts again.</li>
+      <li>The vector store is rebuilt from the three documents at every start. A real app would use a persistent vector database.</li>
+      <li>The path label under each reply is not saved, so replies loaded after a reload show without it.</li>
+      <li>No login (any thread id works) and no real payment provider: "charging the card" is a log line.</li>
+    </ul>
+  </div>
+
+  <h2>Where each idea lives in the code</h2>
+  <div class="panel">
+    <ul class="map">
+      <li><b>Workflow / routing</b>: <code>routeByIntent</code> and the <code>addConditionalEdges</code> calls in <code>backend/src/graph.ts</code>. The model classifies, our code picks the path.</li>
+      <li><b>Structured output</b>: <code>classify</code> returns a typed <code>{ intent }</code>, from a zod schema.</li>
+      <li><b>RAG</b>: <code>answer</code> (retrieve, then generate) and <code>backend/src/knowledge.ts</code> (load, split, embed, store).</li>
+      <li><b>Agent loop and tool calling</b>: <code>orderAgent</code> and <code>cartTools</code>. <code>createAgent</code> runs the loop for us.</li>
+      <li><b>Guardrails</b>: <code>modelCallLimitMiddleware</code> (cap on the loop) and the empty-cart check in <code>routeByIntent</code>.</li>
+      <li><b>Human in the loop</b>: <code>confirm</code> calls <code>interrupt()</code>. The charge lives in <code>placeOrder</code>, after the approval, because a resumed node re-runs from its first line.</li>
+      <li><b>State and persistence</b>: <code>PizzaState</code> and the SQLite checkpointer. <code>GET /api/chat/:threadId</code> rebuilds the chat, the cart and any open approval from it.</li>
+      <li><b>Streaming</b>: <code>runGraph</code> in <code>backend/src/server.ts</code> turns the graph's stream into Server-Sent Events (<code>node</code>, <code>token</code>, <code>done</code> or <code>interrupt</code>).</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

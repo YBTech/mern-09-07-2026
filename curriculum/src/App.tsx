@@ -163,6 +163,10 @@ import Ai30Demo from "./ai-training/day30-workflows-agents-context/lecture/DemoP
 import Ai30Notes from "./ai-training/day30-workflows-agents-context/Notes";
 import Ai30Concepts from "./ai-training/day30-workflows-agents-context/Concepts";
 
+import Ai31Lecture from "./ai-training/day31-langchain-langgraph/lecture/Lecture";
+import Ai31Notes from "./ai-training/day31-langchain-langgraph/Notes";
+import Ai31Concepts from "./ai-training/day31-langchain-langgraph/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -515,6 +519,9 @@ function App() {
       <Route path="/ai-training/day30-workflows-agents-context/lecture/:demo" element={<Ai30Demo />} />
       <Route path="/ai-training/day30-workflows-agents-context/notes" element={<Ai30Notes />} />
       <Route path="/ai-training/day30-workflows-agents-context/concepts" element={<Ai30Concepts />} />
+      <Route path="/ai-training/day31-langchain-langgraph/lecture" element={<Ai31Lecture />} />
+      <Route path="/ai-training/day31-langchain-langgraph/notes" element={<Ai31Notes />} />
+      <Route path="/ai-training/day31-langchain-langgraph/concepts" element={<Ai31Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
