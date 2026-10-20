@@ -7,9 +7,8 @@ expense-desk/
     src/
       ai/workflow.ts           👉 YOUR CODE, part 1: processClaim(claimId), the workflow
       ai/agent.ts              👉 YOUR CODE, part 2: investigateClaim(claimId), the agent
-      tools/                   the company data as tools (functions + schemas), auto-traced
-      llm.ts                   ai.messages.create(...): the Anthropic SDK call, auto-traced
-      trace/trace.ts           records every model and tool call per claim; note() for your labels
+      tools/                   the company data as tools (functions + schemas)
+      llm.ts                   ai.messages.create(...): the Anthropic SDK call, always Haiku
       modules/claims/          routes → controller → service for /api/claims
       modules/employees/       /api/employees
       store.ts                 the in-memory "database", re-seeded on restart or reset
@@ -20,7 +19,7 @@ expense-desk/
       api.ts                   every call from the browser to the API
       types.ts                 the same types as the server
       format.ts                money, token counts, decision labels
-      components/              ClaimList, ClaimDetail, ResultCard, TraceTimeline, NewClaimForm, ...
+      components/              ClaimList, ClaimDetail, ResultCard, NewClaimForm, ...
   docs/                        business brief, policy, tools, architecture, your design.md
 ```
 
@@ -30,11 +29,10 @@ expense-desk/
 ClaimDetail  →  api.processClaim(id)  →  POST /api/claims/:id/process
   → claims.service.processClaimById
       → refuses if the claim is already paid (409)
-      → runWithTrace(id, () => processClaim(id))     ← your workflow.ts runs here (and agent.ts if it hands off)
-            your code calls tools.* and ai.messages.create(...), and both record into the trace
+      → processClaim(id)     ← your workflow.ts runs here (and agent.ts if it hands off)
       → checks the shape of your ClaimResult
       → stores it, sets the claim's status to "processed"
-  ← the result; the page reloads the claim and GET /api/claims/:id/trace
+  ← the result; the page reloads the claim
 ```
 
 ## The API
@@ -45,7 +43,6 @@ ClaimDetail  →  api.processClaim(id)  →  POST /api/claims/:id/process
 | `POST /api/claims`             | submit a new claim `{ employeeId, amount, expenseDate, note, receiptText }` |
 | `GET /api/claims/:id`          | one claim with its employee, the last result, and its payments              |
 | `POST /api/claims/:id/process` | run your `processClaim` on it                                               |
-| `GET /api/claims/:id/trace`    | the trace of the last run                                                   |
 | `GET /api/employees`           | everyone at Brightline                                                      |
 | `POST /api/admin/reset`        | put all data back as it was                                                 |
 

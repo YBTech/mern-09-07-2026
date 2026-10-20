@@ -15,7 +15,7 @@ import { investigateClaim } from "./agent";
 // Some claims are unusual (a dinner that looks split into small claims, a hotel with no trip). You
 // cannot write their steps in advance. Hand those to the agent in agent.ts.
 //
-// What you have:  tools (src/tools)   ai.messages.create (src/llm.ts)   note() (src/trace/trace.ts)
+// What you have:  tools (src/tools)   ai.messages.create (src/llm.ts)
 // Rules: follow the policy (tools.getPolicy()), pay approve/partial claims once with tools.payClaim,
 // and NEVER pay a needs_approval claim here: a manager approves it first.
 

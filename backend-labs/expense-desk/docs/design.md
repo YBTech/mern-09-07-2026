@@ -46,7 +46,13 @@ What does each model call see, and what does it NOT see?
 - What happens when the manager approves, and when they reject?
 - What happens if they press Approve twice?
 
-## 7. Results on the inbox
+## 7. Moving the line
+
+This lab is level 2 (the AI decides, people approve at the gates). If Brightline had 10 times the
+claims, or a smaller budget for model calls, where would you move the line, and what would change
+in your design?
+
+## 8. Results on the inbox
 
 | Claim | Decision | Amount | Path (workflow or agent) | Right? |
 | ----- | -------- | ------ | ------------------------ | ------ |

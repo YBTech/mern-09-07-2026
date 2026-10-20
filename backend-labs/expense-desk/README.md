@@ -14,10 +14,36 @@ npm run typecheck
 ## What exists today
 
 - An inbox of 13 expense claims, a claim view with the receipt, and a "Process with AI" button.
-- After processing: the decision, the amount, the rules, the email to the employee, the payments,
-  and a **trace** of every model call and tool call your code made.
+- After processing: the decision, the amount, the rules, the email to the employee, and the payments.
 - A form to submit your own claims, and "Reset data" to start over.
 - `server/src/ai/workflow.ts` and `server/src/ai/agent.ts` are stubs: every claim goes to Finance.
+
+## How much should the AI decide?
+
+There is no single right AI design for this app. It depends on how much the business trusts the AI
+to act on its own:
+
+| Level                    | The AI                                                | A person                                               |
+| ------------------------ | ----------------------------------------------------- | ------------------------------------------------------ |
+| 1. Assist                | reads the claim, finds the evidence, recommends       | decides and pays every claim                           |
+| 2. **Decide with gates** | decides and pays the claims the policy clearly covers | approves claims over $500, reviews claims the AI flags |
+| 3. Fully autonomous      | decides and pays everything                           | only audits afterwards                                 |
+
+**This lab builds level 2.** Level 1 wastes the AI on 400 boring claims a week; level 3 lets a model
+send money nobody checked. The business brief spells out who decides what.
+
+## Where each feature goes
+
+| Feature                              | Endpoint                                           | Files you write                                                                                            |
+| ------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| The AI decision: workflow (part 1)   | `POST /api/claims/:id/process` (exists)            | `server/src/ai/workflow.ts`: `processClaim`, every claim starts here                                       |
+| The AI decision: agent (part 2)      | the same endpoint, called from the workflow        | `server/src/ai/agent.ts`: `investigateClaim`, for the unusual claims                                       |
+| Manager approval (human in the loop) | `POST /api/claims/:id/approve` and `/reject` (new) | `server/src/modules/claims/`: `claims.routes.ts`, `claims.controller.ts`, `claims.service.ts`              |
+| The manager's review queue           | uses the two endpoints above                       | `client/src/api.ts` (two new calls), a new `client/src/components/ApprovalQueue.tsx`, wired into `App.tsx` |
+
+The `process` endpoint is already wired: the "Process with AI" button calls it, and it runs your
+`processClaim`. So for the AI decision you write code only in `server/src/ai/`; the approval
+endpoints and the queue are new code in the claims module and the client.
 
 ## Your tasks
 
@@ -46,17 +72,20 @@ when it reports a decision, with a turn cap.
 
 ### 4. Manager approval (human in the loop)
 
-A claim over $500 must not be paid by the AI. Build:
+A claim over $500 must not be paid by the AI: `processClaim` returns `needs_approval` and pays
+nothing. Build the gate:
 
-- a review queue in the app where a manager sees the claims waiting for them,
-- Approve and Reject buttons, and the endpoints behind them (`POST /api/claims/:id/approve` and
-  `/reject`),
-- approve pays the claim exactly once, even if the manager clicks twice.
+- **Server** (`server/src/modules/claims/`): `POST /api/claims/:id/approve` pays the claim with
+  `tools.payClaim`, exactly once even if called twice; `POST /api/claims/:id/reject` closes it
+  without paying. Add the statuses you need to `ClaimStatus` in `server/src/types.ts`.
+- **Client** (`client/src/`): an `ApprovalQueue` component listing the claims waiting for a
+  manager, with the AI's summary and Approve / Reject buttons, calling two new functions in
+  `api.ts`.
 
 ### 5. Try it on the inbox
 
 Process all 13 claims in the app. In `docs/design.md`, write down each decision, which path it took
-(workflow or agent: the trace shows it), and anything you would change.
+(workflow or agent), and anything you would change.
 
 Hand in: `docs/design.md` and your code.
 
@@ -71,9 +100,9 @@ Hand in: `docs/design.md` and your code.
 
 ## Rules
 
-- Use the provided `tools` for all data and `ai.messages.create` for all model calls, so everything
-  shows up in the trace. The model is always `claude-haiku-5-5`.
-- Do not change `server/src/tools`, `server/src/llm.ts`, `server/src/trace` or `server/data`.
+- Use the provided `tools` for all data and `ai.messages.create` for all model calls. The model is
+  always `claude-haiku-5-5`.
+- Do not change `server/src/tools`, `server/src/llm.ts` or `server/data`.
   Everything else is yours.
 - Do not hard-code claim ids or answers. The system must work on claims it has not seen.
 
@@ -84,8 +113,7 @@ Hand in: `docs/design.md` and your code.
 | `server/src/ai/workflow.ts` | 👉 part 1: the workflow, where every claim starts |
 | `server/src/ai/agent.ts`    | 👉 part 2: the agent, for the unusual claims      |
 | `server/src/tools`          | the company data as tools, and `payClaim`         |
-| `server/src/llm.ts`         | `ai.messages.create`, the traced model client     |
-| `server/src/trace/trace.ts` | the trace, and `note()` to label your steps       |
+| `server/src/llm.ts`         | `ai.messages.create`, the model client            |
 | `server/src/modules/claims` | the claims API (routes, controller, service)      |
 | `server/data`               | the seed data and the policy                      |
 | `client/src`                | the React app: `App.tsx`, `api.ts`, `components/` |

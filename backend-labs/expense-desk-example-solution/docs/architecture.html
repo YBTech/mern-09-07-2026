@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expense Desk Level 2 Architecture</title>
+<style>
+/* Layout: one narrow reading column; wide diagrams scroll inside their own frame. */
+:root {
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --ink: #16202e;
+  --muted: #586274;
+  --line: #d8dde6;
+  --code: #3b4a5f;
+  --code-fill: #e6eaf1;
+  --model: #5a43d3;
+  --model-fill: #ebe8fb;
+  --human: #a8520a;
+  --human-fill: #fcefd6;
+  --ok: #17794a;
+  --bad: #b3261e;
+  --font-display: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #19202b; --ink: #e8ecf3; --muted: #9aa5b8; --line: #2b3545;
+    --code: #a9b8d0; --code-fill: #253041; --model: #a99bff; --model-fill: #2a2650;
+    --human: #f0b25e; --human-fill: #3b2c14; --ok: #5fd39a; --bad: #ff8b82;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #19202b; --ink: #e8ecf3; --muted: #9aa5b8; --line: #2b3545;
+  --code: #a9b8d0; --code-fill: #253041; --model: #a99bff; --model-fill: #2a2650;
+  --human: #f0b25e; --human-fill: #3b2c14; --ok: #5fd39a; --bad: #ff8b82;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 5vw, 42px); }
+h2 { font-size: 24px; }
+h3 { font-size: 17px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; font-size: 16px; }
+.kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 13px; }
+code { background: var(--code-fill); padding: 1px 5px; border-radius: 3px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 2px solid; }
+.legend .l-code::before { border-color: var(--code); background: var(--code-fill); }
+.legend .l-model::before { border-color: var(--model); background: var(--model-fill); }
+.legend .l-human::before { border-color: var(--human); background: var(--human-fill); }
+
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.scroll { overflow-x: auto; }
+figure svg { display: block; min-width: 860px; width: 100%; height: auto; color: var(--ink); }
+figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; max-width: 80ch; }
+svg text { font-family: var(--font-body); fill: currentColor; font-size: 12.5px; }
+svg .t { font-weight: 600; font-size: 13px; }
+svg .s { font-size: 11px; opacity: .72; }
+svg .lab { font-size: 11px; font-family: var(--font-mono); opacity: .8; }
+svg .n-code { fill: var(--code-fill); stroke: var(--code); stroke-width: 1.5; }
+svg .n-model { fill: var(--model-fill); stroke: var(--model); stroke-width: 1.5; }
+svg .n-human { fill: var(--human-fill); stroke: var(--human); stroke-width: 1.5; }
+svg .edge { stroke: currentColor; stroke-width: 1.4; fill: none; opacity: .7; }
+svg .dash { stroke-dasharray: 5 4; }
+svg .bad { stroke: var(--bad); color: var(--bad); }
+svg .band { fill: none; stroke: var(--line); stroke-dasharray: 3 4; }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 11.5px; padding: 1px 7px; border-radius: 99px; border: 1px solid; white-space: nowrap; }
+.pill.mgr { color: var(--human); border-color: var(--human); background: var(--human-fill); }
+.pill.fin { color: var(--model); border-color: var(--model); background: var(--model-fill); }
+.pill.pay { color: var(--ok); border-color: var(--ok); }
+.pill.rej { color: var(--bad); border-color: var(--bad); }
+.pill.cd { color: var(--code); border-color: var(--code); background: var(--code-fill); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px 32px; }
+.grid2 > div { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.h-item { border-top: 2px solid var(--line); padding-top: 10px; }
+.h-item p { color: var(--muted); font-size: 14px; }
+.files { font-family: var(--font-mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; white-space: pre; line-height: 1.7; }
+.files b { color: var(--model); font-weight: 500; }
+.files i { color: var(--muted); font-style: normal; }
+.ask { background: var(--human-fill); border: 1px solid var(--human); border-radius: 8px; padding: 14px 18px; }
+.ask ul { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <div class="kicker">Expense Desk · Level 2 example solution · architecture</div>
+    <h1>An AI that decides most claims and calls a person only at defined gates</h1>
+    <p class="lede">A fixed workflow does the cheap, predictable work. An agent loop takes the claims that need investigation. Code, not the model, does the arithmetic and enforces the safety rules. A gate table you can read in one file decides when a manager or Finance has to look. The AI never sends money: approved claims are handed to Finance's system.</p>
+    <div class="legend"><span class="l-code">Code (deterministic)</span><span class="l-model">Model (Haiku, judgment)</span><span class="l-human">Human</span></div>
+  </header>
+
+  <section>
+    <h2>The pipeline, nine stages</h2>
+    <p class="lede">The employee submits a small form (amount, date, category, note) and a photo of the receipt. Everything below runs when "Process with AI" is pressed.</p>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1000 640" role="img" aria-label="Pipeline: intake with hard checks, read the receipt image, cross-check against the form, flag and route, then a code policy engine or an investigator agent, checks before acting, write-up, and a routing stage with three outcomes.">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+
+        <!-- row 1 -->
+        <rect class="n-code" x="20" y="30" width="210" height="66" rx="6"/><text class="t" x="125" y="55" text-anchor="middle">1 Intake + hard checks</text><text class="s" x="125" y="73" text-anchor="middle">form fields, receipt present,</text><text class="s" x="125" y="86" text-anchor="middle">deadline, repeat submission</text>
+        <rect class="n-model" x="270" y="30" width="210" height="66" rx="6"/><text class="t" x="375" y="55" text-anchor="middle">2 Read the receipt</text><text class="s" x="375" y="73" text-anchor="middle">vision call: image → merchant,</text><text class="s" x="375" y="86" text-anchor="middle">line items, total, receipt no.</text>
+        <rect class="n-code" x="520" y="30" width="210" height="66" rx="6"/><text class="t" x="625" y="55" text-anchor="middle">3 Cross-check</text><text class="s" x="625" y="73" text-anchor="middle">form vs receipt · trips, past claims,</text><text class="s" x="625" y="86" text-anchor="middle">manager loaded in parallel</text>
+        <rect class="n-code" x="770" y="30" width="210" height="66" rx="6"/><text class="t" x="875" y="55" text-anchor="middle">4 Flag + route</text><text class="s" x="875" y="73" text-anchor="middle">if-checks raise flags;</text><text class="s" x="875" y="86" text-anchor="middle">any real flag → agent</text>
+        <line class="edge" x1="230" y1="63" x2="268" y2="63" marker-end="url(#ar)"/>
+        <line class="edge" x1="480" y1="63" x2="518" y2="63" marker-end="url(#ar)"/>
+        <line class="edge" x1="730" y1="63" x2="768" y2="63" marker-end="url(#ar)"/>
+
+        <!-- hard exit -->
+        <path class="edge bad dash" d="M125 96 V150" marker-end="url(#ar)"/>
+        <rect class="n-code" x="20" y="152" width="210" height="50" rx="6"/><text class="t" x="125" y="173" text-anchor="middle">Reject right away</text><text class="s" x="125" y="190" text-anchor="middle">late · no receipt · same receipt no.</text>
+
+        <!-- branch -->
+        <path class="edge" d="M875 96 V130 H625 V200" marker-end="url(#ar)"/>
+        <path class="edge" d="M875 96 V200" marker-end="url(#ar)"/>
+        <text class="lab" x="636" y="124">no flags</text><text class="lab" x="886" y="124">flags raised</text>
+        <rect class="n-code" x="520" y="202" width="210" height="62" rx="6"/><text class="t" x="625" y="227" text-anchor="middle">5a Policy engine</text><text class="s" x="625" y="245" text-anchor="middle">R1–R4, R10 as code, to the cent</text>
+        <rect class="n-model" x="770" y="202" width="210" height="112" rx="6"/><text class="t" x="875" y="227" text-anchor="middle">5b Investigator agent</text><text class="s" x="875" y="247" text-anchor="middle">loop with read tools,</text><text class="s" x="875" y="261" text-anchor="middle">calculator, findings,</text><text class="s" x="875" y="275" text-anchor="middle">checkApprovalGates;</text><text class="s" x="875" y="289" text-anchor="middle">turn + token cap</text>
+
+        <!-- converge -->
+        <path class="edge" d="M625 264 V340" marker-end="url(#ar)"/>
+        <path class="edge" d="M875 314 V340" marker-end="url(#ar)"/>
+        <rect class="n-code" x="520" y="342" width="460" height="66" rx="6"/><text class="t" x="750" y="366" text-anchor="middle">6 Check before acting</text>
+        <text class="s" x="750" y="384" text-anchor="middle">guardrails (sanity) · approval gates (who signs) · second-opinion model call on risky claims only</text>
+        <text class="s" x="750" y="398" text-anchor="middle">a failed check never pays: it sends the claim to a person</text>
+
+        <line class="edge" x1="750" y1="408" x2="750" y2="448" marker-end="url(#ar)"/>
+        <rect class="n-model" x="520" y="450" width="460" height="56" rx="6"/><text class="t" x="750" y="474" text-anchor="middle">7 Write-up</text><text class="s" x="750" y="492" text-anchor="middle">summary for the reviewer, email to the employee (and two drafts if a person decides)</text>
+
+        <!-- 8 route -->
+        <line class="edge" x1="750" y1="506" x2="750" y2="528" marker-end="url(#ar)"/>
+        <rect class="n-code" x="520" y="530" width="460" height="40" rx="6"/><text class="t" x="750" y="555" text-anchor="middle">8 Route the outcome (decided in stage 6, only carried out here)</text>
+
+        <path class="edge" d="M750 570 V586 H260 V600" marker-end="url(#ar)"/>
+        <path class="edge" d="M750 570 V600" marker-end="url(#ar)"/>
+        <path class="edge" d="M750 570 V586 H900 V600" marker-end="url(#ar)"/>
+        <rect class="n-code" x="130" y="602" width="260" height="34" rx="6"/><text class="t" x="260" y="624" text-anchor="middle">Auto-approved → stage 9</text>
+        <rect class="n-human" x="620" y="602" width="260" height="34" rx="6"/><text class="t" x="750" y="624" text-anchor="middle">Needs a person → review queue</text>
+        <rect class="n-code" x="900" y="602" width="90" height="34" rx="6"/><text class="t" x="945" y="624" text-anchor="middle">Reject</text>
+      </svg>
+      </div>
+      <figcaption>Stages 1 to 4 are shared by every claim. The router sends a claim down one of two decision paths, then every claim passes the same checks, write-up and routing. Stage 9 (hand-off to Finance) is drawn below.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What each stage does</h2>
+    <div class="grid2">
+      <div class="h-item"><h3>1 · Intake and hard checks</h3><p>The employee's form is already JSON: amount, expense date, category, note. Code rejects immediately if the claim is past 60 days (R5), has no receipt image over $25 (R1), or repeats an earlier submission. No model call, so these cost nothing.</p></div>
+      <div class="h-item"><h3>2 · Read the receipt</h3><p>A vision call reads the photo and fills a fixed shape: merchant, date, each line item tagged (alcohol, meal, hotel night, gift), total, receipt number, guest count. It must be structured because code does the math next. The same call reads the note for purpose: travel, hosting a client, or none.</p></div>
+      <div class="h-item"><h3>3 · Cross-check</h3><p>Code compares what the employee typed with what the receipt shows: amount, date, category. It also checks the line items add up to the total and that the receipt number was never paid. The employee's trips, past claims and manager are fetched here, in parallel. These are plain lookups by id, not search.</p></div>
+      <div class="h-item"><h3>4 · Flag and route</h3><p>A list of small if-checks, each returning a flag with a severity: note says "part 3", no trip covers a hotel night, "gift card" on the receipt, form and receipt disagree. No flags: policy engine. Any real flag: the agent, which is told why it was called.</p></div>
+      <div class="h-item"><h3>5a · Policy engine (code)</h3><p>Applies the $75 meal cap, removes alcohol, takes the lower of claimed and receipt total, prices hotel nights against $250. The routine claim's decision comes from arithmetic, not from a model's guess.</p></div>
+      <div class="h-item"><h3>5b · Investigator agent</h3><p>For claims whose steps can't be scripted. It starts with everything already gathered plus the flags, uses its tools until it can decide, then submits. It can read and calculate. It cannot pay.</p></div>
+      <div class="h-item"><h3>6 · Check before acting</h3><p>Three checks. <b>Guardrails:</b> sanity rules (pay no more than the claim or the receipt, $0 on a reject, real rule ids). <b>Gates:</b> the table below decides who must sign. <b>Second opinion:</b> a separate model call, no tools, asks "would you pay this?" for agent-path claims and payouts over $200.</p></div>
+      <div class="h-item"><h3>7 · Write-up</h3><p>One model call turns the decision into a short summary for the reviewer and an email to the employee. When a person will decide, it drafts the email for both outcomes so the final message is ready after the click.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>From decision to money</h2>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 900 330" role="img" aria-label="Approved claims, whether auto-approved or approved by a person, become a payout request. The system submits it to Finance's API once; success records it as ready for payout, failure retries three times and then lands in a failed payouts queue where Finance can retry.">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <rect class="n-code" x="20" y="30" width="190" height="50" rx="6"/><text class="t" x="115" y="51" text-anchor="middle">Auto-approved</text><text class="s" x="115" y="68" text-anchor="middle">no gate fired</text>
+        <rect class="n-human" x="20" y="110" width="190" height="50" rx="6"/><text class="t" x="115" y="131" text-anchor="middle">Person clicks Approve</text><text class="s" x="115" y="148" text-anchor="middle">manager or Finance</text>
+        <path class="edge" d="M210 55 H250 V95 H270" marker-end="url(#ar3)"/>
+        <path class="edge" d="M210 135 H250 V95 H270"/>
+        <rect class="n-code" x="272" y="62" width="190" height="66" rx="6"/><text class="t" x="367" y="86" text-anchor="middle">9 Payout request</text><text class="s" x="367" y="104" text-anchor="middle">saved with status "queued"</text><text class="s" x="367" y="118" text-anchor="middle">one per claim (idempotent)</text>
+        <line class="edge" x1="462" y1="95" x2="512" y2="95" marker-end="url(#ar3)"/><text class="lab" x="468" y="87">submit</text>
+        <rect class="n-code" x="514" y="62" width="190" height="66" rx="6"/><text class="t" x="609" y="86" text-anchor="middle">Finance system API</text><text class="s" x="609" y="104" text-anchor="middle">records the reimbursement</text><text class="s" x="609" y="118" text-anchor="middle">(in the lab: tools.payClaim)</text>
+        <line class="edge" x1="704" y1="95" x2="754" y2="95" marker-end="url(#ar3)"/><text class="lab" x="712" y="87">ok</text>
+        <rect class="n-code" x="756" y="62" width="130" height="66" rx="6" style="stroke:var(--ok)"/><text class="t" x="821" y="86" text-anchor="middle">Recorded</text><text class="s" x="821" y="104" text-anchor="middle">Finance sends the</text><text class="s" x="821" y="118" text-anchor="middle">money its own way</text>
+        <path class="edge bad dash" d="M609 128 V200" marker-end="url(#ar3)"/><text class="lab" x="618" y="170" style="fill:var(--bad)">error or timeout: retry ×3</text>
+        <rect class="n-human" x="514" y="202" width="190" height="66" rx="6"/><text class="t" x="609" y="226" text-anchor="middle">Failed payouts queue</text><text class="s" x="609" y="244" text-anchor="middle">Finance sees the error</text><text class="s" x="609" y="258" text-anchor="middle">and presses Retry</text>
+        <path class="edge dash" d="M514 235 H367 V130" marker-end="url(#ar3)"/><text class="lab" x="380" y="228">Retry: back to "queued"</text>
+        <text class="s" x="20" y="205" style="opacity:1;font-weight:600">The AI and the model code</text><text class="s" x="20" y="221" style="opacity:1;font-weight:600">stop at "Approved".</text>
+        <text class="s" x="20" y="241">Only this hand-off module talks to</text><text class="s" x="20" y="255">Finance, and the same claim can</text><text class="s" x="20" y="269">never be submitted twice.</text>
+      </svg>
+      </div>
+      <figcaption>Whether a claim was approved automatically or by a person, it takes the same path to Finance. The lab has a "Simulate Finance outage" switch in the header so students can watch a failure land in the failed payouts queue and then retry it.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <thead><tr><th>Claim status</th><th>Meaning</th><th>Moved by</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">new</td><td>Submitted, nothing run yet</td><td>employee</td></tr>
+        <tr><td class="mono">rejected</td><td>Closed with no payment (hard rule, or AI reject). Email drafted.</td><td>stage 8, or a reviewer's Reject</td></tr>
+        <tr><td class="mono">awaiting_review</td><td>A gate fired; in the manager or Finance queue; nothing sent to Finance's system</td><td>stage 8</td></tr>
+        <tr><td class="mono">approved</td><td>Cleared, payout request created and queued</td><td>stage 8, or a reviewer's Approve</td></tr>
+        <tr><td class="mono">payout_recorded</td><td>Finance's system accepted it</td><td>hand-off module</td></tr>
+        <tr><td class="mono">payout_failed</td><td>Three attempts failed; waiting for Finance to retry</td><td>hand-off module</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Inside the agent loop</h2>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 900 330" role="img" aria-label="Agent loop: the model asks for tools, code runs them and returns results, until the model calls submitDecision. A turn cap or token budget forces a final submit or an escalation.">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <rect class="n-code" x="20" y="20" width="190" height="64" rx="6"/><text class="t" x="115" y="46" text-anchor="middle">Everything gathered</text><text class="s" x="115" y="64" text-anchor="middle">+ why it was routed here</text>
+        <line class="edge" x1="210" y1="52" x2="280" y2="52" marker-end="url(#ar2)"/>
+        <rect class="n-model" x="282" y="20" width="200" height="150" rx="6"/><text class="t" x="382" y="46" text-anchor="middle">Model turn</text>
+        <text class="s" x="382" y="68" text-anchor="middle">what is still unknown?</text>
+        <text class="s" x="382" y="86" text-anchor="middle">pick tools, or finish</text>
+        <text class="s" x="382" y="116" text-anchor="middle">max 8 turns · token budget</text>
+        <text class="s" x="382" y="134" text-anchor="middle">receipts and notes are data,</text><text class="s" x="382" y="148" text-anchor="middle">never instructions</text>
+        <path class="edge" d="M482 60 H600" marker-end="url(#ar2)"/><text class="lab" x="506" y="52">tool_use</text>
+        <rect class="n-code" x="602" y="20" width="278" height="200" rx="6"/><text class="t" x="741" y="44" text-anchor="middle">Tools, run by code</text>
+        <text class="s" x="620" y="68">getEmployee · getPolicy · getPastClaims</text>
+        <text class="s" x="620" y="86">getTravelCalendar · getClaim</text>
+        <text class="s" x="620" y="110">findSimilarClaims  (merchant/date/amount)</text>
+        <text class="s" x="620" y="128">calculate  (exact arithmetic)</text>
+        <text class="s" x="620" y="146">recordFinding  (evidence for the audit)</text>
+        <text class="s" x="620" y="164">checkApprovalGates  (would this need a human?)</text>
+        <text class="s" x="620" y="190" style="font-weight:600;opacity:1">no tool can move money</text>
+        <path class="edge" d="M640 222 V260 H420 V172" marker-end="url(#ar2)"/><text class="lab" x="450" y="254">tool_result, back to the model</text>
+        <path class="edge" d="M330 170 V280 H200" marker-end="url(#ar2)"/><text class="lab" x="340" y="226">done</text>
+        <rect class="n-model" x="20" y="250" width="180" height="64" rx="6"/><text class="t" x="110" y="275" text-anchor="middle">submitDecision</text><text class="s" x="110" y="293" text-anchor="middle">validated, gates re-run in code</text>
+        <path class="edge bad dash" d="M470 170 V196 H500 V300 H702" />
+        <rect class="n-human" x="704" y="276" width="176" height="42" rx="6"/><text class="t" x="792" y="294" text-anchor="middle">Cap hit: forced submit</text><text class="s" x="792" y="309" text-anchor="middle">unsure → send to Finance</text>
+      </svg>
+      </div>
+      <figcaption>The agent can look things up and think. Its decision goes through the same stage 6 as the workflow's, and the code re-checks the gates even if the agent already called <code>checkApprovalGates</code>.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>When a human is required</h2>
+    <p class="lede">These business scenarios live in one file, <code>server/src/ai/gates.ts</code>, as a list with an id, a plain-English description, a reviewer and a test. Thresholds sit in one config object. Changing company policy means editing this table, not the prompts.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Gate</th><th>Triggers when</th><th>Reviewer</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">AMOUNT_OVER_LIMIT</td><td>Amount to pay is over $500 (R6)</td><td><span class="pill mgr">Manager</span></td></tr>
+        <tr><td class="mono">POLICY_ESCALATION</td><td>A rule says "send to Finance": gift or cash equivalent (R7), possible splitting (R9), hotel with no matching trip (R4)</td><td><span class="pill fin">Finance</span></td></tr>
+        <tr><td class="mono">LOW_CONFIDENCE</td><td>The decision to pay has model confidence under 0.75</td><td><span class="pill fin">Finance</span></td></tr>
+        <tr><td class="mono">VERIFIER_DISAGREES</td><td>The independent second opinion would not pay as proposed</td><td><span class="pill fin">Finance</span></td></tr>
+        <tr><td class="mono">AGENT_INCONCLUSIVE</td><td>The agent hit its turn or token cap, or returned an invalid decision</td><td><span class="pill fin">Finance</span></td></tr>
+        <tr><td class="mono">HIGH_RISK_SIGNAL</td><td>A high-severity flag survives: receipt contradicts the form (amount, date or category), line items don't add up, near-duplicate of a paid claim</td><td><span class="pill fin">Finance</span></td></tr>
+        <tr><td class="mono">JUST_UNDER_LIMIT</td><td>Payout is $475–$500, inside 5% below the manager limit (possible threshold dodging)</td><td><span class="pill mgr">Manager</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="lede" style="font-size:14px">If a claim hits both kinds of gate, Finance reviews it. Every triggered gate and its reason is stored with the claim and shown on its review card. "Notify" means the queue count updates and a message to the reviewer is written to the server log, since the lab has no email service.</p>
+  </section>
+
+  <section>
+    <h2>What the reviewer sees</h2>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Sketch of the Review queue tab: a card per waiting claim with the AI summary, triggered gates, key findings and Approve and Reject buttons.">
+        <rect class="n-code" x="10" y="10" width="880" height="280" rx="8" style="fill:var(--surface)"/>
+        <text class="t" x="30" y="40">Inbox    <tspan style="fill:var(--model)">Review queue (4)</tspan>    Failed payouts (0)</text>
+        <line x1="10" y1="52" x2="890" y2="52" class="band"/>
+        <rect class="n-human" x="30" y="68" width="400" height="206" rx="6" style="fill:var(--surface)"/>
+        <text class="t" x="46" y="94">C12 · Lucas Silva · $1,240.00</text>
+        <rect class="n-human" x="330" y="78" width="88" height="22" rx="11"/><text class="s" x="374" y="93" text-anchor="middle" style="opacity:1">Manager</text>
+        <text class="s" x="46" y="116" style="opacity:1">Waiting for Hannah Weber (his manager) · proposed payout $1,240.00</text>
+        <text class="s" x="46" y="140" style="opacity:1">AI summary: MacBook Air from Best Buy Business, receipt matches,</text>
+        <text class="s" x="46" y="154" style="opacity:1">covered by R10. Over $500, so the manager signs.</text>
+        <text class="lab" x="46" y="178">GATE AMOUNT_OVER_LIMIT  $1,240 &gt; $500</text>
+        <text class="lab" x="46" y="196">checked: form = receipt ✓  no duplicate ✓  trip n/a</text>
+        <rect class="n-model" x="46" y="226" width="150" height="32" rx="5"/><text class="t" x="121" y="246" text-anchor="middle">Approve · $1,240</text>
+        <rect class="n-code" x="206" y="226" width="90" height="32" rx="5"/><text class="t" x="251" y="246" text-anchor="middle">Reject</text>
+        <rect class="n-human" x="460" y="68" width="400" height="206" rx="6" style="fill:var(--surface);opacity:.55"/>
+        <text class="t" x="476" y="94" style="opacity:.8">C11 · Omar Haddad · $410.00</text>
+        <text class="s" x="476" y="116">Finance · Austin hotel, no trip on file …</text>
+        <text class="s" x="476" y="140">(next card)</text>
+      </svg>
+      </div>
+      <figcaption>Each waiting claim is one card: who must decide, what would go to Finance, the AI's summary, the exact gates that fired and the evidence checked. Approve is disabled when nothing would be paid (a gift, say), leaving only Reject. Approving creates the payout request from the diagram above. Claim detail also gets a collapsible run timeline.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>How the 13 seeded claims should flow</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Claim</th><th>What it is</th><th>Path</th><th>Expected outcome</th></tr></thead>
+      <tbody>
+        <tr><td>C01 C02</td><td>Taxi, conference ticket</td><td><span class="pill cd">workflow</span></td><td><span class="pill pay">approved</span> → payout queued</td></tr>
+        <tr><td>C03</td><td>Chicago hotel, 2 nights at $245.28</td><td><span class="pill cd">workflow</span></td><td><span class="pill mgr">Manager</span> JUST_UNDER_LIMIT ($490.56 is within 5% below $500)</td></tr>
+        <tr><td>C04</td><td>Client dinner, wine on the bill</td><td><span class="pill cd">workflow</span></td><td><span class="pill pay">partial $138.00</span> R3 (hosting a client, from the note)</td></tr>
+        <tr><td>C05</td><td>Solo dinner on a Boston trip</td><td><span class="pill cd">workflow</span></td><td><span class="pill pay">partial $75.00</span> R2 cap</td></tr>
+        <tr><td>C06</td><td>Claimed $180, receipt says $108</td><td><span class="pill cd">workflow</span></td><td><span class="pill pay">partial $108.00</span> R1</td></tr>
+        <tr><td>C07 C08 C09</td><td>Too late, no receipt, receipt number already paid</td><td><span class="pill cd">hard-rule exit</span></td><td><span class="pill rej">reject</span>, no decision model call</td></tr>
+        <tr><td>C10</td><td>Dinner "part 3", two earlier parts on file</td><td><span class="pill fin">agent</span></td><td><span class="pill fin">Finance</span> R9, proposed $0, Reject only</td></tr>
+        <tr><td>C11</td><td>Austin hotel, no trip that date</td><td><span class="pill fin">agent</span></td><td><span class="pill fin">Finance</span> R4, proposed $410, Approve or Reject</td></tr>
+        <tr><td>C12</td><td>Laptop $1,240</td><td><span class="pill cd">workflow</span></td><td><span class="pill mgr">Manager</span> R6, nothing sent to Finance until approved</td></tr>
+        <tr><td>C13</td><td>$200 Amazon gift card</td><td><span class="pill fin">agent</span></td><td><span class="pill fin">Finance</span> R7, proposed $0, Reject only</td></tr>
+      </tbody>
+    </table></div>
+    <p class="lede" style="font-size:14px">Outcomes from a test run with canned model answers, which checks the gates, the payout hand-off and the double-approve guard. Real model results can differ. The seeded claims have receipt text (an OCR stand-in), not photos, so stage 2 reads text for them and the image for claims submitted through the new form.</p>
+  </section>
+
+  <section>
+    <h2>What changes in the project</h2>
+    <div class="files"><b>server/src/ai/</b>
+  workflow.ts        <i>processClaim: stages 1–7 as numbered calls</i>
+  agent.ts           <i>investigateClaim: the loop, turn cap, token budget, forced finish</i>
+  agent-tools.ts     <i>the agent's extra tools; none can move money</i>
+  <b>gates.ts</b>           <i>the business scenarios + evaluateGates()</i>
+  intake.ts          <i>stage 1: hard rules</i>
+  extract.ts         <i>stage 2: receipt photo/text + note → structured data</i>
+  crosscheck.ts      <i>stage 3: records lookup, form vs receipt</i>
+  signals.ts         <i>stage 4: risk flags and the router</i>
+  policy-engine.ts   <i>stage 5a: R1–R4, R10 as arithmetic</i>
+  checks.ts          <i>stage 6: guardrails + second opinion + gates</i>
+  guardrails.ts, verifier.ts, writeup.ts
+  model.ts, trace.ts <i>forced tool call with repair retry; step timeline</i>
+<b>server/src/</b>payouts.ts   <i>stage 9: payout requests, submit to Finance once, retry, failed queue</i>
+<b>server/src/modules/claims/</b>claims.outcome.ts   <i>stage 8, review queue, approve and reject</i>
+<b>server/src/modules/payouts/</b>   <i>failed payouts, retry, Finance outage switch</i>
+<b>client/src/</b>components/ApprovalQueue.tsx, FailedPayouts.tsx, RunTimeline.tsx; App.tsx tabs;
+            NewClaimForm.tsx (category, receipt photo)</div>
+    <p class="lede" style="font-size:14px"><code>server/src/tools</code>, <code>llm.ts</code> and <code>server/data</code> untouched, as the lab rules say. <code>tools.payClaim</code> stays the one call that records money, so it stands in for Finance's API and only <code>payouts.ts</code> calls it. The model is Haiku for every call.</p>
+  </section>
+
+  <section>
+    <div class="ask">
+      <h3>Design decisions to know about</h3>
+      <ul>
+        <li><b>Finance outranks the manager.</b> A claim over $500 that is also flagged for doubt goes to Finance alone, not through a two-step chain, because the app has no reviewer identity.</li>
+        <li><b>Escalations enter the same queue.</b> Finance cases appear as cards too, with the amount they would approve (or none).</li>
+        <li><b>The second opinion is selective.</b> Agent-path claims and payouts over $200 only, so boring claims stay at a few cents.</li>
+        <li><b>Failures retry three times,</b> then wait in the failed payouts queue for a person to press Retry. No background scheduler.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

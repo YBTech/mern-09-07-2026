@@ -58,19 +58,3 @@ export type NewClaim = {
   note: string;
   receiptText: string;
 };
-
-export type TraceEvent =
-  | {
-      kind: "model";
-      at: number;
-      model: string;
-      inputTokens: number;
-      outputTokens: number;
-      stopReason: string | null;
-      toolsRequested: string[];
-      text: string;
-      ms: number;
-    }
-  | { kind: "tool"; at: number; name: string; input: unknown; output: string; error?: string }
-  | { kind: "note"; at: number; label: string; detail?: string }
-  | { kind: "error"; at: number; message: string };

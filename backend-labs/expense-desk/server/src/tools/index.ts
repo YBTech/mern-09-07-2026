@@ -1,12 +1,10 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { db } from "../store";
-import { record } from "../trace/trace";
 import type { Claim, Employee, PastClaim, Payment, PolicyRule, Trip } from "../types";
 
 // The ONLY way your AI code reaches company data. Use each tool in two ways:
 //   in a workflow step, call the function:   tools.getEmployee({ employeeId: "E01" })
 //   in an agent, give the model the schemas:  tools: readToolSchemas, then runTool(name, input)
-// Every call is recorded in the claim's trace, whichever way you call it.
 
 export class ToolError extends Error {}
 
@@ -79,28 +77,13 @@ function payClaim({ claimId, amount }: { claimId: string; amount: number }): Pay
   return payment;
 }
 
-// ── Tracing: every tool records its input and output ────────────────────
-
-function traced<F extends (input: any) => unknown>(name: string, fn: F): F {
-  return ((input?: unknown) => {
-    try {
-      const output = fn(input);
-      record({ kind: "tool", name, input, output: JSON.stringify(output).slice(0, 2000) });
-      return output;
-    } catch (err) {
-      record({ kind: "tool", name, input, output: "", error: (err as Error).message });
-      throw err;
-    }
-  }) as F;
-}
-
 export const tools = {
-  getClaim: traced("getClaim", getClaim),
-  getEmployee: traced("getEmployee", getEmployee),
-  getPolicy: traced("getPolicy", getPolicy),
-  getPastClaims: traced("getPastClaims", getPastClaims),
-  getTravelCalendar: traced("getTravelCalendar", getTravelCalendar),
-  payClaim: traced("payClaim", payClaim),
+  getClaim,
+  getEmployee,
+  getPolicy,
+  getPastClaims,
+  getTravelCalendar,
+  payClaim,
 };
 
 export type ToolName = keyof typeof tools;
