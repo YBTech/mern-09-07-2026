@@ -1,0 +1,13 @@
+{
+  "name": "day32-pizza-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n v1-api,v1-web,v2-api,v2-web -c blue,cyan,green,yellow \"npm run dev:v1 --prefix backend\" \"npm run dev:v1 --prefix frontend\" \"npm run dev:v2 --prefix backend\" \"npm run dev:v2 --prefix frontend\"",
+    "dev:v1": "concurrently -n v1-api,v1-web -c blue,cyan \"npm run dev:v1 --prefix backend\" \"npm run dev:v1 --prefix frontend\"",
+    "dev:v2": "concurrently -n v2-api,v2-web -c green,yellow \"npm run dev:v2 --prefix backend\" \"npm run dev:v2 --prefix frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}

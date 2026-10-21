@@ -1,0 +1,5 @@
+node_modules
+.env
+app/backend/runs
+app/backend/eval-report
+app/frontend/dist
