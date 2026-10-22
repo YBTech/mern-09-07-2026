@@ -1,0 +1,19 @@
+{
+  "name": "day32-evaluation-observability",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix app && npm install --prefix app/backend && npm install --prefix app/frontend",
+    "app": "npm run dev:v1 --prefix app",
+    "app:v1": "npm run dev:v1 --prefix app",
+    "app:v2": "npm run dev:v2 --prefix app",
+    "app:both": "npm run dev:both --prefix app",
+    "eval:code": "npm run eval:code --prefix app/backend",
+    "eval:decision": "npm run eval:decision --prefix app/backend",
+    "eval:judge": "npm run eval:judge --prefix app/backend",
+    "eval:node": "npm run eval:node --prefix app/backend",
+    "eval:all": "npm run eval:all --prefix app/backend",
+    "eval:v1": "npm run eval:v1 --prefix app/backend",
+    "eval:v2": "npm run eval:v2 --prefix app/backend"
+  }
+}

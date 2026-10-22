@@ -167,6 +167,10 @@ import Ai31Lecture from "./ai-training/day31-langchain-langgraph/lecture/Lecture
 import Ai31Notes from "./ai-training/day31-langchain-langgraph/Notes";
 import Ai31Concepts from "./ai-training/day31-langchain-langgraph/Concepts";
 
+import Ai32Lecture from "./ai-training/day32-evaluation-observability/lecture/Lecture";
+import Ai32Notes from "./ai-training/day32-evaluation-observability/Notes";
+import Ai32Concepts from "./ai-training/day32-evaluation-observability/Concepts";
+
 function App() {
   return (
     <Routes>
@@ -522,6 +526,9 @@ function App() {
       <Route path="/ai-training/day31-langchain-langgraph/lecture" element={<Ai31Lecture />} />
       <Route path="/ai-training/day31-langchain-langgraph/notes" element={<Ai31Notes />} />
       <Route path="/ai-training/day31-langchain-langgraph/concepts" element={<Ai31Concepts />} />
+      <Route path="/ai-training/day32-evaluation-observability/lecture" element={<Ai32Lecture />} />
+      <Route path="/ai-training/day32-evaluation-observability/notes" element={<Ai32Notes />} />
+      <Route path="/ai-training/day32-evaluation-observability/concepts" element={<Ai32Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />
