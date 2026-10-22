@@ -170,6 +170,9 @@ import Ai31Concepts from "./ai-training/day31-langchain-langgraph/Concepts";
 import Ai32Lecture from "./ai-training/day32-evaluation-observability/lecture/Lecture";
 import Ai32Notes from "./ai-training/day32-evaluation-observability/Notes";
 import Ai32Concepts from "./ai-training/day32-evaluation-observability/Concepts";
+import Ai33Lecture from "./ai-training/day33-security-cost-performance/lecture/Lecture";
+import Ai33Notes from "./ai-training/day33-security-cost-performance/Notes";
+import Ai33Concepts from "./ai-training/day33-security-cost-performance/Concepts";
 
 function App() {
   return (
@@ -529,6 +532,9 @@ function App() {
       <Route path="/ai-training/day32-evaluation-observability/lecture" element={<Ai32Lecture />} />
       <Route path="/ai-training/day32-evaluation-observability/notes" element={<Ai32Notes />} />
       <Route path="/ai-training/day32-evaluation-observability/concepts" element={<Ai32Concepts />} />
+      <Route path="/ai-training/day33-security-cost-performance/lecture" element={<Ai33Lecture />} />
+      <Route path="/ai-training/day33-security-cost-performance/notes" element={<Ai33Notes />} />
+      <Route path="/ai-training/day33-security-cost-performance/concepts" element={<Ai33Concepts />} />
 
       {/* General Notes */}
       <Route path="/general/ide-shortcuts" element={<IdeShortcuts />} />

@@ -1,0 +1,19 @@
+{
+  "name": "day33-security-cost-performance",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix playground && npm install --prefix app && npm install --prefix app/backend && npm install --prefix app/frontend",
+    "01": "npm run 01 --prefix playground",
+    "02": "npm run 02 --prefix playground",
+    "03": "npm run 03 --prefix playground",
+    "04": "npm run 04 --prefix playground",
+    "05": "npm run 05 --prefix playground",
+    "06": "npm run 06 --prefix playground",
+    "07": "npm run 07 --prefix playground",
+    "08": "npm run 08 --prefix playground",
+    "typecheck": "npm run typecheck --prefix playground",
+    "app": "npm run dev --prefix app",
+    "probe": "npm run probe --prefix app/backend"
+  }
+}

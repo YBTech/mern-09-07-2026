@@ -1,0 +1,22 @@
+{
+  "name": "day33-injection-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_OPTIONS=--disable-warning=ExperimentalWarning tsx watch --env-file=../../.env src/server.ts",
+    "probe": "tsx --env-file=../../.env src/probe.ts",
+    "typecheck": "tsc --noEmit",
+    "probe:assistant": "NODE_OPTIONS=--disable-warning=ExperimentalWarning tsx --env-file=../../.env src/assistant-probe.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
