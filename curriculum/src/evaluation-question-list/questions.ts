@@ -1177,4 +1177,98 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       },
     ],
   },
+  {
+    id: "ai",
+    title: "AI",
+    groups: [
+      {
+        title: "AI Fundamentals & Coding Tools",
+        questions: [
+          "What is a prompt?",
+          "What is a token?",
+          "What is a context window, and how do you manage your context window?",
+          "What is a skill?",
+          "What is a hook, and what is its purpose?",
+          "How do you use AI in your day-to-day work and to help with your code?",
+          "How do you verify the AI's output?",
+          "How do you keep the code secure when you use AI?",
+        ],
+      },
+      {
+        title: "LLMs, Prompts & SDK",
+        questions: [
+          "What is a system prompt?",
+          "What is the difference between zero-shot, one-shot, and few-shot prompting?",
+          "What is chain-of-thought prompting?",
+          "What is structured output, why do we need it, and how do you get it?",
+          "What is AI's hallucination? How do we reduce it?",
+        ],
+      },
+      {
+        title: "Tools, MCP & the Agent Loop",
+        questions: [
+          "What is a tool?",
+          "What is an agent?",
+          "What is the agentic loop? How does it work?",
+          "What is MCP?",
+          "What are an MCP server and its purpose?",
+        ],
+      },
+      {
+        title: "RAG & Vector Databases",
+        questions: [
+          "What is RAG, and what problem does it solve?",
+          "Walk through the full RAG ingestion pipeline.",
+          "What is vector embedding?",
+          "What is a vector database?",
+          "What is chunking, and why does it matter?",
+          "What is a citation in RAG, and why include it?",
+          "What is the difference between keyword search and vector search, and what is hybrid search?",
+        ],
+      },
+      {
+        title: "Workflows, Agents & Context",
+        questions: [
+          "What is a workflow, what is an agent, and what is the difference?",
+          "What are some common workflow patterns?",
+          "What is context engineering, and how could you do it?",
+          "What is agent orchestration (orchestrator-workers)?",
+          "What is a checkpoint, and why does a long-running agent need one?",
+          "How do you add human approval to an agent?",
+        ],
+      },
+      {
+        title: "LangChain & LangGraph",
+        questions: [
+          "What are LangChain, LangGraph and LangSmith, and how do they fit together?",
+          "What are the three parts of a LangGraph graph?",
+          "What is the difference between a chain and a graph?",
+          "What does LangGraph give you that a plain while loop does not?",
+          "What is a checkpointer, and what is thread_id for?",
+          "How does interrupt work, and why must you not charge a card before it?",
+        ],
+      },
+      {
+        title: "AI Evaluation & Observability",
+        questions: [
+          "Why does an AI app need evals, and not only unit tests?",
+          "What kinds of grader are there, and when do you use each?",
+          "What is an LLM as a judge, and how do you write a good test case for it?",
+          "How do you evaluate a RAG system?",
+          "What are observability and tracing, and how are they different from evaluation?",
+          "How do you debug an AI's mistake?"
+        ],
+      },
+      {
+        title: "AI Security, Cost & Performance",
+        questions: [
+          "What is prompt injection, and why does it exist?",
+          "What are guardrails, and where do they go?",
+          "What is prompt caching?",
+          "What is semantic caching?",
+          "How do you control the cost of an LLM app?",
+        ],
+      }
+    ],
+  },
 ];

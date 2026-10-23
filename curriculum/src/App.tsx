@@ -140,42 +140,42 @@ import D24Concepts from "./week5/day24-agile-sdlc/Concepts";
 import D25Lecture from "./week5/day25-backend-review/lecture/Lecture";
 import D25Notes from "./week5/day25-backend-review/Notes";
 
-import Ai26Lecture from "./ai-training/day26-ai-overview-coding-tools/lecture/Lecture";
-import Ai26Notes from "./ai-training/day26-ai-overview-coding-tools/Notes";
-import Ai26Concepts from "./ai-training/day26-ai-overview-coding-tools/Concepts";
+import Ai26Lecture from "./week6-7-ai-training/day26-ai-overview-coding-tools/lecture/Lecture";
+import Ai26Notes from "./week6-7-ai-training/day26-ai-overview-coding-tools/Notes";
+import Ai26Concepts from "./week6-7-ai-training/day26-ai-overview-coding-tools/Concepts";
 
-import Ai27Lecture from "./ai-training/day27-llm-prompts-sdk/lecture/Lecture";
-import Ai27Notes from "./ai-training/day27-llm-prompts-sdk/Notes";
-import Ai27Concepts from "./ai-training/day27-llm-prompts-sdk/Concepts";
-import Ai28Lab from "./ai-training/day27-llm-prompts-sdk/Lab";
+import Ai27Lecture from "./week6-7-ai-training/day27-llm-prompts-sdk/lecture/Lecture";
+import Ai27Notes from "./week6-7-ai-training/day27-llm-prompts-sdk/Notes";
+import Ai27Concepts from "./week6-7-ai-training/day27-llm-prompts-sdk/Concepts";
+import Ai28Lab from "./week6-7-ai-training/day27-llm-prompts-sdk/Lab";
 
-import Ai28Lecture from "./ai-training/day28-tools-mcp-agent-loop/lecture/Lecture";
-import Ai28Notes from "./ai-training/day28-tools-mcp-agent-loop/Notes";
-import Ai28Concepts from "./ai-training/day28-tools-mcp-agent-loop/Concepts";
-import Ai28DayLab from "./ai-training/day28-tools-mcp-agent-loop/Lab";
+import Ai28Lecture from "./week6-7-ai-training/day28-tools-mcp-agent-loop/lecture/Lecture";
+import Ai28Notes from "./week6-7-ai-training/day28-tools-mcp-agent-loop/Notes";
+import Ai28Concepts from "./week6-7-ai-training/day28-tools-mcp-agent-loop/Concepts";
+import Ai28DayLab from "./week6-7-ai-training/day28-tools-mcp-agent-loop/Lab";
 
-import Ai29Lecture from "./ai-training/day29-rag-vector-databases/lecture/Lecture";
-import Ai29Notes from "./ai-training/day29-rag-vector-databases/Notes";
-import Ai29Concepts from "./ai-training/day29-rag-vector-databases/Concepts";
+import Ai29Lecture from "./week6-7-ai-training/day29-rag-vector-databases/lecture/Lecture";
+import Ai29Notes from "./week6-7-ai-training/day29-rag-vector-databases/Notes";
+import Ai29Concepts from "./week6-7-ai-training/day29-rag-vector-databases/Concepts";
 
-import Ai30Lecture from "./ai-training/day30-workflows-agents-context/lecture/Lecture";
-import Ai30Demo from "./ai-training/day30-workflows-agents-context/lecture/DemoPage";
-import Ai30Notes from "./ai-training/day30-workflows-agents-context/Notes";
-import Ai30Concepts from "./ai-training/day30-workflows-agents-context/Concepts";
+import Ai30Lecture from "./week6-7-ai-training/day30-workflows-agents-context/lecture/Lecture";
+import Ai30Demo from "./week6-7-ai-training/day30-workflows-agents-context/lecture/DemoPage";
+import Ai30Notes from "./week6-7-ai-training/day30-workflows-agents-context/Notes";
+import Ai30Concepts from "./week6-7-ai-training/day30-workflows-agents-context/Concepts";
 
-import Ai31Lecture from "./ai-training/day31-langchain-langgraph/lecture/Lecture";
-import Ai31Notes from "./ai-training/day31-langchain-langgraph/Notes";
-import Ai31Concepts from "./ai-training/day31-langchain-langgraph/Concepts";
+import Ai31Lecture from "./week6-7-ai-training/day31-langchain-langgraph/lecture/Lecture";
+import Ai31Notes from "./week6-7-ai-training/day31-langchain-langgraph/Notes";
+import Ai31Concepts from "./week6-7-ai-training/day31-langchain-langgraph/Concepts";
 
-import Ai32Lecture from "./ai-training/day32-evaluation-observability/lecture/Lecture";
-import Ai32Notes from "./ai-training/day32-evaluation-observability/Notes";
-import Ai32Concepts from "./ai-training/day32-evaluation-observability/Concepts";
-import Ai33Lecture from "./ai-training/day33-security-cost-performance/lecture/Lecture";
-import Ai33Notes from "./ai-training/day33-security-cost-performance/Notes";
-import Ai33Concepts from "./ai-training/day33-security-cost-performance/Concepts";
-import Ai34Lecture from "./ai-training/day34-ai-system-design/lecture/Lecture";
-import Ai34Notes from "./ai-training/day34-ai-system-design/Notes";
-import Ai34Concepts from "./ai-training/day34-ai-system-design/Concepts";
+import Ai32Lecture from "./week6-7-ai-training/day32-evaluation-observability/lecture/Lecture";
+import Ai32Notes from "./week6-7-ai-training/day32-evaluation-observability/Notes";
+import Ai32Concepts from "./week6-7-ai-training/day32-evaluation-observability/Concepts";
+import Ai33Lecture from "./week6-7-ai-training/day33-security-cost-performance/lecture/Lecture";
+import Ai33Notes from "./week6-7-ai-training/day33-security-cost-performance/Notes";
+import Ai33Concepts from "./week6-7-ai-training/day33-security-cost-performance/Concepts";
+import Ai34Lecture from "./week6-7-ai-training/day34-ai-system-design/lecture/Lecture";
+import Ai34Notes from "./week6-7-ai-training/day34-ai-system-design/Notes";
+import Ai34Concepts from "./week6-7-ai-training/day34-ai-system-design/Concepts";
 
 function App() {
   return (
