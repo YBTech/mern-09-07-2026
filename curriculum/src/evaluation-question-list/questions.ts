@@ -192,11 +192,17 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         questions: [
           "How many threads does Javascript have? Why do we need async / non-blocking operations?",
-          "What is the call stack?",
-          "What is the callback queue?",
-          "What is the event loop? Why do we need it?",
-          "What is an Execution context?",
-          "What is macrotask and microtask?",
+          [
+            "Explain the Javascript event loop and how these work together",
+            [
+              "execution context",
+              "call stack",
+              "web apis",
+              "callback queue",
+              "macrotask and microtask",
+            ],
+          ],
+          "Which task has higher priority? For example, given same delay, setTimeout and Promise.resolve, which one comes out first?",
           "What is callback hell? How do we solve this problem?",
           "What is a Promise? Why do we need it?",
           "What is .then, .catch, and .finally?",
@@ -206,7 +212,6 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
           "Why would we need Promise.race?",
           "Difference between using .then and .catch, vs using async/await for promises. Which syntax should we use and why?",
           "How to call a few api’s in parallel vs in sequence? When should you do each",
-          "Which task has higher priority? For example, given same delay, setTimeout and Promise.resolve, which one comes out first?",
         ],
       },
       {
@@ -269,12 +274,16 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         title: "HTTP Status Codes & Networking",
         questions: [
           "Difference between http and https?",
-          "What do 200, 201, and 204 status codes represent?",
-          "What do 300-level status codes indicate?",
-          "Explain the differences between 400, 401, 403, 404, and 409 status codes.",
-          "What is the difference between a 401 and a 403 error?",
-          "What do 500-level status codes represent?",
-          "What is http cache control?",
+          [
+            "Explain status code in different ranges and give some examples",
+            [
+              "2xx and these: 200, 201, 204",
+              "3xx",
+              "4xx and these: 400, 401 vs 403 difference, 404, 409",
+              "5xx",
+            ],
+          ],
+          "What is http cache control? Give examples",
         ],
       },
       {
@@ -338,18 +347,28 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "JSX and Under the Hood",
         questions: [
-          "What is JSX?",
-          "How is JSX a syntax sugar, and how is it compiled by Babel into React.createElement?",
-          "How does the Virtual DOM use a diffing algorithm to compare copies and update the real DOM?",
-          "What is React Reconciliation?",
+          [
+            "What is JSX?",
+            [
+              "why is it a syntax sugar?",
+              "how is it compiled by Babel into React.createElement?",
+            ],
+          ],
+          [
+            "Explain React rerendering / reconciliation process",
+            [
+              "Virtual DOM",
+              "diffing algorithm",
+              "how does it decide what updates to make to the real DOM?",
+            ],
+          ],
           "Briefly explain React Fiber.",
-          "What is the difference between a React element and a React component?",
-          "What is a React component?",
         ],
       },
       {
         title: "Components, Props, and States",
         questions: [
+          "What is a React component?",
           "What is the difference between state and props?",
           "Why must array/object state be updated immutably instead of mutated in place?",
           "Is a prop mutable?",
@@ -368,17 +387,20 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "Rendering and Lifecycle",
         questions: [
-          "What causes a React component to re-render?",
-          "How can you prevent unnecessary re-rendering?",
-          "Why do we need keys in a list? What are the requirements for a key?",
-          "Why can't we use a simple index as a key in a list?",
+          [
+            "What causes a React component to re-render?",
+            ["how do we prevent unnecessary re-rendering"],
+          ],
+          [
+            "Explain keys in a list",
+            ["purpose", "requirements", "can we use index?"],
+          ],
           "What is a pure function?",
           'What does it mean for a Component to be "Pure"?',
           "What are considered side effects in React components? Where should we handle them?",
           "What is React.StrictMode, and why does it render everything twice?",
           "What are mounting and unmounting in a component's lifecycle?",
           "What are the class component lifecycle methods?",
-          "How to prevent unnecessary re-rendering in React?",
         ],
       },
       {
@@ -432,15 +454,18 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "Forms and Inputs",
         questions: [
-          "What is a controlled component?",
-          "What is two-way data binding in React?",
-          "How is a controlled component different from an uncontrolled component?",
+          [
+            "What is a controlled component?",
+            ["explain two way data binding", "how it differs to uncontrolled"],
+          ],
           "What is a Synthetic Event in React?",
           "What's the difference between onClick={handleClick}, onClick={handleClick()}, and onClick={() => handleClick(id)}?",
-          "How do you perform form input validation?",
+          [
+            "How do you perform form input validation?",
+            ["what library to use"],
+          ],
           "What is the default behavior of forms? How do we prevent it?",
-          "What is debounce? When would you use it?",
-          "What is throttle? When would you use it?",
+          "Explain debounce and throttle and what we might need them in a form?",
         ],
       },
       {
@@ -482,18 +507,18 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "Redux",
         questions: [
-          "Why do we use Redux?",
-          "What are the three core principles of Redux?",
-          "Explain the Flux pattern.",
-          "What is a Redux store?",
-          "What is a reducer function?",
-          "What is an action?",
+          ["Why do we use Redux?", ["explain its three core principles"]],
+          [
+            "Explain the Flux pattern with the following concepts.",
+            ["store", "reducer", "dispatching an action"],
+          ],
           "How do you read from and write to states in Redux store? Which functions?",
           "What are connect api and mapStateToProps?",
           "What is Redux Toolkit? How is it different from traditional Redux?",
-          "What is a Redux middleware?",
-          "What are Redux Thunk and Redux Saga middlewares? Explain their difference very briefly",
-          "What is Redux Persist middleware?",
+          [
+            "What is a redux Redux middleware? Explain these examples",
+            ["Redux Thunk", "Redux Saga", "Redux Persist"],
+          ],
           "Explain the differences between Redux and the Context API.",
           "How do you choose whether to store data in local state vs global state?",
         ],
@@ -509,8 +534,7 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         title: "React Router & Rendering Techniques",
         questions: [
           "What is React Router?",
-          "How is Client Side Routing (CSR) different from traditional routing?",
-          "How is Client Side Rendering (CSR) different from Server Side Rendering (SSR)?",
+          "How is Client Side Routing (CSR) different from both traditional routing & Server Side Rendering (SSR)?",
           "Why does Client Side Rendering have slow initial loading and poor SEO, and how could we solve it?",
           "How do you protect a route from unauthorized users in the frontend using Auth Guards?",
         ],
@@ -524,24 +548,30 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "Performance",
         questions: [
-          "What are the core web vitals?",
-          "Explain Largest Contentful Paint (LCP). And what’s a good LCP score?",
-          "What is Interaction to Next Paint? What’s a good INP score?",
-          "What is Cumulative Layout Shift (CLS)? How to avoid it?",
-          "What tools do you use to measure the core web vitals score?",
+          [
+            "What are the core web vitals? Explain each",
+            ["LCP", "INP", "CLS", "how to monitor it?"],
+          ],
           "How do you improve the initial loading speed of your web page? Give as many methods as possible.",
-          "How do you handle displaying a very massive amount of data (like 100,000) on the UI without freezing the browser?",
-          "What is React virtualization? What library can you use for that?",
+          [
+            "How do you handle displaying a very massive amount of data (like 100,000) on the UI without freezing the browser?",
+            ["Explain virtualization and library to use for that"],
+          ],
           "What is infinite scrolling, why do you need it and how do you implement it?",
           "What is an AutoComplete component? How can you improve its performance?",
-          "What is offset based pagination?",
-          "What is cursor based pagination?",
-          "How do you improve the performance for image loading?",
-          "What are responsive images?",
-          "How does CDN help with image performance?",
-          "What are prefetch and preload?",
-          "What is lazy loading? And what is dynamic import in React?",
-          "What is the Suspense component?",
+          "Explain offset based vs cursor based pagination?",
+          [
+            "Explain the ways to improve performance for image loading?",
+            [
+              "What are responsive images?",
+              "how CDN helps?",
+              "prefetch and preload?",
+            ],
+          ],
+          [
+            "What is lazy loading? And what is dynamic import in React?",
+            ["What is the Suspense component?"],
+          ],
           "What are web worker and service worker?",
         ],
       },
@@ -1172,10 +1202,10 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
             "Explain the different environments:",
             ["local, dev, QA, staging, production"],
           ],
-          "What is a PR (pull request)? What happens after you open it?",
+          "What happens in the CI/CD pipeline after you open an PR?",
           "How do you ensure the code quality during the CI/CD pipeline process?",
           "What is SonarQube and Lint? What are their differences?",
-          "What are feature flags?",
+          "What are feature flags? How is cherry-pick different?",
           [
             "Explain the below deployment strategies, what they are and their benefits:",
             ["Blue/Green deployment", "Canary release"],
@@ -1187,12 +1217,18 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "Monitoring Tools",
         questions: [
-          "How do you monitor your app in production?",
-          "What is observability?",
-          "What is New Relic?",
-          "What is Splunk?",
-          "What is Sentry.io?",
-          "What is Grafana?",
+          [
+            "How do you monitor your app in production?",
+            ["tools used", "things you look for"],
+          ],
+          [
+            "List out some common monitoring tools and their uniqueness",
+            ["New Relic?", "Splunk?", "Sentry.io?"],
+          ],
+          [
+            "What is Otel-LGTM stack and what does each one do?",
+            ["explain all five"],
+          ],
         ],
       },
       {
@@ -1200,10 +1236,15 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         questions: [
           "What is a bundler (e.g., Webpack), and what does bundling mean? Why do we need bundling?",
           "What are the differences between Webpack and Vite?",
-          "What is dependency resolution in a build tool?",
-          "What is tree shaking, and why do we need it?",
-          "What is code splitting, and how is it combined with lazy loading? Why do we need it?",
-          "What is Hot Module Replacement (HMR) and a dev server?",
+          [
+            "Explain some of the build tool's feature and what it does",
+            [
+              "tree shaking",
+              "code splitting",
+              "Hot Module Replacement (HMR)",
+              "dev server",
+            ],
+          ],
         ],
       },
       {
@@ -1222,53 +1263,54 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "AI Fundamentals & Coding Tools",
         questions: [
-          "What is a prompt?",
-          "What is a token?",
-          "What is a context window, and how do you manage your context window?",
-          "What is a skill?",
-          "What is a hook, and what is its purpose?",
+          "What are prompts, tokens, and the context window?",
+          "What are the differences between skills and hooks?",
           "How do you use AI in your day-to-day work and to help with your code?",
-          "How do you verify the AI's output?",
-          "How do you keep the code secure when you use AI?",
+          "How do you verify the AI's output and keep the code secure?",
         ],
       },
       {
         title: "LLMs, Prompts & SDK",
         questions: [
-          "What is a system prompt?",
-          "What is the difference between zero-shot, one-shot, and few-shot prompting?",
-          "What is chain-of-thought prompting?",
-          "What is structured output, why do we need it, and how do you get it?",
+          "What is a system prompt and how is it different from a normal prompt?",
+          [
+            "Explain the common prompting techniques",
+            ["zero-shot", "one-shot", "few-shot prompting", "chain-of-thought"],
+          ],
+          "What is structured output, why do we need it, and how do you do it?",
           "What is AI's hallucination? How do we reduce it?",
         ],
       },
       {
         title: "Tools, MCP & the Agent Loop",
         questions: [
-          "What is a tool?",
-          "What is an agent?",
+          "What is a tool? What makes an AI an agent?",
           "What is the agentic loop? How does it work?",
-          "What is MCP?",
-          "What are an MCP server and its purpose?",
+          [
+            "What is MCP?",
+            ["also explain MCP server and its purpose", "MCP client"],
+          ],
         ],
       },
       {
         title: "RAG & Vector Databases",
         questions: [
-          "What is RAG, and what problem does it solve?",
-          "Walk through the full RAG ingestion pipeline.",
-          "What is vector embedding?",
-          "What is a vector database?",
-          "What is chunking, and why does it matter?",
-          "What is a citation in RAG, and why include it?",
-          "What is the difference between keyword search and vector search, and what is hybrid search?",
+          "How does RAG work, and what problem does it solve?",
+          [
+            "Explain the RAG ingestion pipeline.",
+            ["Chunking", "Embeddings", "Vector database and index"],
+          ],
+          "What is the difference between keyword search, vector search, and hybrid search?",
         ],
       },
       {
         title: "Workflows, Agents & Context",
         questions: [
           "What is a workflow, what is an agent, and what is the difference?",
-          "What are some common workflow patterns?",
+          [
+            "What are some common workflow patterns?",
+            ["prompt chaining", "router", "parallelization"],
+          ],
           "What is context engineering, and how could you do it?",
           "What is agent orchestration (orchestrator-workers)?",
           "What is a checkpoint, and why does a long-running agent need one?",
@@ -1280,7 +1322,6 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
         questions: [
           "What are LangChain, LangGraph and LangSmith, and how do they fit together?",
           "What are the three parts of a LangGraph graph?",
-          "What is the difference between a chain and a graph?",
           "What does LangGraph give you that a plain while loop does not?",
           "What is a checkpointer, and what is thread_id for?",
           "How does interrupt work, and why must you not charge a card before it?",
@@ -1300,8 +1341,8 @@ export const EVALUATION_SECTIONS: QuestionSection[] = [
       {
         title: "AI Security, Cost & Performance",
         questions: [
-          "What is prompt injection, and why does it exist?",
-          "What are guardrails, and where do they go?",
+          "What is prompt injection, and how does it work?",
+          "What are guardrails, what do they do and where do they go?",
           "What is prompt caching?",
           "What is semantic caching?",
           "How do you control the cost of an LLM app?",
