@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./RecipeForm.module.css";
 
-export function RecipeForm() {
+export function RecipeCreateForm() {
   const navigate = useNavigate();
 
   // 🔴 TODO:
-  // 1. Get recipe ID from URL params (if editing)
-  // 2. Create form state for all recipe fields using useState
-  // 3. Fetch existing recipe data if editing (useEffect)
-  // 4. Implement form validation
-  // 5. Handle form submission (create or update recipe)
-  // 6. Implement dynamic ingredient list (add/remove)
+  // 1. Create form state for all recipe fields using useState (the inputs below should become controlled inputs)
+  // 2. Implement form validation (title, description, times, servings, at least one ingredient, instructions)
+  // 3. Handle form submission: POST /recipes with axios (base URL http://localhost:4000/api),
+  //    then navigate to the new recipe's detail page
+  // 4. Implement dynamic ingredient list (add/remove)
 
   return (
     <div className={styles.container}>

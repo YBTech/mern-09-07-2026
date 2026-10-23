@@ -1,7 +1,7 @@
 import styles from "./CookTimer.module.css";
 
 export function CookTimer() {
-  // 🔴 TODO: Implement timer with useState, useEffect, useRef for interval management and auto-focus
+  // 🔴 TODO (bonus): Implement timer with useState, useEffect, useRef for interval management and auto-focus
 
   return (
     <div className={styles.timer}>

@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import { FavoriteButton } from "../../favorites/components/FavoriteButton";
-import { CookTimer } from "./CookTimer";
-import { formatTime } from "../../../shared/utils/formatters";
+import { FavoriteButton } from "../../../favorites/components/FavoriteButton";
+import { CookTimer } from "../CookTimer/CookTimer";
+import { formatTime } from "../../../../shared/utils/formatters";
 import styles from "./RecipeDetail.module.css";
 
 export function RecipeDetail() {
   // 🔴 TODO:
   // 1. Get recipe ID from URL params using useParams
-  // 2. Fetch recipe data using recipeApi.getById on component mount
+  // 2. Fetch GET /recipes/:id with axios on component mount, and send DELETE /recipes/:id from the delete handler
   // 3. Display loading state and handle errors
   // 4. Implement delete handler with confirmation dialog
 

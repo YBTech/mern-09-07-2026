@@ -1,4 +1,4 @@
-import { RecipeCard } from '../../recipes/components/RecipeCard';
+import { RecipeCard } from '../../recipes/components/RecipeCard/RecipeCard';
 import styles from './FavoritesPage.module.css';
 
 export function FavoritesPage() {

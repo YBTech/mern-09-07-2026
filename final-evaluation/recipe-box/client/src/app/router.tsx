@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Dashboard } from "../features/dashboard/components/Dashboard";
-import { RecipeList } from "../features/recipes/components/RecipeList";
-import { RecipeDetail } from "../features/recipes/components/RecipeDetail";
-import { RecipeForm } from "../features/recipes/components/RecipeForm";
+import { RecipeList } from "../features/recipes/components/RecipeList/RecipeList";
+import { RecipeDetail } from "../features/recipes/components/RecipeDetail/RecipeDetail";
+import { RecipeCreateForm } from "../features/recipes/components/RecipeForm/RecipeCreateForm";
+import { RecipeEditForm } from "../features/recipes/components/RecipeForm/RecipeEditForm";
 import { FavoritesPage } from "../features/favorites/components/FavoritesPage";
 import { NotFound } from "../shared/components/NotFound";
 import { ErrorBoundary } from "../shared/components/ErrorBoundary";
@@ -27,7 +28,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "recipes/new",
-        element: <RecipeForm />,
+        element: <RecipeCreateForm />,
       },
       {
         path: "recipes/:id",
@@ -35,7 +36,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "recipes/:id/edit",
-        element: <RecipeForm />,
+        element: <RecipeEditForm />,
       },
       {
         path: "favorites",

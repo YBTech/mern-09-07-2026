@@ -69,7 +69,7 @@ See http://localhost:4001 for the interactive version (source: `docs/openapi.yam
 ## Frontend features
 
 - Browse recipes with pagination
-- Search by title with debounced input
+- Search by title
 - Filter by cuisine, difficulty, vegetarian status
 - Sort by prep time, created date, or title
 - Create and edit recipes with dynamic ingredient lists
@@ -78,7 +78,7 @@ See http://localhost:4001 for the interactive version (source: `docs/openapi.yam
 - Dashboard with stats and featured recipes
 - Cook timer on recipe detail pages
 - Error boundaries and loading states
-- Custom hooks (useRecipes, useDebouncedValue)
+- Custom hook (useDebouncedValue)
 
 ## To-Do
 
@@ -98,8 +98,9 @@ Check each endpoint in the docs at http://localhost:4001 before wiring it to the
 
 ### Frontend
 
-Look for `🔴 TODO` comments in each file. These files are stubbed and need implementing:
+Look for `🔴 TODO` comments in each file. These files are stubbed and need implementing. There is no API layer: call the backend directly from your components with `axios` or `fetch` (base URL `http://localhost:4000/api`, see http://localhost:4001 for the endpoints).
 
-- [ ] **Dashboard:** `dashboardApi.ts`, `Dashboard.tsx`, `StatsPanel.tsx`, `FeaturedRecipes.tsx`
-- [ ] **Recipes:** `recipeApi.ts`, `useRecipes.ts`, `RecipeList.tsx`, `RecipeCard.tsx`, `RecipeDetail.tsx`, `RecipeForm.tsx`, `CookTimer.tsx`
+- [ ] **Dashboard:** `Dashboard.tsx`, `StatsPanel.tsx`, `FeaturedRecipes.tsx`
+- [ ] **Recipes:** `RecipeList.tsx`, `RecipeCard.tsx`, `RecipeDetail.tsx`, `RecipeCreateForm.tsx`
 - [ ] **Favorites:** `FavoritesContext.tsx`, `FavoriteButton.tsx`, `FavoritesPage.tsx`
+- [ ] **Bonus:** `CookTimer.tsx`, the countdown timer on the recipe detail page (`useState`, `useEffect`, `useRef`).

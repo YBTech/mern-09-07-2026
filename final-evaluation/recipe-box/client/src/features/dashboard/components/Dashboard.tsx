@@ -4,7 +4,7 @@ import styles from "./Dashboard.module.css";
 
 export function Dashboard() {
   // 🔴 TODO:
-  // 1. Fetch /api/stats using fetch, /api/stats/featured using axios (Bonus: extract the logic to dashboardApi.ts)
+  // 1. Fetch GET /stats using fetch and GET /stats/featured using axios (base URL: http://localhost:4000/api)
   // 2. Display loading state and handle errors
   // 3. Pass data to StatsPanel and FeaturedRecipes components
 

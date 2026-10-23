@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { FavoriteButton } from "../../favorites/components/FavoriteButton";
-import { formatTime } from "../../../shared/utils/formatters";
+import { FavoriteButton } from "../../../favorites/components/FavoriteButton";
+import { formatTime } from "../../../../shared/utils/formatters";
 import styles from "./RecipeCard.module.css";
 
 // 🔴 TODO: Accept recipe prop and use all its properties dynamically
