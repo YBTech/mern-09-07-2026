@@ -1,0 +1,214 @@
+openapi: 3.0.3
+info:
+  title: RecipeBox API
+  version: 1.0.0
+  description: |
+    REST API for the RecipeBox app. Data lives in an in-memory SQLite database,
+    so it resets (and re-seeds with 15 recipes) every time the server restarts.
+
+    Errors always look like `{ "error": "message", "type": "ValidationError" }`.
+servers:
+  - url: http://localhost:4000/api
+tags:
+  - name: Recipes
+  - name: Stats
+paths:
+  /recipes:
+    get:
+      tags: [Recipes]
+      summary: List recipes (paginated, filterable, sortable)
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: limit, in: query, description: Clamped to 1-50, schema: { type: integer, minimum: 1, maximum: 50, default: 10 } }
+        - { name: search, in: query, description: Case-insensitive match on title, schema: { type: string } }
+        - { name: cuisine, in: query, schema: { $ref: '#/components/schemas/Cuisine' } }
+        - { name: difficulty, in: query, schema: { $ref: '#/components/schemas/Difficulty' } }
+        - { name: isVegetarian, in: query, schema: { type: boolean } }
+        - { name: sortBy, in: query, schema: { type: string, enum: [createdAt, prepTimeMinutes, title], default: createdAt } }
+        - { name: sortOrder, in: query, schema: { type: string, enum: [asc, desc], default: desc } }
+      responses:
+        '200':
+          description: One page of recipes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedRecipes' }
+    post:
+      tags: [Recipes]
+      summary: Create a recipe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecipeInput' }
+      responses:
+        '201':
+          description: The created recipe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recipe' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+  /recipes/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer, minimum: 1 } }
+    get:
+      tags: [Recipes]
+      summary: Get one recipe
+      responses:
+        '200':
+          description: The recipe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recipe' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Recipes]
+      summary: Update a recipe (send only the fields you want to change)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecipeUpdate' }
+      responses:
+        '200':
+          description: The updated recipe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recipe' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Recipes]
+      summary: Delete a recipe
+      responses:
+        '204': { description: Deleted, no body }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /stats:
+    get:
+      tags: [Stats]
+      summary: Dashboard statistics
+      responses:
+        '200':
+          description: Totals and cuisine distribution
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Stats' }
+  /stats/featured:
+    get:
+      tags: [Stats]
+      summary: Random featured recipes (3 by default)
+      parameters:
+        - { name: count, in: query, description: How many recipes to return, schema: { type: integer, minimum: 1, maximum: 10, default: 3 } }
+      responses:
+        '200':
+          description: '`count` recipes, different on every call'
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Recipe' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+components:
+  responses:
+    ValidationError:
+      description: Invalid id or request body
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { error: Title must be at least 3 characters, type: ValidationError }
+    NotFound:
+      description: No recipe with that id
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { error: Recipe with id 999 not found, type: NotFoundError }
+  schemas:
+    Cuisine:
+      type: string
+      enum: [Chinese, Japanese, Italian, Mexican, American, Indian, French, Thai, Other]
+    Difficulty:
+      type: string
+      enum: [Easy, Medium, Hard]
+    Ingredient:
+      type: object
+      required: [name, amount]
+      properties:
+        name: { type: string, example: Olive oil }
+        amount: { type: string, example: 2 tbsp }
+    RecipeInput:
+      type: object
+      required: [title, description, cuisine, difficulty, prepTimeMinutes, cookTimeMinutes, servings, ingredients, instructions]
+      properties:
+        title: { type: string, minLength: 3, example: Garlic Noodles }
+        description: { type: string, example: Quick buttery noodles }
+        cuisine: { $ref: '#/components/schemas/Cuisine' }
+        difficulty: { $ref: '#/components/schemas/Difficulty' }
+        prepTimeMinutes: { type: integer, minimum: 1, example: 10 }
+        cookTimeMinutes: { type: integer, minimum: 0, example: 15 }
+        servings: { type: integer, minimum: 1, example: 2 }
+        isVegetarian: { type: boolean, default: false }
+        ingredients:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Ingredient' }
+        instructions: { type: string, example: Boil noodles. Toss with garlic butter. }
+        imageUrl: { type: string, description: 'Empty string or an http(s) URL', example: 'https://example.com/noodles.jpg' }
+    RecipeUpdate:
+      description: Same fields as RecipeInput, but all optional
+      type: object
+      properties:
+        title: { type: string, minLength: 3 }
+        description: { type: string }
+        cuisine: { $ref: '#/components/schemas/Cuisine' }
+        difficulty: { $ref: '#/components/schemas/Difficulty' }
+        prepTimeMinutes: { type: integer, minimum: 1 }
+        cookTimeMinutes: { type: integer, minimum: 0 }
+        servings: { type: integer, minimum: 1 }
+        isVegetarian: { type: boolean }
+        ingredients:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Ingredient' }
+        instructions: { type: string }
+        imageUrl: { type: string }
+    Recipe:
+      allOf:
+        - $ref: '#/components/schemas/RecipeInput'
+        - type: object
+          required: [id, imageUrl, isVegetarian, createdAt, updatedAt]
+          properties:
+            id: { type: integer, example: 1 }
+            isVegetarian: { type: boolean }
+            totalTimeMinutes: { type: integer, description: 'prepTimeMinutes + cookTimeMinutes. Returned by GET /recipes and GET /recipes/{id}', example: 35 }
+            imageUrl: { type: string, nullable: true }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    PaginatedRecipes:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Recipe' }
+        page: { type: integer }
+        limit: { type: integer }
+        totalPages: { type: integer }
+        totalCount: { type: integer }
+    Stats:
+      type: object
+      properties:
+        totalRecipes: { type: integer, example: 15 }
+        avgPrepTime: { type: integer, description: Average prep time in minutes (rounded), example: 19 }
+        cuisineDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              cuisine: { type: string, example: Italian }
+              count: { type: integer, example: 3 }
+              percentage: { type: integer, example: 20 }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        type: { type: string, enum: [ValidationError, NotFoundError, ConflictError, ServerError] }

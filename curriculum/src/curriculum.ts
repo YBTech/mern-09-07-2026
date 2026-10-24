@@ -253,6 +253,8 @@ export const AI_TRAINING: Track = {
     { slug: "day30-workflows-agents-context", title: "Workflows, Agents & Context Engineering", pages: NO_PRACTICE_LAB },
     { slug: "day31-langchain-langgraph", title: "LangChain, LangGraph & LangSmith", pages: NO_PRACTICE_LAB },
     { slug: "day32-evaluation-observability", title: "Evaluation, Observability & Tracing", pages: ["lecture", "notes", "concepts"] },
+    { slug: "day33-security-cost-performance", title: "Security, Cost & Performance", pages: ["lecture", "notes", "concepts"] },
+    { slug: "day34-ai-system-design", title: "AI System Design & Review", pages: ["lecture", "notes", "concepts"] },
   ],
 };
 

@@ -1,0 +1,17 @@
+.button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #bdc3c7;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.button:hover {
+  transform: scale(1.2);
+}
+
+.button.favorited {
+  color: #f39c12;
+}

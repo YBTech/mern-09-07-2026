@@ -19,7 +19,7 @@ import { MENU_TEXT, ORDERS, OrderItem, cartTotal, describeCart, nextOrderId, pri
 // LangChain: one model interface. Haiku everywhere, thinking off (cheap, fast, predictable for a demo)
 const model = await initChatModel("anthropic:claude-haiku-5-5", {
   thinking: { type: "disabled" },
-  maxTokens: 500,
+  maxTokens: 500, 
 });
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════

@@ -43,7 +43,8 @@ html:not([lang="zh"]) .lang-zh { display: none; }
 
 /* The nav bar on every page (components/DayNav.tsx). Sticky, so the links and the language
    toggle stay reachable while scrolling a long page; it slides away while scrolling down
-   and comes back on scroll up (.home-nav-hidden, toggled by DayNav). */
+   and comes back on scroll up (.home-nav-hidden, toggled by DayNav). A page with a
+   non-white background sets --nav-bg on its wrapper (see .day1-lab). */
 .home-nav {
   position: sticky;
   top: 0.5rem;
@@ -231,6 +232,53 @@ html {
   border-bottom: 3px solid #222;
   padding-bottom: 0.3rem;
   margin-bottom: 1.75rem;
+}
+
+/* A lecture page used as a walkthrough (day 32): section headings plus step-list timelines. */
+.lecture-guide h2 {
+  margin-top: 2.5rem;
+  border-bottom: 2px solid #4a6fa5;
+  padding-bottom: 0.3rem;
+}
+.lecture-guide .step-list ul {
+  margin: 0.4rem 0 1rem;
+}
+
+/* Day 34: a lecture page with tabs (one tab per case study), the selected tab kept in the address. */
+.case-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+}
+.case-tabs button {
+  padding: 0.45rem 0.95rem;
+  border: 1px solid #c9d3e3;
+  border-radius: 999px;
+  background: #fff;
+  color: #33415c;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.case-tabs button.active {
+  background: #4a6fa5;
+  border-color: #4a6fa5;
+  color: #fff;
+  font-weight: 600;
+}
+.lecture-guide li.sub {
+  margin-left: 1.6rem;
+  list-style-type: circle;
+}
+.lecture-guide h3 {
+  margin-top: 1.9rem;
+  font-size: 1.05rem;
+}
+.case-legend {
+  font-size: 0.82rem;
+  color: #5b6b82;
+  margin: -0.4rem 0 1rem;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1035,7 +1083,6 @@ pre .ln {
   font-size: 1rem;
   color: #1f3350;
 }
-
 /* A topic that needs to read as its own block (day 21's four test types): a tinted bar, like
    a small h3.part, so the sections are easy to tell apart while scrolling. */
 .notes-page h4.topic.topic-bar {
